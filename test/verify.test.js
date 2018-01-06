@@ -101,6 +101,46 @@ test.serial('Verify token and repository access and custom URL', async t => {
   t.deepEqual(t.context.log.args[0], ['Verify GitLab authentication (%s)', 'https://othertesturl.com:9090/prefix']);
 });
 
+test.serial('Verify token and repository access with subgroup git URL', async t => {
+  const repoUri = 'orga/subgroup/test_user/test_repo';
+  process.env.GL_TOKEN = 'gitlab_token';
+  const gitlabUrl = 'https://customurl.com:9090/context';
+  const gitlabApiPathPrefix = 'prefix';
+  const gitlab = authenticate({gitlabUrl, gitlabApiPathPrefix})
+    .get(`/projects/${encodeURIComponent(repoUri)}`)
+    .reply(200, {permissions: {project_access: {access_level: 40}}});
+
+  await t.notThrows(
+    verify({gitlabUrl, gitlabApiPathPrefix}, {repositoryUrl: `git@customurl.com:${repoUri}.git`}, t.context.logger)
+  );
+
+  t.true(gitlab.isDone());
+  t.deepEqual(t.context.log.args[0], [
+    'Verify GitLab authentication (%s)',
+    'https://customurl.com:9090/context/prefix',
+  ]);
+});
+
+test.serial('Verify token and repository access with subgroup http URL', async t => {
+  const repoUri = 'orga/subgroup/test_user/test_repo';
+  process.env.GL_TOKEN = 'gitlab_token';
+  const gitlabUrl = 'https://customurl.com:9090/context';
+  const gitlabApiPathPrefix = 'prefix';
+  const gitlab = authenticate({gitlabUrl, gitlabApiPathPrefix})
+    .get(`/projects/${encodeURIComponent(repoUri)}`)
+    .reply(200, {permissions: {project_access: {access_level: 40}}});
+
+  await t.notThrows(
+    verify({gitlabUrl, gitlabApiPathPrefix}, {repositoryUrl: `http://customurl.com/${repoUri}.git`}, t.context.logger)
+  );
+
+  t.true(gitlab.isDone());
+  t.deepEqual(t.context.log.args[0], [
+    'Verify GitLab authentication (%s)',
+    'https://customurl.com:9090/context/prefix',
+  ]);
+});
+
 test.serial('Verify token and repository access with empty gitlabApiPathPrefix', async t => {
   const owner = 'test_user';
   const repo = 'test_repo';
@@ -181,8 +221,11 @@ test.serial('Throw SemanticReleaseError for invalid token', async t => {
 
 test.serial('Throw SemanticReleaseError for invalid repositoryUrl', async t => {
   process.env.GITLAB_TOKEN = 'gitlab_token';
+  const gitlabUrl = 'https://gitlab.com/context';
 
-  const error = await t.throws(verify({}, {repositoryUrl: 'invalid_url'}, t.context.logger));
+  const error = await t.throws(
+    verify({gitlabUrl}, {repositoryUrl: 'git+ssh://git@gitlab.com/context.git'}, t.context.logger)
+  );
 
   t.true(error instanceof SemanticReleaseError);
   t.is(error.code, 'EINVALIDGITURL');

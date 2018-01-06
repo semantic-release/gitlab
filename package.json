@@ -18,8 +18,9 @@
   "dependencies": {
     "@semantic-release/error": "^2.1.0",
     "debug": "^3.1.0",
+    "escape-string-regexp": "^1.0.5",
     "got": "^8.0.1",
-    "parse-github-url": "^1.0.2",
+    "parse-path": "^3.0.2",
     "url-join": "^2.0.2"
   },
   "devDependencies": {
