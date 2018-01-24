@@ -39,9 +39,7 @@ test.serial('Publish a release', async t => {
   const options = {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`};
 
   const gitlab = authenticate()
-    .get(`/projects/${owner}%2F${repo}/repository/tags/${nextRelease.gitTag}`)
-    .reply(404)
-    .post(`/projects/${owner}%2F${repo}/repository/tags/${nextRelease.gitTag}/release`, {
+    .put(`/projects/${owner}%2F${repo}/repository/tags/${nextRelease.gitTag}/release`, {
       tag_name: nextRelease.gitTag,
       ref: nextRelease.gitHead,
       release_description: nextRelease.notes,
@@ -52,45 +50,4 @@ test.serial('Publish a release', async t => {
 
   t.deepEqual(t.context.log.args[0], ['Published GitLab release: %s', nextRelease.gitTag]);
   t.true(gitlab.isDone());
-});
-
-test.serial('Publish a release with an existing tag', async t => {
-  const owner = 'test_user';
-  const repo = 'test_repo';
-  process.env.GITLAB_TOKEN = 'gitlab_token';
-  const pluginConfig = {};
-  const nextRelease = {gitHead: '123', gitTag: 'v1.0.0', notes: 'Test release note body'};
-  const options = {branch: 'master', repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`};
-
-  const gitlab = authenticate()
-    .get(`/projects/${owner}%2F${repo}/repository/tags/${nextRelease.gitTag}`)
-    .reply(200, {name: nextRelease.gitTag})
-    .post(`/projects/${owner}%2F${repo}/repository/tags/${nextRelease.gitTag}/release`, {
-      tag_name: nextRelease.gitTag,
-      description: nextRelease.notes,
-    })
-    .reply(200);
-
-  await publish(pluginConfig, options, nextRelease, t.context.logger);
-
-  t.deepEqual(t.context.log.args[0], ['Published GitLab release: %s', nextRelease.gitTag]);
-  t.true(gitlab.isDone());
-});
-
-test.serial('Throw Error if get tag call return an error other than 404', async t => {
-  const owner = 'test_user';
-  const repo = 'test_repo';
-  process.env.GITLAB_TOKEN = 'github_token';
-  const pluginConfig = {};
-  const nextRelease = {gitHead: '123', gitTag: 'v1.0.0', notes: 'Test release note body'};
-  const options = {branch: 'master', repositoryUrl: `https://github.com/${owner}/${repo}.git`};
-
-  const github = authenticate()
-    .get(`/projects/${owner}%2F${repo}/repository/tags/${nextRelease.gitTag}`)
-    .reply(500);
-
-  const error = await t.throws(publish(pluginConfig, options, nextRelease, t.context.logger), Error);
-
-  t.is(error.statusCode, 500);
-  t.true(github.isDone());
 });

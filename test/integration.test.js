@@ -57,9 +57,7 @@ test.serial('Publish a release', async t => {
   const gitlab = authenticate()
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, {permissions: {project_access: {access_level: 30}}})
-    .get(`/projects/${owner}%2F${repo}/repository/tags/${nextRelease.gitTag}`)
-    .reply(404)
-    .post(`/projects/${owner}%2F${repo}/repository/tags/${nextRelease.gitTag}/release`, {
+    .put(`/projects/${owner}%2F${repo}/repository/tags/${nextRelease.gitTag}/release`, {
       tag_name: nextRelease.gitTag,
       ref: nextRelease.gitHead,
       release_description: nextRelease.notes,
@@ -83,9 +81,7 @@ test.serial('Verify Github auth and release', async t => {
   const gitlab = authenticate()
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, {permissions: {project_access: {access_level: 30}}})
-    .get(`/projects/${owner}%2F${repo}/repository/tags/${nextRelease.gitTag}`)
-    .reply(404)
-    .post(`/projects/${owner}%2F${repo}/repository/tags/${nextRelease.gitTag}/release`, {
+    .put(`/projects/${owner}%2F${repo}/repository/tags/${nextRelease.gitTag}/release`, {
       tag_name: nextRelease.gitTag,
       ref: nextRelease.gitHead,
       release_description: nextRelease.notes,
