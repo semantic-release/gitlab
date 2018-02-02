@@ -79,7 +79,7 @@ test.serial('Verify token and repository access (group_access 40)', async t => {
   t.true(gitlab.isDone());
 });
 
-test.serial('Verify token and repository access and custom URL', async t => {
+test.serial('Verify token and repository access and custom URL with prefix', async t => {
   const owner = 'test_user';
   const repo = 'test_repo';
   process.env.GL_TOKEN = 'gitlab_token';
@@ -99,6 +99,23 @@ test.serial('Verify token and repository access and custom URL', async t => {
 
   t.true(gitlab.isDone());
   t.deepEqual(t.context.log.args[0], ['Verify GitLab authentication (%s)', 'https://othertesturl.com:9090/prefix']);
+});
+
+test.serial('Verify token and repository access and custom URL without prefix', async t => {
+  const owner = 'test_user';
+  const repo = 'test_repo';
+  process.env.GL_TOKEN = 'gitlab_token';
+  const gitlabUrl = 'https://othertesturl.com:9090';
+  const gitlab = authenticate({gitlabUrl})
+    .get(`/projects/${owner}%2F${repo}`)
+    .reply(200, {permissions: {project_access: {access_level: 40}}});
+
+  await t.notThrows(
+    verify({gitlabUrl}, {repositoryUrl: `git@othertesturl.com:${owner}/${repo}.git`}, t.context.logger)
+  );
+
+  t.true(gitlab.isDone());
+  t.deepEqual(t.context.log.args[0], ['Verify GitLab authentication (%s)', 'https://othertesturl.com:9090/api/v4']);
 });
 
 test.serial('Verify token and repository access with subgroup git URL', async t => {
@@ -160,7 +177,7 @@ test.serial('Verify token and repository access with empty gitlabApiPathPrefix',
   );
 
   t.true(gitlab.isDone());
-  t.deepEqual(t.context.log.args[0], ['Verify GitLab authentication (%s)', 'https://othertesturl.com:9090/']);
+  t.deepEqual(t.context.log.args[0], ['Verify GitLab authentication (%s)', 'https://othertesturl.com:9090']);
 });
 
 test.serial('Verify token and repository with environment variables', async t => {
