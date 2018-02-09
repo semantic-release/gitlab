@@ -39,10 +39,9 @@ test.serial('Publish a release', async t => {
   const options = {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`};
 
   const gitlab = authenticate()
-    .put(`/projects/${owner}%2F${repo}/repository/tags/${nextRelease.gitTag}/release`, {
+    .post(`/projects/${owner}%2F${repo}/repository/tags/${nextRelease.gitTag}/release`, {
       tag_name: nextRelease.gitTag,
-      ref: nextRelease.gitHead,
-      release_description: nextRelease.notes,
+      description: nextRelease.notes,
     })
     .reply(200);
 
