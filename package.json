@@ -69,6 +69,9 @@
     ],
     "all": true
   },
+  "peerDependencies": {
+    "semantic-release": "13.x.x"
+  },
   "prettier": {
     "printWidth": 120,
     "singleQuote": true,
