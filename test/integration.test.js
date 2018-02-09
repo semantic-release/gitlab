@@ -50,16 +50,14 @@ test.serial('Verify GitLab auth', async t => {
 test.serial('Publish a release', async t => {
   const owner = 'test_user';
   const repo = 'test_repo';
-  const repoId = `${owner}%2F${repo}`;
   process.env.GL_TOKEN = 'gitlab_token';
   const nextRelease = {gitHead: '123', gitTag: 'v1.0.0', notes: 'Test release note body'};
   const options = {branch: 'master', repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`};
 
   const gitlab = authenticate()
-    .get(`/projects/${repoId}`)
+    .get(`/projects/${owner}%2F${repo}`)
     .reply(200, {permissions: {project_access: {access_level: 30}}})
-    .post(`/projects/${repoId}/repository/tags/${nextRelease.gitTag}/release`, {
-      id: repoId,
+    .post(`/projects/${owner}%2F${repo}/repository/tags/${nextRelease.gitTag}/release`, {
       tag_name: nextRelease.gitTag,
       description: nextRelease.notes,
     })
@@ -76,15 +74,13 @@ test.serial('Verify Github auth and release', async t => {
   process.env.GL_TOKEN = 'gitlab_token';
   const owner = 'test_user';
   const repo = 'test_repo';
-  const repoId = `${owner}%2F${repo}`;
   const options = {repositoryUrl: `https://github.com/${owner}/${repo}.git`};
   const nextRelease = {gitHead: '123', gitTag: 'v1.0.0', notes: 'Test release note body'};
 
   const gitlab = authenticate()
-    .get(`/projects/${repoId}`)
+    .get(`/projects/${owner}%2F${repo}`)
     .reply(200, {permissions: {project_access: {access_level: 30}}})
-    .post(`/projects/${repoId}/repository/tags/${nextRelease.gitTag}/release`, {
-      id: repoId,
+    .post(`/projects/${owner}%2F${repo}/repository/tags/${nextRelease.gitTag}/release`, {
       tag_name: nextRelease.gitTag,
       description: nextRelease.notes,
     })

@@ -33,15 +33,13 @@ test.afterEach.always(() => {
 test.serial('Publish a release', async t => {
   const owner = 'test_user';
   const repo = 'test_repo';
-  const repoId = `${owner}%2F${repo}`;
   process.env.GITLAB_TOKEN = 'gitlab_token';
   const pluginConfig = {};
   const nextRelease = {gitHead: '123', gitTag: 'v1.0.0', notes: 'Test release note body'};
   const options = {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`};
 
   const gitlab = authenticate()
-    .post(`/projects/${repoId}/repository/tags/${nextRelease.gitTag}/release`, {
-      id: repoId,
+    .post(`/projects/${owner}%2F${repo}/repository/tags/${nextRelease.gitTag}/release`, {
       tag_name: nextRelease.gitTag,
       description: nextRelease.notes,
     })
