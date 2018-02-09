@@ -7,6 +7,9 @@ Set of [Semantic-release](https://github.com/semantic-release/semantic-release) 
 [![Codecov](https://img.shields.io/codecov/c/github/semantic-release/gitlab.svg)](https://codecov.io/gh/semantic-release/gitlab)
 [![Greenkeeper badge](https://badges.greenkeeper.io/semantic-release/gitlab.svg)](https://greenkeeper.io/)
 
+[![npm latest version](https://img.shields.io/npm/v/@semantic-release/gitlab/latest.svg)](https://www.npmjs.com/package/@semantic-release/gitlab)
+[![npm next version](https://img.shields.io/npm/v/@semantic-release/gitlab/next.svg)](https://www.npmjs.com/package/@semantic-release/gitlab)
+
 ## verifyConditions
 
 Verify the presence and the validity of the authentication (set via [environment variables](#environment-variables)).
