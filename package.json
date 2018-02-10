@@ -16,7 +16,8 @@
     "Gregor Martynus (https://twitter.com/gr2m)"
   ],
   "dependencies": {
-    "@semantic-release/error": "^2.1.0",
+    "@semantic-release/error": "^2.2.0",
+    "aggregate-error": "^1.0.0",
     "debug": "^3.1.0",
     "escape-string-regexp": "^1.0.5",
     "got": "^8.0.1",
@@ -70,7 +71,7 @@
     "all": true
   },
   "peerDependencies": {
-    "semantic-release": "13.x.x"
+    "semantic-release": ">=13.3.0 <14.0.0"
   },
   "prettier": {
     "printWidth": 120,
