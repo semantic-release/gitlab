@@ -1,7 +1,6 @@
 import test from 'ava';
 import nock from 'nock';
 import {stub} from 'sinon';
-import SemanticReleaseError from '@semantic-release/error';
 import verify from '../lib/verify';
 import authenticate from './helpers/mock-gitlab';
 
@@ -230,11 +229,11 @@ test.serial('Verify token and repository access with alternative environment var
 });
 
 test.serial('Throw SemanticReleaseError for missing GitLab token', async t => {
-  const error = await t.throws(
+  const [error] = await t.throws(
     verify({}, {options: {repositoryUrl: 'https://gitlab.com/semantic-release/gitlab.git'}, logger: t.context.logger})
   );
 
-  t.true(error instanceof SemanticReleaseError);
+  t.is(error.name, 'SemanticReleaseError');
   t.is(error.code, 'ENOGLTOKEN');
 });
 
@@ -246,11 +245,11 @@ test.serial('Throw SemanticReleaseError for invalid token', async t => {
     .get(`/projects/${owner}%2F${repo}`)
     .reply(401);
 
-  const error = await t.throws(
+  const [error] = await t.throws(
     verify({}, {options: {repositoryUrl: `https://gitlab.com:${owner}/${repo}.git`}, logger: t.context.logger})
   );
 
-  t.true(error instanceof SemanticReleaseError);
+  t.is(error.name, 'SemanticReleaseError');
   t.is(error.code, 'EINVALIDGLTOKEN');
   t.true(gitlab.isDone());
 });
@@ -259,12 +258,12 @@ test.serial('Throw SemanticReleaseError for invalid repositoryUrl', async t => {
   process.env.GITLAB_TOKEN = 'gitlab_token';
   const gitlabUrl = 'https://gitlab.com/context';
 
-  const error = await t.throws(
+  const [error] = await t.throws(
     verify({gitlabUrl}, {options: {repositoryUrl: 'git+ssh://git@gitlab.com/context.git'}, logger: t.context.logger})
   );
 
-  t.true(error instanceof SemanticReleaseError);
-  t.is(error.code, 'EINVALIDGITURL');
+  t.is(error.name, 'SemanticReleaseError');
+  t.is(error.code, 'EINVALIDGITLABURL');
 });
 
 test.serial("Throw SemanticReleaseError if token doesn't have the push permission on the repository", async t => {
@@ -275,11 +274,11 @@ test.serial("Throw SemanticReleaseError if token doesn't have the push permissio
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, {permissions: {project_access: {access_level: 10}, group_access: {access_level: 20}}});
 
-  const error = await t.throws(
+  const [error] = await t.throws(
     verify({}, {options: {repositoryUrl: `https://gitlab.com:${owner}/${repo}.git`}, logger: t.context.logger})
   );
 
-  t.true(error instanceof SemanticReleaseError);
+  t.is(error.name, 'SemanticReleaseError');
   t.is(error.code, 'EGHNOPERMISSION');
   t.true(gitlab.isDone());
 });
@@ -292,11 +291,11 @@ test.serial("Throw SemanticReleaseError if the repository doesn't exist", async 
     .get(`/projects/${owner}%2F${repo}`)
     .reply(404);
 
-  const error = await t.throws(
+  const [error] = await t.throws(
     verify({}, {options: {repositoryUrl: `https://gitlab.com:${owner}/${repo}.git`}, logger: t.context.logger})
   );
 
-  t.true(error instanceof SemanticReleaseError);
+  t.is(error.name, 'SemanticReleaseError');
   t.is(error.code, 'EMISSINGREPO');
   t.true(gitlab.isDone());
 });
