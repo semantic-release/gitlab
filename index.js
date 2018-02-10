@@ -3,17 +3,17 @@ const publishGitLab = require('./lib/publish');
 
 let verified;
 
-async function verifyConditions(pluginConfig, {options, logger}) {
-  await verifyGitLab(pluginConfig, options, logger);
+async function verifyConditions(pluginConfig, context) {
+  await verifyGitLab(pluginConfig, context);
   verified = true;
 }
 
-async function publish(pluginConfig, {nextRelease, options, logger}) {
+async function publish(pluginConfig, context) {
   if (!verified) {
-    await verifyGitLab(pluginConfig, options, logger);
+    await verifyGitLab(pluginConfig, context);
     verified = true;
   }
-  await publishGitLab(pluginConfig, options, nextRelease, logger);
+  await publishGitLab(pluginConfig, context);
 }
 
 module.exports = {verifyConditions, publish};
