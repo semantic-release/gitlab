@@ -39,7 +39,9 @@ test.serial('Verify token and repository access (project_access 30)', async t =>
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, {permissions: {project_access: {access_level: 30}}});
 
-  await t.notThrows(verify({}, {repositoryUrl: `git+https://gitalb.com/${owner}/${repo}.git`}, t.context.logger));
+  await t.notThrows(
+    verify({}, {options: {repositoryUrl: `git+https://gitalb.com/${owner}/${repo}.git`}, logger: t.context.logger})
+  );
   t.true(gitlab.isDone());
 });
 
@@ -51,7 +53,9 @@ test.serial('Verify token and repository access (project_access 40)', async t =>
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, {permissions: {project_access: {access_level: 40}}});
 
-  await t.notThrows(verify({}, {repositoryUrl: `git+https://gitalb.com/${owner}/${repo}.git`}, t.context.logger));
+  await t.notThrows(
+    verify({}, {options: {repositoryUrl: `git+https://gitalb.com/${owner}/${repo}.git`}, logger: t.context.logger})
+  );
   t.true(gitlab.isDone());
 });
 
@@ -63,7 +67,9 @@ test.serial('Verify token and repository access (group_access 30)', async t => {
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, {permissions: {project_access: {access_level: 10}, group_access: {access_level: 30}}});
 
-  await t.notThrows(verify({}, {repositoryUrl: `git+https://gitalb.com/${owner}/${repo}.git`}, t.context.logger));
+  await t.notThrows(
+    verify({}, {options: {repositoryUrl: `git+https://gitalb.com/${owner}/${repo}.git`}, logger: t.context.logger})
+  );
   t.true(gitlab.isDone());
 });
 
@@ -75,7 +81,9 @@ test.serial('Verify token and repository access (group_access 40)', async t => {
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, {permissions: {project_access: {access_level: 10}, group_access: {access_level: 40}}});
 
-  await t.notThrows(verify({}, {repositoryUrl: `git+https://gitalb.com/${owner}/${repo}.git`}, t.context.logger));
+  await t.notThrows(
+    verify({}, {options: {repositoryUrl: `git+https://gitalb.com/${owner}/${repo}.git`}, logger: t.context.logger})
+  );
   t.true(gitlab.isDone());
 });
 
@@ -92,8 +100,7 @@ test.serial('Verify token and repository access and custom URL with prefix', asy
   await t.notThrows(
     verify(
       {gitlabUrl, gitlabApiPathPrefix},
-      {repositoryUrl: `git@othertesturl.com:${owner}/${repo}.git`},
-      t.context.logger
+      {options: {repositoryUrl: `git@othertesturl.com:${owner}/${repo}.git`}, logger: t.context.logger}
     )
   );
 
@@ -111,7 +118,10 @@ test.serial('Verify token and repository access and custom URL without prefix', 
     .reply(200, {permissions: {project_access: {access_level: 40}}});
 
   await t.notThrows(
-    verify({gitlabUrl}, {repositoryUrl: `git@othertesturl.com:${owner}/${repo}.git`}, t.context.logger)
+    verify(
+      {gitlabUrl},
+      {options: {repositoryUrl: `git@othertesturl.com:${owner}/${repo}.git`}, logger: t.context.logger}
+    )
   );
 
   t.true(gitlab.isDone());
@@ -128,7 +138,10 @@ test.serial('Verify token and repository access with subgroup git URL', async t 
     .reply(200, {permissions: {project_access: {access_level: 40}}});
 
   await t.notThrows(
-    verify({gitlabUrl, gitlabApiPathPrefix}, {repositoryUrl: `git@customurl.com:${repoUri}.git`}, t.context.logger)
+    verify(
+      {gitlabUrl, gitlabApiPathPrefix},
+      {options: {repositoryUrl: `git@customurl.com:${repoUri}.git`}, logger: t.context.logger}
+    )
   );
 
   t.true(gitlab.isDone());
@@ -148,7 +161,10 @@ test.serial('Verify token and repository access with subgroup http URL', async t
     .reply(200, {permissions: {project_access: {access_level: 40}}});
 
   await t.notThrows(
-    verify({gitlabUrl, gitlabApiPathPrefix}, {repositoryUrl: `http://customurl.com/${repoUri}.git`}, t.context.logger)
+    verify(
+      {gitlabUrl, gitlabApiPathPrefix},
+      {options: {repositoryUrl: `http://customurl.com/${repoUri}.git`}, logger: t.context.logger}
+    )
   );
 
   t.true(gitlab.isDone());
@@ -171,8 +187,7 @@ test.serial('Verify token and repository access with empty gitlabApiPathPrefix',
   await t.notThrows(
     verify(
       {gitlabUrl, gitlabApiPathPrefix},
-      {repositoryUrl: `git@othertesturl.com:${owner}/${repo}.git`},
-      t.context.logger
+      {options: {repositoryUrl: `git@othertesturl.com:${owner}/${repo}.git`}, logger: t.context.logger}
     )
   );
 
@@ -190,7 +205,9 @@ test.serial('Verify token and repository with environment variables', async t =>
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, {permissions: {project_access: {access_level: 40}}});
 
-  await t.notThrows(verify({}, {repositoryUrl: `git@othertesturl.com:${owner}/${repo}.git`}, t.context.logger));
+  await t.notThrows(
+    verify({}, {options: {repositoryUrl: `git@othertesturl.com:${owner}/${repo}.git`}, logger: t.context.logger})
+  );
 
   t.true(gitlab.isDone());
   t.deepEqual(t.context.log.args[0], ['Verify GitLab authentication (%s)', 'https://othertesturl.com:443/prefix']);
@@ -206,13 +223,15 @@ test.serial('Verify token and repository access with alternative environment var
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, {permissions: {project_access: {access_level: 40}}});
 
-  await t.notThrows(verify({}, {repositoryUrl: `git@othertesturl.com:${owner}/${repo}.git`}, t.context.logger));
+  await t.notThrows(
+    verify({}, {options: {repositoryUrl: `git@othertesturl.com:${owner}/${repo}.git`}, logger: t.context.logger})
+  );
   t.true(gitlab.isDone());
 });
 
 test.serial('Throw SemanticReleaseError for missing GitLab token', async t => {
   const error = await t.throws(
-    verify({}, {repositoryUrl: 'https://gitlab.com/semantic-release/gitlab.git'}, t.context.logger)
+    verify({}, {options: {repositoryUrl: 'https://gitlab.com/semantic-release/gitlab.git'}, logger: t.context.logger})
   );
 
   t.true(error instanceof SemanticReleaseError);
@@ -228,7 +247,7 @@ test.serial('Throw SemanticReleaseError for invalid token', async t => {
     .reply(401);
 
   const error = await t.throws(
-    verify({}, {repositoryUrl: `https://gitlab.com:${owner}/${repo}.git`}, t.context.logger)
+    verify({}, {options: {repositoryUrl: `https://gitlab.com:${owner}/${repo}.git`}, logger: t.context.logger})
   );
 
   t.true(error instanceof SemanticReleaseError);
@@ -241,7 +260,7 @@ test.serial('Throw SemanticReleaseError for invalid repositoryUrl', async t => {
   const gitlabUrl = 'https://gitlab.com/context';
 
   const error = await t.throws(
-    verify({gitlabUrl}, {repositoryUrl: 'git+ssh://git@gitlab.com/context.git'}, t.context.logger)
+    verify({gitlabUrl}, {options: {repositoryUrl: 'git+ssh://git@gitlab.com/context.git'}, logger: t.context.logger})
   );
 
   t.true(error instanceof SemanticReleaseError);
@@ -257,7 +276,7 @@ test.serial("Throw SemanticReleaseError if token doesn't have the push permissio
     .reply(200, {permissions: {project_access: {access_level: 10}, group_access: {access_level: 20}}});
 
   const error = await t.throws(
-    verify({}, {repositoryUrl: `https://gitlab.com:${owner}/${repo}.git`}, t.context.logger)
+    verify({}, {options: {repositoryUrl: `https://gitlab.com:${owner}/${repo}.git`}, logger: t.context.logger})
   );
 
   t.true(error instanceof SemanticReleaseError);
@@ -274,7 +293,7 @@ test.serial("Throw SemanticReleaseError if the repository doesn't exist", async 
     .reply(404);
 
   const error = await t.throws(
-    verify({}, {repositoryUrl: `https://gitlab.com:${owner}/${repo}.git`}, t.context.logger)
+    verify({}, {options: {repositoryUrl: `https://gitlab.com:${owner}/${repo}.git`}, logger: t.context.logger})
   );
 
   t.true(error instanceof SemanticReleaseError);
@@ -291,7 +310,7 @@ test.serial('Throw error if GitLab API return any other errors', async t => {
     .reply(500);
 
   const error = await t.throws(
-    verify({}, {repositoryUrl: `https://gitlab.com:${owner}/${repo}.git`}, t.context.logger)
+    verify({}, {options: {repositoryUrl: `https://gitlab.com:${owner}/${repo}.git`}, logger: t.context.logger})
   );
 
   t.is(error.statusCode, 500);
