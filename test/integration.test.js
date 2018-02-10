@@ -63,8 +63,9 @@ test.serial('Publish a release', async t => {
     })
     .reply(200);
 
-  await t.context.m.publish({}, {nextRelease, options, logger: t.context.logger});
+  const result = await t.context.m.publish({}, {nextRelease, options, logger: t.context.logger});
 
+  t.is(result.url, `https://gitlab.com/${owner}/${repo}/tags/${nextRelease.gitTag}`);
   t.deepEqual(t.context.log.args[0], ['Verify GitLab authentication (%s)', 'https://gitlab.com/api/v4']);
   t.deepEqual(t.context.log.args[1], ['Published GitLab release: %s', nextRelease.gitTag]);
   t.true(gitlab.isDone());
@@ -87,8 +88,9 @@ test.serial('Verify Github auth and release', async t => {
     .reply(200);
 
   await t.notThrows(t.context.m.verifyConditions({}, {options, logger: t.context.logger}));
-  await t.context.m.publish({}, {nextRelease, options, logger: t.context.logger});
+  const result = await t.context.m.publish({}, {nextRelease, options, logger: t.context.logger});
 
+  t.is(result.url, `https://gitlab.com/${owner}/${repo}/tags/${nextRelease.gitTag}`);
   t.deepEqual(t.context.log.args[0], ['Verify GitLab authentication (%s)', 'https://gitlab.com/api/v4']);
   t.deepEqual(t.context.log.args[1], ['Published GitLab release: %s', nextRelease.gitTag]);
   t.true(gitlab.isDone());

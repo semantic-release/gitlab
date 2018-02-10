@@ -13,7 +13,7 @@ async function publish(pluginConfig, context) {
     await verifyGitLab(pluginConfig, context);
     verified = true;
   }
-  await publishGitLab(pluginConfig, context);
+  return publishGitLab(pluginConfig, context);
 }
 
 module.exports = {verifyConditions, publish};

@@ -45,8 +45,9 @@ test.serial('Publish a release', async t => {
     })
     .reply(200);
 
-  await publish(pluginConfig, {options, nextRelease, logger: t.context.logger});
+  const result = await publish(pluginConfig, {options, nextRelease, logger: t.context.logger});
 
+  t.is(result.url, `https://gitlab.com/${owner}/${repo}/tags/${nextRelease.gitTag}`);
   t.deepEqual(t.context.log.args[0], ['Published GitLab release: %s', nextRelease.gitTag]);
   t.true(gitlab.isDone());
 });
