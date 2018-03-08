@@ -32,7 +32,7 @@
     "cz-conventional-changelog": "^2.0.0",
     "nock": "^9.1.0",
     "nyc": "^11.2.1",
-    "semantic-release": "^12.2.2",
+    "semantic-release": "^15.0.0",
     "sinon": "^4.0.0",
     "tempy": "^0.2.1",
     "xo": "^0.20.0"
