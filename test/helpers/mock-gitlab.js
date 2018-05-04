@@ -14,7 +14,9 @@ export default function authenticate({
   gitlabUrl = process.env.GL_URL || process.env.GITLAB_URL || 'https://gitlab.com',
   gitlabApiPathPrefix = typeof process.env.GL_PREFIX === 'string'
     ? process.env.GL_PREFIX
-    : null || typeof process.env.GITLAB_PREFIX === 'string' ? process.env.GITLAB_PREFIX : null || '/api/v4',
+    : null || typeof process.env.GITLAB_PREFIX === 'string'
+      ? process.env.GITLAB_PREFIX
+      : null || '/api/v4',
 } = {}) {
   return nock(urlJoin(gitlabUrl, gitlabApiPathPrefix), {reqheaders: {'Private-Token': gitlabToken}});
 }
