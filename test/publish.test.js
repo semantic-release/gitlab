@@ -37,10 +37,11 @@ test.serial('Publish a release', async t => {
   const pluginConfig = {};
   const nextRelease = {gitHead: '123', gitTag: '@scope/v1.0.0', notes: 'Test release note body'};
   const options = {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`};
-  const gitTagEncoded = encodeURIComponent(nextRelease.gitTag);
+  const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
+  const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
 
   const gitlab = authenticate()
-    .post(`/projects/${owner}%2F${repo}/repository/tags/${gitTagEncoded}/release`, {
+    .post(`/projects/${encodedRepoId}/repository/tags/${encodedGitTag}/release`, {
       tag_name: nextRelease.gitTag,
       description: nextRelease.notes,
     })
@@ -48,7 +49,7 @@ test.serial('Publish a release', async t => {
 
   const result = await publish(pluginConfig, {options, nextRelease, logger: t.context.logger});
 
-  t.is(result.url, `https://gitlab.com/${owner}/${repo}/tags/${gitTagEncoded}`);
+  t.is(result.url, `https://gitlab.com/${encodedRepoId}/tags/${encodedGitTag}`);
   t.deepEqual(t.context.log.args[0], ['Published GitLab release: %s', nextRelease.gitTag]);
   t.true(gitlab.isDone());
 });
