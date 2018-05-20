@@ -52,7 +52,7 @@ Options can be set within the plugin definition in the Semantic-release configur
   "release": {
     "verifyConditions": [
       "@semantic-release/npm",
-      "@semantic-release/git",
+      "@semantic-release/gitlab",
       {
         "path": "@semantic-release/gitlab",
         "gitlabUrl": "https://custom.gitlab.com"
@@ -60,12 +60,14 @@ Options can be set within the plugin definition in the Semantic-release configur
     ],
     "publish": [
       "@semantic-release/npm",
-      "@semantic-release/git",
+      "@semantic-release/gitlab",
       {
         "path": "@semantic-release/gitlab",
         "gitlabUrl": "https://custom.gitlab.com"
       }
-    ]
+    ],
+    "success": false,
+    "fail": false
   }
 }
 ```
