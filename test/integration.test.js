@@ -6,17 +6,7 @@ import authenticate from './helpers/mock-gitlab';
 
 /* eslint camelcase: ["error", {properties: "never"}] */
 
-// Save the current process.env
-const envBackup = Object.assign({}, process.env);
-
 test.beforeEach(t => {
-  // Delete env variables in case they are on the machine running the tests
-  delete process.env.GL_TOKEN;
-  delete process.env.GITLAB_TOKEN;
-  delete process.env.GL_URL;
-  delete process.env.GITLAB_URL;
-  delete process.env.GL_PREFIX;
-  delete process.env.GITLAB_PREFIX;
   // Clear npm cache to refresh the module state
   clearModule('..');
   t.context.m = require('..');
@@ -27,27 +17,26 @@ test.beforeEach(t => {
 });
 
 test.afterEach.always(() => {
-  // Restore process.env
-  process.env = envBackup;
   // Clear nock
   nock.cleanAll();
 });
 
 test.serial('Verify GitLab auth', async t => {
-  process.env.GITLAB_TOKEN = 'gitlab_token';
+  const env = {GITLAB_TOKEN: 'gitlab_token'};
   const owner = 'test_user';
   const repo = 'test_repo';
   const options = {repositoryUrl: `git+https://othertesturl.com/${owner}/${repo}.git`};
-  const github = authenticate()
+  const github = authenticate(env)
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, {permissions: {project_access: {access_level: 30}}});
 
-  await t.notThrows(t.context.m.verifyConditions({}, {options, logger: t.context.logger}));
+  await t.notThrows(t.context.m.verifyConditions({}, {env, options, logger: t.context.logger}));
 
   t.true(github.isDone());
 });
 
 test.serial('Throw SemanticReleaseError if invalid config', async t => {
+  const env = {};
   const options = {
     publish: [{path: '@semantic-release/npm'}, {path: '@semantic-release/gitlab'}],
     repositoryUrl: 'git+ssh://git@gitlab.com/context.git',
@@ -55,7 +44,7 @@ test.serial('Throw SemanticReleaseError if invalid config', async t => {
 
   const errors = [
     ...(await t.throws(
-      t.context.m.verifyConditions({gitlabUrl: 'https://gitlab.com/context'}, {options, logger: t.context.logger})
+      t.context.m.verifyConditions({gitlabUrl: 'https://gitlab.com/context'}, {env, options, logger: t.context.logger})
     )),
   ];
 
@@ -68,12 +57,12 @@ test.serial('Throw SemanticReleaseError if invalid config', async t => {
 test.serial('Publish a release', async t => {
   const owner = 'test_user';
   const repo = 'test_repo';
-  process.env.GL_TOKEN = 'gitlab_token';
+  const env = {GL_TOKEN: 'gitlab_token'};
   const nextRelease = {gitHead: '123', gitTag: 'v1.0.0', notes: 'Test release note body'};
   const options = {branch: 'master', repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`};
   const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
 
-  const gitlab = authenticate()
+  const gitlab = authenticate(env)
     .get(`/projects/${encodedRepoId}`)
     .reply(200, {permissions: {project_access: {access_level: 30}}})
     .post(`/projects/${encodedRepoId}/repository/tags/${nextRelease.gitTag}/release`, {
@@ -82,7 +71,7 @@ test.serial('Publish a release', async t => {
     })
     .reply(200);
 
-  const result = await t.context.m.publish({}, {nextRelease, options, logger: t.context.logger});
+  const result = await t.context.m.publish({}, {env, nextRelease, options, logger: t.context.logger});
 
   t.is(result.url, `https://gitlab.com/${encodedRepoId}/tags/${nextRelease.gitTag}`);
   t.deepEqual(t.context.log.args[0], ['Verify GitLab authentication (%s)', 'https://gitlab.com/api/v4']);
@@ -91,14 +80,14 @@ test.serial('Publish a release', async t => {
 });
 
 test.serial('Verify Github auth and release', async t => {
-  process.env.GL_TOKEN = 'gitlab_token';
+  const env = {GL_TOKEN: 'gitlab_token'};
   const owner = 'test_user';
   const repo = 'test_repo';
   const options = {repositoryUrl: `https://github.com/${owner}/${repo}.git`};
   const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
   const nextRelease = {gitHead: '123', gitTag: 'v1.0.0', notes: 'Test release note body'};
 
-  const gitlab = authenticate()
+  const gitlab = authenticate(env)
     .get(`/projects/${encodedRepoId}`)
     .reply(200, {permissions: {project_access: {access_level: 30}}})
     .post(`/projects/${encodedRepoId}/repository/tags/${nextRelease.gitTag}/release`, {
@@ -107,8 +96,8 @@ test.serial('Verify Github auth and release', async t => {
     })
     .reply(200);
 
-  await t.notThrows(t.context.m.verifyConditions({}, {options, logger: t.context.logger}));
-  const result = await t.context.m.publish({}, {nextRelease, options, logger: t.context.logger});
+  await t.notThrows(t.context.m.verifyConditions({}, {env, options, logger: t.context.logger}));
+  const result = await t.context.m.publish({}, {env, options, nextRelease, logger: t.context.logger});
 
   t.is(result.url, `https://gitlab.com/${encodedRepoId}/tags/${nextRelease.gitTag}`);
   t.deepEqual(t.context.log.args[0], ['Verify GitLab authentication (%s)', 'https://gitlab.com/api/v4']);
