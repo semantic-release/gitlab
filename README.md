@@ -45,7 +45,7 @@ authentication is supported.
 
 ### Usage
 
-Options can be set within the plugin definition in the Semantic-release configuration file:
+Options can be set within the plugin definition in the `package.json` file.
 
 ```json
 {
