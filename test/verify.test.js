@@ -297,6 +297,7 @@ test.serial('Throw error if GitLab API return any other errors', async t => {
   const env = {GITLAB_TOKEN: 'gitlab_token'};
   const gitlab = authenticate(env)
     .get(`/projects/${owner}%2F${repo}`)
+    .times(3)
     .reply(500);
 
   const error = await t.throws(
