@@ -30,7 +30,7 @@
     "codecov": "^3.0.0",
     "commitizen": "^2.9.6",
     "cz-conventional-changelog": "^2.0.0",
-    "nock": "^9.1.0",
+    "nock": "^10.0.0",
     "nyc": "^12.0.1",
     "semantic-release": "^15.0.0",
     "sinon": "^6.0.0",
