@@ -270,7 +270,7 @@ test.serial("Throw SemanticReleaseError if token doesn't have the push permissio
   );
 
   t.is(error.name, 'SemanticReleaseError');
-  t.is(error.code, 'EGHNOPERMISSION');
+  t.is(error.code, 'EGLNOPERMISSION');
   t.true(gitlab.isDone());
 });
 
