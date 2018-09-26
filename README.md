@@ -1,6 +1,6 @@
 # @semantic-release/gitlab
 
-Set of [Semantic-release](https://github.com/semantic-release/semantic-release) plugins for publishing a
+[**semantic-release**](https://github.com/semantic-release/semantic-release) plugin to publish a
 [GitLab release](https://docs.gitlab.com/ce/workflow/releases.html).
 
 [![Travis](https://img.shields.io/travis/semantic-release/gitlab.svg)](https://travis-ci.org/semantic-release/gitlab)
@@ -10,13 +10,34 @@ Set of [Semantic-release](https://github.com/semantic-release/semantic-release) 
 [![npm latest version](https://img.shields.io/npm/v/@semantic-release/gitlab/latest.svg)](https://www.npmjs.com/package/@semantic-release/gitlab)
 [![npm next version](https://img.shields.io/npm/v/@semantic-release/gitlab/next.svg)](https://www.npmjs.com/package/@semantic-release/gitlab)
 
-## verifyConditions
+| Step               | Description                                                                                                           |
+|--------------------|-----------------------------------------------------------------------------------------------------------------------|
+| `verifyConditions` | Verify the presence and the validity of the authentication (set via [environment variables](#environment-variables)). |
+| `publish`          | Publish a [GitLab release](https://docs.gitlab.com/ce/workflow/releases.html).                                        |
 
-Verify the presence and the validity of the authentication (set via [environment variables](#environment-variables)).
+## Install
 
-## publish
+```bash
+$ npm install @semantic-release/gitlab -D
+```
 
-Publish a [GitLab release](https://docs.gitlab.com/ce/workflow/releases.html).
+## Usage
+
+The plugin can be configured in the [**semantic-release** configuration file](https://github.com/semantic-release/semantic-release/blob/caribou/docs/usage/configuration.md#configuration):
+
+```json
+{
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    ["@semantic-release/gitlab", {
+      "gitlabUrl": "https://custom.gitlab.com"
+    }],
+  ]
+}
+```
+
+With this example [GitLab releases](https://docs.gitlab.com/ce/workflow/releases.html) will be published to the `https://custom.gitlab.com` instance.
 
 ## Configuration
 
@@ -42,32 +63,3 @@ authentication is supported.
 |-----------------------|------------------------|------------------------------------------------------------------------|
 | `gitlabUrl`           | The GitLab endpoint.   | `GL_URL` or `GITLAB_URL` environment variable or `https://gitlab.com`. |
 | `gitlabApiPathPrefix` | The GitLab API prefix. | `GL_PREFIX` or `GITLAB_PREFIX` environment variable or `/api/v4`.      |
-
-### Usage
-
-Options can be set within the plugin definition in the Semantic-release configuration file:
-
-```json
-{
-  "release": {
-    "verifyConditions": [
-      "@semantic-release/npm",
-      "@semantic-release/gitlab",
-      {
-        "path": "@semantic-release/gitlab",
-        "gitlabUrl": "https://custom.gitlab.com"
-      }
-    ],
-    "publish": [
-      "@semantic-release/npm",
-      "@semantic-release/gitlab",
-      {
-        "path": "@semantic-release/gitlab",
-        "gitlabUrl": "https://custom.gitlab.com"
-      }
-    ],
-    "success": false,
-    "fail": false
-  }
-}
-```
