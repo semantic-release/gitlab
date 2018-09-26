@@ -1,6 +1,6 @@
 {
   "name": "@semantic-release/gitlab",
-  "description": "Set of Semantic-release plugins for publishing a GitLab release",
+  "description": "semantic-release plugin to publish a GitLab release",
   "version": "0.0.0-development",
   "author": "Pierre Vanduynslager (https://twitter.com/@pvdlg_)",
   "bugs": {
