@@ -21,7 +21,7 @@
     "debug": "^4.0.0",
     "escape-string-regexp": "^1.0.5",
     "got": "^9.1.0",
-    "parse-path": "^3.0.2",
+    "parse-path": "^4.0.0",
     "url-join": "^4.0.0"
   },
   "devDependencies": {
