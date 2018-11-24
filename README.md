@@ -31,7 +31,11 @@ The plugin can be configured in the [**semantic-release** configuration file](ht
     "@semantic-release/commit-analyzer",
     "@semantic-release/release-notes-generator",
     ["@semantic-release/gitlab", {
-      "gitlabUrl": "https://custom.gitlab.com"
+      "gitlabUrl": "https://custom.gitlab.com",
+      "assets": [
+        {"path": "dist/asset.min.css", "label": "CSS distribution"},
+        {"path": "dist/*.js"}
+      ]
     }],
   ]
 }
@@ -59,7 +63,41 @@ authentication is supported.
 
 ### Options
 
-| Option                | Description            | Default                                                                |
-|-----------------------|------------------------|------------------------------------------------------------------------|
-| `gitlabUrl`           | The GitLab endpoint.   | `GL_URL` or `GITLAB_URL` environment variable or `https://gitlab.com`. |
-| `gitlabApiPathPrefix` | The GitLab API prefix. | `GL_PREFIX` or `GITLAB_PREFIX` environment variable or `/api/v4`.      |
+| Option                | Description                                                        | Default                                                                |
+|-----------------------|--------------------------------------------------------------------|------------------------------------------------------------------------|
+| `gitlabUrl`           | The GitLab endpoint.                                               | `GL_URL` or `GITLAB_URL` environment variable or `https://gitlab.com`. |
+| `gitlabApiPathPrefix` | The GitLab API prefix.                                             | `GL_PREFIX` or `GITLAB_PREFIX` environment variable or `/api/v4`.      |
+| `assets`              | An array of files to upload to the release. See [assets](#assets). | -                                                                      |
+
+#### assets
+
+Can be a [glob](https://github.com/isaacs/node-glob#glob-primer) or and `Array` of
+[globs](https://github.com/isaacs/node-glob#glob-primer) and `Object`s with the following properties:
+
+| Property | Description                                                                                              | Default                              |
+| -------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| `path`   | **Required.** A [glob](https://github.com/isaacs/node-glob#glob-primer) to identify the files to upload. | -                                    |
+| `label`  | Short description of the file displayed on the GitLab release.                                           | File name extracted from the `path`. |
+
+Each entry in the `assets` `Array` is globbed individually. A [glob](https://github.com/isaacs/node-glob#glob-primer)
+can be a `String` (`"dist/**/*.js"` or `"dist/mylib.js"`) or an `Array` of `String`s that will be globbed together
+(`["dist/**", "!**/*.css"]`).
+
+If a directory is configured, all the files under this directory and its children will be included.
+
+**Note**: If a file has a match in `assets` it will be included even if it also has a match in `.gitignore`.
+
+##### assets examples
+
+`'dist/*.js'`: include all the `js` files in the `dist` directory, but not in its sub-directories.
+
+`[['dist', '!**/*.css']]`: include all the files in the `dist` directory and its sub-directories excluding the `css`
+files.
+
+`[{path: 'dist/MyLibrary.js', label: 'MyLibrary JS distribution'}, {path: 'dist/MyLibrary.css', label: 'MyLibrary CSS
+distribution'}]`: include the `dist/MyLibrary.js` and `dist/MyLibrary.css` files, and label them `MyLibrary JS
+distribution` and `MyLibrary CSS distribution` in the GitLab release.
+
+`[['dist/**/*.{js,css}', '!**/*.min.*'], {path: 'build/MyLibrary.zip', label: 'MyLibrary'}]`: include all the `js` and
+`css` files in the `dist` directory and its sub-directories excluding the minified version, plus the
+`build/MyLibrary.zip` file and label it `MyLibrary` in the GitLab release.
