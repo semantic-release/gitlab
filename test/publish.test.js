@@ -47,7 +47,7 @@ test.serial('Publish a release', async t => {
 });
 
 test.serial('Publish a release with assets', async t => {
-  const uploaded = {markdown: '![file.css](/uploads/file.css)', url: '/uploads/file.css'};
+  const uploaded = {markdown: '[file.css](/uploads/file.css)', url: '/uploads/file.css'};
   const notes = `${nextRelease.notes}\n\n#### Assets\n\n* ${uploaded.markdown}`;
   const assets = [['**', '!**/*.txt', '!.dotfile']];
   const gitlab = authenticate(env)
@@ -110,9 +110,9 @@ test.serial('Publish a release without assets if have bad request', async t => {
 });
 
 test.serial('Publish a release with one asset and custom label', async t => {
-  const uploaded = {markdown: '![file](/uploads/file.txt)', url: '/uploads/file.txt'};
+  const uploaded = {markdown: '[file](/uploads/file.txt)', url: '/uploads/file.txt'};
   const assetLabel = 'Custom Label';
-  const notes = `${nextRelease.notes}\n\n#### Assets\n\n* ![${assetLabel}](${uploaded.url})`;
+  const notes = `${nextRelease.notes}\n\n#### Assets\n\n* [${assetLabel}](${uploaded.url})`;
   const assets = [{path: 'file.txt', label: assetLabel, name: ''}];
   const gitlab = authenticate(env)
     .post(releaseUrl, {...releaseBody, description: notes})
