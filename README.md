@@ -34,7 +34,7 @@ The plugin can be configured in the [**semantic-release** configuration file](ht
       "gitlabUrl": "https://custom.gitlab.com",
       "assets": [
         {"path": "dist/asset.min.css", "label": "CSS distribution"},
-        {"path": "dist/*.js"}
+        {"path": "dist/asset.min.js", "label": "JS distribution"}
       ]
     }],
   ]
