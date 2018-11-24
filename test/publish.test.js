@@ -71,7 +71,7 @@ test.serial('Publish a release with assets', async t => {
 test.serial('Publish a release with array of missing assets', async t => {
   const cwd = 'test/fixtures/files';
   const emptyDirectory = tempy.directory();
-  const assets = [emptyDirectory, {path: 'missing.txt', name: 'missing.txt'}];
+  const assets = [emptyDirectory, {path: 'missing.txt', label: 'missing.txt'}];
   const gitlab = authenticate(env)
     .post(releaseUrl, {...releaseBody, description: nextRelease.notes})
     .reply(200);
@@ -88,7 +88,7 @@ test.serial('Publish a release with one asset and custom label', async t => {
   const uploaded = {markdown: '[file](/uploads/upload.txt)', url: '/uploads/upload.txt'};
   const assetLabel = 'Custom Label';
   const notes = `${nextRelease.notes}\n\n#### Assets\n\n* [${assetLabel}](${uploaded.url})`;
-  const assets = [{path: 'upload.txt', label: assetLabel, name: ''}];
+  const assets = [{path: 'upload.txt', label: assetLabel}];
   const gitlab = authenticate(env)
     .post(releaseUrl, {...releaseBody, description: notes})
     .reply(200);
