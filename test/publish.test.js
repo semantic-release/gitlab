@@ -47,7 +47,7 @@ test.serial('Publish a release', async t => {
 
 test.serial('Publish a release with assets', async t => {
   const cwd = 'test/fixtures/files';
-  const uploaded = {markdown: '[file.css](/uploads/file.css)', url: '/uploads/file.css'};
+  const uploaded = {markdown: '[file.css](/uploads/file.css)', url: '/uploads/file.css', alt: 'file.css'};
   const notes = `${nextRelease.notes}\n\n#### Assets\n\n* ${uploaded.markdown}`;
   const assets = [['**', '!**/*.txt', '!.dotfile']];
   const gitlab = authenticate(env)
@@ -70,11 +70,10 @@ test.serial('Publish a release with assets', async t => {
 
 test.serial('Publish a release with array of missing assets', async t => {
   const cwd = 'test/fixtures/files';
-  const notes = `${nextRelease.notes}\n\n#### Assets\n\n`;
   const emptyDirectory = tempy.directory();
   const assets = [emptyDirectory, {path: 'missing.txt', name: 'missing.txt'}];
   const gitlab = authenticate(env)
-    .post(releaseUrl, {...releaseBody, description: notes})
+    .post(releaseUrl, {...releaseBody, description: nextRelease.notes})
     .reply(200);
 
   const result = await publish({assets}, {env, cwd, options, nextRelease, logger: t.context.logger});
@@ -82,47 +81,20 @@ test.serial('Publish a release with array of missing assets', async t => {
   t.is(result.url, `https://gitlab.com/${encodedRepoId}/tags/${encodedGitTag}`);
   t.deepEqual(t.context.log.args[0], ['Published GitLab release: %s', nextRelease.gitTag]);
   t.true(gitlab.isDone());
-});
-
-test.serial('Publish a release without assets if have bad request', async t => {
-  const cwd = 'test/fixtures/files';
-  const notes = `${nextRelease.notes}\n\n#### Assets\n\n`;
-  const assets = ['file.css'];
-  const error = {error: 'invalid file'};
-  const gitlab = authenticate(env)
-    .post(releaseUrl, {...releaseBody, description: notes})
-    .reply(200);
-  const gitlabUpload = authenticate(env)
-    .post(`/projects/${encodedRepoId}/uploads`, body => {
-      return body.match('filename="file.css"');
-    })
-    .reply(400, error);
-
-  const result = await publish({assets}, {env, cwd, options, nextRelease, logger: t.context.logger});
-
-  t.is(result.url, `https://gitlab.com/${encodedRepoId}/tags/${encodedGitTag}`);
-  t.deepEqual(t.context.log.args[0], ['Published GitLab release: %s', nextRelease.gitTag]);
-  t.deepEqual(t.context.error.args[0], [
-    'Error %o uploading the asset %s, and will be ignored.',
-    JSON.stringify(error),
-    assets[0],
-  ]);
-  t.true(gitlab.isDone());
-  t.true(gitlabUpload.isDone());
 });
 
 test.serial('Publish a release with one asset and custom label', async t => {
   const cwd = 'test/fixtures/files';
-  const uploaded = {markdown: '[file](/uploads/file.txt)', url: '/uploads/file.txt'};
+  const uploaded = {markdown: '[file](/uploads/upload.txt)', url: '/uploads/upload.txt'};
   const assetLabel = 'Custom Label';
   const notes = `${nextRelease.notes}\n\n#### Assets\n\n* [${assetLabel}](${uploaded.url})`;
-  const assets = [{path: 'file.txt', label: assetLabel, name: ''}];
+  const assets = [{path: 'upload.txt', label: assetLabel, name: ''}];
   const gitlab = authenticate(env)
     .post(releaseUrl, {...releaseBody, description: notes})
     .reply(200);
   const gitlabUpload = authenticate(env)
     .post(`/projects/${encodedRepoId}/uploads`, body => {
-      return body.match('filename="file.txt"');
+      return body.match('filename="upload.txt"');
     })
     .reply(200, uploaded);
 
@@ -132,20 +104,5 @@ test.serial('Publish a release with one asset and custom label', async t => {
   t.deepEqual(t.context.log.args[0], ['Uploaded file: %s', uploaded.url]);
   t.deepEqual(t.context.log.args[1], ['Published GitLab release: %s', nextRelease.gitTag]);
   t.true(gitlabUpload.isDone());
-  t.true(gitlab.isDone());
-});
-
-test.serial('Publish a release with invalid assets', async t => {
-  const cwd = 'test/fixtures/files';
-  const notes = `${nextRelease.notes}\n\n#### Assets\n\n`;
-  const assets = [{file: 'file.txt', name: ''}];
-  const gitlab = authenticate(env)
-    .post(releaseUrl, {...releaseBody, description: notes})
-    .reply(200);
-
-  const result = await publish({assets}, {env, cwd, options, nextRelease, logger: t.context.logger});
-
-  t.is(result.url, `https://gitlab.com/${encodedRepoId}/tags/${encodedGitTag}`);
-  t.deepEqual(t.context.log.args[0], ['Published GitLab release: %s', nextRelease.gitTag]);
   t.true(gitlab.isDone());
 });
