@@ -7,11 +7,11 @@ import getAssets from '../lib/get-assets';
 
 const sortAssets = assets => sortBy(assets, asset => (isPlainObject(asset) ? asset.path : asset));
 
-const assets = 'test/assets';
+const fixtures = 'test/fixtures/files';
 
 test('Retrieve file from single path', async t => {
   const cwd = tempy.directory();
-  await copy(assets, cwd);
+  await copy(fixtures, cwd);
   const finalAssets = await getAssets({cwd}, ['file.txt']);
 
   t.deepEqual(finalAssets, [{path: 'file.txt', name: 'file.txt'}]);
@@ -19,7 +19,7 @@ test('Retrieve file from single path', async t => {
 
 test('Retrieve multiple files from path', async t => {
   const cwd = tempy.directory();
-  await copy(assets, cwd);
+  await copy(fixtures, cwd);
   const finalAssets = await getAssets({cwd}, ['file.txt', 'file.css']);
 
   t.deepEqual(
@@ -30,7 +30,7 @@ test('Retrieve multiple files from path', async t => {
 
 test('Include missing files as defined, using Object definition', async t => {
   const cwd = tempy.directory();
-  await copy(assets, cwd);
+  await copy(fixtures, cwd);
   const finalAssets = await getAssets({cwd}, ['file.txt', {path: 'miss*.txt', label: 'Missing'}]);
 
   t.deepEqual(
@@ -41,7 +41,7 @@ test('Include missing files as defined, using Object definition', async t => {
 
 test('Retrieve multiple files from Object', async t => {
   const cwd = tempy.directory();
-  await copy(assets, cwd);
+  await copy(fixtures, cwd);
   const finalAssets = await getAssets({cwd}, [{path: 'file.txt', name: 'file_name', label: 'File label'}, 'file.css']);
 
   t.deepEqual(
@@ -52,7 +52,7 @@ test('Retrieve multiple files from Object', async t => {
 
 test('Retrieve multiple files without duplicates', async t => {
   const cwd = tempy.directory();
-  await copy(assets, cwd);
+  await copy(fixtures, cwd);
   const finalAssets = await getAssets({cwd}, ['file.css', 'file.txt', 'file.css', 'file.txt', 'file.txt', 'file.css']);
 
   t.deepEqual(
@@ -63,7 +63,7 @@ test('Retrieve multiple files without duplicates', async t => {
 
 test('Favor Object over String values when removing duplicates', async t => {
   const cwd = tempy.directory();
-  await copy(assets, cwd);
+  await copy(fixtures, cwd);
   const finalAssets = await getAssets({cwd}, [
     'file.css',
     'file.txt',
@@ -85,7 +85,7 @@ test('Favor Object over String values when removing duplicates', async t => {
 
 test('Retrieve file from single glob', async t => {
   const cwd = tempy.directory();
-  await copy(assets, cwd);
+  await copy(fixtures, cwd);
   const finalAssets = await getAssets({cwd}, ['file.*']);
 
   t.deepEqual(
@@ -96,7 +96,7 @@ test('Retrieve file from single glob', async t => {
 
 test('Retrieve multiple files from single glob', async t => {
   const cwd = tempy.directory();
-  await copy(assets, cwd);
+  await copy(fixtures, cwd);
   const finalAssets = await getAssets({cwd}, ['*.txt']);
 
   t.deepEqual(
@@ -107,7 +107,7 @@ test('Retrieve multiple files from single glob', async t => {
 
 test('Accept glob array with one value', async t => {
   const cwd = tempy.directory();
-  await copy(assets, cwd);
+  await copy(fixtures, cwd);
   const finalAssets = await getAssets({cwd}, [['*ile.txt'], ['*_other.txt']]);
 
   t.deepEqual(
@@ -118,7 +118,7 @@ test('Accept glob array with one value', async t => {
 
 test('Include globs that resolve to no files as defined', async t => {
   const cwd = tempy.directory();
-  await copy(assets, cwd);
+  await copy(fixtures, cwd);
   const finalAssets = await getAssets({cwd}, [['file.txt', '!file.txt']]);
 
   t.deepEqual(
@@ -129,7 +129,7 @@ test('Include globs that resolve to no files as defined', async t => {
 
 test('Accept glob array with one value for missing files', async t => {
   const cwd = tempy.directory();
-  await copy(assets, cwd);
+  await copy(fixtures, cwd);
   const finalAssets = await getAssets({cwd}, [['*missing.txt'], ['*.css']]);
 
   t.deepEqual(
@@ -140,7 +140,7 @@ test('Accept glob array with one value for missing files', async t => {
 
 test('Replace name by filename for Object that match dusaplicate name', async t => {
   const cwd = tempy.directory();
-  await copy(assets, cwd);
+  await copy(fixtures, cwd);
   const finalAssets = await getAssets({cwd}, [{path: '*.txt', name: 'file_name', label: 'File label'}]);
 
   t.deepEqual(
@@ -154,7 +154,7 @@ test('Replace name by filename for Object that match dusaplicate name', async t 
 
 test('Include dotfiles', async t => {
   const cwd = tempy.directory();
-  await copy(assets, cwd);
+  await copy(fixtures, cwd);
   const finalAssets = await getAssets({cwd}, ['.dot*']);
 
   t.deepEqual(finalAssets, [{path: '.dotfile', name: '.dotfile'}]);
@@ -162,7 +162,7 @@ test('Include dotfiles', async t => {
 
 test('Ingnore single negated glob', async t => {
   const cwd = tempy.directory();
-  await copy(assets, cwd);
+  await copy(fixtures, cwd);
   const finalAssets = await getAssets({cwd}, ['!*.txt']);
 
   t.deepEqual(finalAssets, []);
@@ -170,7 +170,7 @@ test('Ingnore single negated glob', async t => {
 
 test('Ingnore single negated glob in Object', async t => {
   const cwd = tempy.directory();
-  await copy(assets, cwd);
+  await copy(fixtures, cwd);
   const finalAssets = await getAssets({cwd}, [{path: '!*.txt'}]);
 
   t.deepEqual(finalAssets, []);
@@ -178,7 +178,7 @@ test('Ingnore single negated glob in Object', async t => {
 
 test('Accept negated globs', async t => {
   const cwd = tempy.directory();
-  await copy(assets, cwd);
+  await copy(fixtures, cwd);
   const finalAssets = await getAssets({cwd}, [['*.txt', '!**/*_other.txt']]);
 
   t.deepEqual(finalAssets, [{path: 'file.txt', name: 'file.txt'}]);
@@ -186,7 +186,7 @@ test('Accept negated globs', async t => {
 
 test('Expand directories', async t => {
   const cwd = tempy.directory();
-  await copy(assets, path.resolve(cwd, 'dir'));
+  await copy(fixtures, path.resolve(cwd, 'dir'));
   const finalAssets = await getAssets({cwd}, [['dir']]);
 
   t.deepEqual(
@@ -203,7 +203,7 @@ test('Expand directories', async t => {
 
 test('Include empty directory as defined', async t => {
   const cwd = tempy.directory();
-  await copy(assets, cwd);
+  await copy(fixtures, cwd);
   await ensureDir(path.resolve(cwd, 'empty'));
   const finalAssets = await getAssets({cwd}, [['empty']]);
 
@@ -212,7 +212,7 @@ test('Include empty directory as defined', async t => {
 
 test('Deduplicate resulting files path', async t => {
   const cwd = tempy.directory();
-  await copy(assets, cwd);
+  await copy(fixtures, cwd);
   const finalAssets = await getAssets({cwd}, ['./file.txt', path.resolve(cwd, 'file.txt'), 'file.txt']);
 
   t.deepEqual(finalAssets, [{path: 'file.txt', name: 'file.txt'}]);

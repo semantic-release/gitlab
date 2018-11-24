@@ -7,7 +7,6 @@ import authenticate from './helpers/mock-gitlab';
 
 /* eslint camelcase: ["error", {properties: "never"}] */
 
-const cwd = 'test/assets';
 const owner = 'test_user';
 const repo = 'test_repo';
 const env = {GITLAB_TOKEN: 'gitlab_token'};
@@ -47,6 +46,7 @@ test.serial('Publish a release', async t => {
 });
 
 test.serial('Publish a release with assets', async t => {
+  const cwd = 'test/fixtures/files';
   const uploaded = {markdown: '[file.css](/uploads/file.css)', url: '/uploads/file.css'};
   const notes = `${nextRelease.notes}\n\n#### Assets\n\n* ${uploaded.markdown}`;
   const assets = [['**', '!**/*.txt', '!.dotfile']];
@@ -69,6 +69,7 @@ test.serial('Publish a release with assets', async t => {
 });
 
 test.serial('Publish a release with array of missing assets', async t => {
+  const cwd = 'test/fixtures/files';
   const notes = `${nextRelease.notes}\n\n#### Assets\n\n`;
   const emptyDirectory = tempy.directory();
   const assets = [emptyDirectory, {path: 'missing.txt', name: 'missing.txt'}];
@@ -84,6 +85,7 @@ test.serial('Publish a release with array of missing assets', async t => {
 });
 
 test.serial('Publish a release without assets if have bad request', async t => {
+  const cwd = 'test/fixtures/files';
   const notes = `${nextRelease.notes}\n\n#### Assets\n\n`;
   const assets = ['file.css'];
   const error = {error: 'invalid file'};
@@ -110,6 +112,7 @@ test.serial('Publish a release without assets if have bad request', async t => {
 });
 
 test.serial('Publish a release with one asset and custom label', async t => {
+  const cwd = 'test/fixtures/files';
   const uploaded = {markdown: '[file](/uploads/file.txt)', url: '/uploads/file.txt'};
   const assetLabel = 'Custom Label';
   const notes = `${nextRelease.notes}\n\n#### Assets\n\n* [${assetLabel}](${uploaded.url})`;
@@ -133,6 +136,7 @@ test.serial('Publish a release with one asset and custom label', async t => {
 });
 
 test.serial('Publish a release with invalid assets', async t => {
+  const cwd = 'test/fixtures/files';
   const notes = `${nextRelease.notes}\n\n#### Assets\n\n`;
   const assets = [{file: 'file.txt', name: ''}];
   const gitlab = authenticate(env)
