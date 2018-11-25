@@ -54,9 +54,7 @@ test.serial('Publish a release with assets', async t => {
     .post(releaseUrl, {...releaseBody, description: notes})
     .reply(200);
   const gitlabUpload = authenticate(env)
-    .post(`/projects/${encodedRepoId}/uploads`, body => {
-      return body.match('filename="file.css"');
-    })
+    .post(`/projects/${encodedRepoId}/uploads`, /filename="file.css"/gm)
     .reply(200, uploaded);
 
   const result = await publish({assets}, {env, cwd, options, nextRelease, logger: t.context.logger});
@@ -93,9 +91,7 @@ test.serial('Publish a release with one asset and custom label', async t => {
     .post(releaseUrl, {...releaseBody, description: notes})
     .reply(200);
   const gitlabUpload = authenticate(env)
-    .post(`/projects/${encodedRepoId}/uploads`, body => {
-      return body.match('filename="upload.txt"');
-    })
+    .post(`/projects/${encodedRepoId}/uploads`, /filename="upload.txt"/gm)
     .reply(200, uploaded);
 
   const result = await publish({assets}, {env, cwd, options, nextRelease, logger: t.context.logger});
