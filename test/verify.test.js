@@ -212,6 +212,161 @@ test.serial('Verify token and repository access with alternative environment var
   t.true(gitlab.isDone());
 });
 
+test.serial('Verify "assets" is a String', async t => {
+  const owner = 'test_user';
+  const repo = 'test_repo';
+  const env = {GITLAB_URL: 'https://othertesturl.com:443', GITLAB_TOKEN: 'gitlab_token', GITLAB_PREFIX: 'prefix'};
+  const assets = 'file2.js';
+  const gitlab = authenticate(env)
+    .get(`/projects/${owner}%2F${repo}`)
+    .reply(200, {permissions: {project_access: {access_level: 40}}});
+
+  await t.notThrows(
+    verify(
+      {assets},
+      {env, options: {repositoryUrl: `git@othertesturl.com:${owner}/${repo}.git`}, logger: t.context.logger}
+    )
+  );
+
+  t.true(gitlab.isDone());
+});
+
+test.serial('Verify "assets" is an Object with a path property', async t => {
+  const owner = 'test_user';
+  const repo = 'test_repo';
+  const env = {GITLAB_URL: 'https://othertesturl.com:443', GITLAB_TOKEN: 'gitlab_token', GITLAB_PREFIX: 'prefix'};
+  const assets = {path: 'file2.js'};
+  const gitlab = authenticate(env)
+    .get(`/projects/${owner}%2F${repo}`)
+    .reply(200, {permissions: {project_access: {access_level: 40}}});
+
+  await t.notThrows(
+    verify(
+      {assets},
+      {env, options: {repositoryUrl: `git@othertesturl.com:${owner}/${repo}.git`}, logger: t.context.logger}
+    )
+  );
+
+  t.true(gitlab.isDone());
+});
+
+test.serial('Verify "assets" is an Array of Object with a path property', async t => {
+  const owner = 'test_user';
+  const repo = 'test_repo';
+  const env = {GITLAB_URL: 'https://othertesturl.com:443', GITLAB_TOKEN: 'gitlab_token', GITLAB_PREFIX: 'prefix'};
+  const assets = [{path: 'file1.js'}, {path: 'file2.js'}];
+  const gitlab = authenticate(env)
+    .get(`/projects/${owner}%2F${repo}`)
+    .reply(200, {permissions: {project_access: {access_level: 40}}});
+
+  await t.notThrows(
+    verify(
+      {assets},
+      {env, options: {repositoryUrl: `git@othertesturl.com:${owner}/${repo}.git`}, logger: t.context.logger}
+    )
+  );
+
+  t.true(gitlab.isDone());
+});
+
+test.serial('Verify "assets" is an Array of glob Arrays', async t => {
+  const owner = 'test_user';
+  const repo = 'test_repo';
+  const env = {GITLAB_URL: 'https://othertesturl.com:443', GITLAB_TOKEN: 'gitlab_token', GITLAB_PREFIX: 'prefix'};
+  const assets = [['dist/**', '!**/*.js'], 'file2.js'];
+  const gitlab = authenticate(env)
+    .get(`/projects/${owner}%2F${repo}`)
+    .reply(200, {permissions: {project_access: {access_level: 40}}});
+
+  await t.notThrows(
+    verify(
+      {assets},
+      {env, options: {repositoryUrl: `git@othertesturl.com:${owner}/${repo}.git`}, logger: t.context.logger}
+    )
+  );
+
+  t.true(gitlab.isDone());
+});
+
+test.serial('Verify "assets" is an Array of Object with a glob Arrays in path property', async t => {
+  const owner = 'test_user';
+  const repo = 'test_repo';
+  const env = {GITLAB_URL: 'https://othertesturl.com:443', GITLAB_TOKEN: 'gitlab_token', GITLAB_PREFIX: 'prefix'};
+  const assets = [{path: ['dist/**', '!**/*.js']}, {path: 'file2.js'}];
+  const gitlab = authenticate(env)
+    .get(`/projects/${owner}%2F${repo}`)
+    .reply(200, {permissions: {project_access: {access_level: 40}}});
+
+  await t.notThrows(
+    verify(
+      {assets},
+      {env, options: {repositoryUrl: `git@othertesturl.com:${owner}/${repo}.git`}, logger: t.context.logger}
+    )
+  );
+
+  t.true(gitlab.isDone());
+});
+
+test('Throw SemanticReleaseError if "assets" option is not a String or an Array of Objects', async t => {
+  const env = {GITLAB_TOKEN: 'gitlab_token'};
+  const assets = 42;
+
+  const [error] = await t.throws(
+    verify(
+      {assets},
+      {env, options: {repositoryUrl: 'https://gitlab.com/semantic-release/gitlab.git'}, logger: t.context.logger}
+    )
+  );
+
+  t.is(error.name, 'SemanticReleaseError');
+  t.is(error.code, 'EINVALIDASSETS');
+});
+
+test('Throw SemanticReleaseError if "assets" option is an Array with invalid elements', async t => {
+  const env = {GITLAB_TOKEN: 'gitlab_token'};
+  const assets = ['file.js', 42];
+
+  const [error] = await t.throws(
+    verify(
+      {assets},
+      {env, options: {repositoryUrl: 'https://gitlab.com/semantic-release/gitlab.git'}, logger: t.context.logger}
+    )
+  );
+
+  t.is(error.name, 'SemanticReleaseError');
+  t.is(error.code, 'EINVALIDASSETS');
+});
+
+test('Throw SemanticReleaseError if "assets" option is an Object missing the "path" property', async t => {
+  const env = {GITLAB_TOKEN: 'gitlab_token'};
+  const assets = {name: 'file.js'};
+
+  const [error] = await t.throws(
+    verify(
+      {assets},
+      {env, options: {repositoryUrl: 'https://gitlab.com/semantic-release/gitlab.git'}, logger: t.context.logger}
+    )
+  );
+
+  t.is(error.name, 'SemanticReleaseError');
+  t.is(error.code, 'EINVALIDASSETS');
+});
+
+test('Throw SemanticReleaseError if "assets" option is an Array with objects missing the "path" property', async t => {
+  const env = {GITLAB_TOKEN: 'gitlab_token'};
+  const assets = [{path: 'lib/file.js'}, {name: 'file.js'}];
+
+  const [error] = await t.throws(
+    verify(
+      {assets},
+      {env, options: {repositoryUrl: 'https://gitlab.com/semantic-release/gitlab.git'}, logger: t.context.logger}
+    )
+  );
+
+  t.is(error.name, 'SemanticReleaseError');
+  t.is(error.code, 'EINVALIDASSETS');
+});
+
 test.serial('Throw SemanticReleaseError for missing GitLab token', async t => {
   const env = {};
   const [error] = await t.throws(
