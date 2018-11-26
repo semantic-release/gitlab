@@ -7,20 +7,6 @@ import authenticate from './helpers/mock-gitlab';
 
 /* eslint camelcase: ["error", {properties: "never"}] */
 
-const owner = 'test_user';
-const repo = 'test_repo';
-const env = {GITLAB_TOKEN: 'gitlab_token'};
-const pluginConfig = {};
-const nextRelease = {gitHead: '123', gitTag: '@scope/v1.0.0', notes: 'Test release note body'};
-const options = {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`};
-const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
-const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
-const releaseUrl = `/projects/${encodedRepoId}/repository/tags/${encodedGitTag}/release`;
-const releaseBody = {
-  tag_name: nextRelease.gitTag,
-  description: nextRelease.notes,
-};
-
 test.beforeEach(t => {
   // Mock logger
   t.context.log = stub();
@@ -34,8 +20,19 @@ test.afterEach.always(() => {
 });
 
 test.serial('Publish a release', async t => {
+  const owner = 'test_user';
+  const repo = 'test_repo';
+  const env = {GITLAB_TOKEN: 'gitlab_token'};
+  const pluginConfig = {};
+  const nextRelease = {gitHead: '123', gitTag: '@scope/v1.0.0', notes: 'Test release note body'};
+  const options = {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`};
+  const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
+  const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
   const gitlab = authenticate(env)
-    .post(releaseUrl, releaseBody)
+    .post(`/projects/${encodedRepoId}/repository/tags/${encodedGitTag}/release`, {
+      tag_name: nextRelease.gitTag,
+      description: nextRelease.notes,
+    })
     .reply(200);
 
   const result = await publish(pluginConfig, {env, options, nextRelease, logger: t.context.logger});
@@ -47,11 +44,21 @@ test.serial('Publish a release', async t => {
 
 test.serial('Publish a release with assets', async t => {
   const cwd = 'test/fixtures/files';
+  const owner = 'test_user';
+  const repo = 'test_repo';
+  const env = {GITLAB_TOKEN: 'gitlab_token'};
+  const nextRelease = {gitHead: '123', gitTag: '@scope/v1.0.0', notes: 'Test release note body'};
+  const options = {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`};
+  const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
+  const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
   const uploaded = {markdown: '[file.css](/uploads/file.css)', url: '/uploads/file.css', alt: 'file.css'};
   const notes = `${nextRelease.notes}\n\n#### Assets\n\n* ${uploaded.markdown}`;
   const assets = [['**', '!**/*.txt', '!.dotfile']];
   const gitlab = authenticate(env)
-    .post(releaseUrl, {...releaseBody, description: notes})
+    .post(`/projects/${encodedRepoId}/repository/tags/${encodedGitTag}/release`, {
+      tag_name: nextRelease.gitTag,
+      description: notes,
+    })
     .reply(200);
   const gitlabUpload = authenticate(env)
     .post(`/projects/${encodedRepoId}/uploads`, /filename="file.css"/gm)
@@ -68,10 +75,20 @@ test.serial('Publish a release with assets', async t => {
 
 test.serial('Publish a release with array of missing assets', async t => {
   const cwd = 'test/fixtures/files';
+  const owner = 'test_user';
+  const repo = 'test_repo';
+  const env = {GITLAB_TOKEN: 'gitlab_token'};
+  const nextRelease = {gitHead: '123', gitTag: '@scope/v1.0.0', notes: 'Test release note body'};
+  const options = {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`};
+  const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
+  const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
   const emptyDirectory = tempy.directory();
   const assets = [emptyDirectory, {path: 'missing.txt', label: 'missing.txt'}];
   const gitlab = authenticate(env)
-    .post(releaseUrl, {...releaseBody, description: nextRelease.notes})
+    .post(`/projects/${encodedRepoId}/repository/tags/${encodedGitTag}/release`, {
+      tag_name: nextRelease.gitTag,
+      description: nextRelease.notes,
+    })
     .reply(200);
 
   const result = await publish({assets}, {env, cwd, options, nextRelease, logger: t.context.logger});
@@ -83,12 +100,22 @@ test.serial('Publish a release with array of missing assets', async t => {
 
 test.serial('Publish a release with one asset and custom label', async t => {
   const cwd = 'test/fixtures/files';
+  const owner = 'test_user';
+  const repo = 'test_repo';
+  const env = {GITLAB_TOKEN: 'gitlab_token'};
+  const nextRelease = {gitHead: '123', gitTag: '@scope/v1.0.0', notes: 'Test release note body'};
+  const options = {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`};
+  const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
+  const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
   const uploaded = {markdown: '[file](/uploads/upload.txt)', url: '/uploads/upload.txt'};
   const assetLabel = 'Custom Label';
   const notes = `${nextRelease.notes}\n\n#### Assets\n\n* [${assetLabel}](${uploaded.url})`;
   const assets = [{path: 'upload.txt', label: assetLabel}];
   const gitlab = authenticate(env)
-    .post(releaseUrl, {...releaseBody, description: notes})
+    .post(`/projects/${encodedRepoId}/repository/tags/${encodedGitTag}/release`, {
+      tag_name: nextRelease.gitTag,
+      description: notes,
+    })
     .reply(200);
   const gitlabUpload = authenticate(env)
     .post(`/projects/${encodedRepoId}/uploads`, /filename="upload.txt"/gm)
