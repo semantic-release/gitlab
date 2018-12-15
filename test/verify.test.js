@@ -26,7 +26,7 @@ test.serial('Verify token and repository access (project_access 30)', async t =>
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, {permissions: {project_access: {access_level: 30}}});
 
-  await t.notThrows(
+  await t.notThrowsAsync(
     verify({}, {env, options: {repositoryUrl: `git+https://gitalb.com/${owner}/${repo}.git`}, logger: t.context.logger})
   );
   t.true(gitlab.isDone());
@@ -40,7 +40,7 @@ test.serial('Verify token and repository access (project_access 40)', async t =>
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, {permissions: {project_access: {access_level: 40}}});
 
-  await t.notThrows(
+  await t.notThrowsAsync(
     verify({}, {env, options: {repositoryUrl: `git+https://gitalb.com/${owner}/${repo}.git`}, logger: t.context.logger})
   );
   t.true(gitlab.isDone());
@@ -54,7 +54,7 @@ test.serial('Verify token and repository access (group_access 30)', async t => {
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, {permissions: {project_access: {access_level: 10}, group_access: {access_level: 30}}});
 
-  await t.notThrows(
+  await t.notThrowsAsync(
     verify({}, {env, options: {repositoryUrl: `git+https://gitalb.com/${owner}/${repo}.git`}, logger: t.context.logger})
   );
   t.true(gitlab.isDone());
@@ -68,7 +68,7 @@ test.serial('Verify token and repository access (group_access 40)', async t => {
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, {permissions: {project_access: {access_level: 10}, group_access: {access_level: 40}}});
 
-  await t.notThrows(
+  await t.notThrowsAsync(
     verify({}, {env, options: {repositoryUrl: `git+https://gitalb.com/${owner}/${repo}.git`}, logger: t.context.logger})
   );
   t.true(gitlab.isDone());
@@ -84,7 +84,7 @@ test.serial('Verify token and repository access and custom URL with prefix', asy
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, {permissions: {project_access: {access_level: 40}}});
 
-  await t.notThrows(
+  await t.notThrowsAsync(
     verify(
       {gitlabUrl, gitlabApiPathPrefix},
       {env, options: {repositoryUrl: `git@othertesturl.com:${owner}/${repo}.git`}, logger: t.context.logger}
@@ -104,7 +104,7 @@ test.serial('Verify token and repository access and custom URL without prefix', 
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, {permissions: {project_access: {access_level: 40}}});
 
-  await t.notThrows(
+  await t.notThrowsAsync(
     verify(
       {gitlabUrl},
       {env, options: {repositoryUrl: `git@othertesturl.com:${owner}/${repo}.git`}, logger: t.context.logger}
@@ -124,7 +124,7 @@ test.serial('Verify token and repository access with subgroup git URL', async t 
     .get(`/projects/${encodeURIComponent(repoUri)}`)
     .reply(200, {permissions: {project_access: {access_level: 40}}});
 
-  await t.notThrows(
+  await t.notThrowsAsync(
     verify(
       {gitlabUrl, gitlabApiPathPrefix},
       {env, options: {repositoryUrl: `git@customurl.com:${repoUri}.git`}, logger: t.context.logger}
@@ -147,7 +147,7 @@ test.serial('Verify token and repository access with subgroup http URL', async t
     .get(`/projects/${encodeURIComponent(repoUri)}`)
     .reply(200, {permissions: {project_access: {access_level: 40}}});
 
-  await t.notThrows(
+  await t.notThrowsAsync(
     verify(
       {gitlabUrl, gitlabApiPathPrefix},
       {env, options: {repositoryUrl: `http://customurl.com/${repoUri}.git`}, logger: t.context.logger}
@@ -171,7 +171,7 @@ test.serial('Verify token and repository access with empty gitlabApiPathPrefix',
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, {permissions: {project_access: {access_level: 40}}});
 
-  await t.notThrows(
+  await t.notThrowsAsync(
     verify(
       {gitlabUrl, gitlabApiPathPrefix},
       {env, options: {repositoryUrl: `git@othertesturl.com:${owner}/${repo}.git`}, logger: t.context.logger}
@@ -190,7 +190,7 @@ test.serial('Verify token and repository with environment variables', async t =>
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, {permissions: {project_access: {access_level: 40}}});
 
-  await t.notThrows(
+  await t.notThrowsAsync(
     verify({}, {env, options: {repositoryUrl: `git@othertesturl.com:${owner}/${repo}.git`}, logger: t.context.logger})
   );
 
@@ -206,7 +206,7 @@ test.serial('Verify token and repository access with alternative environment var
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, {permissions: {project_access: {access_level: 40}}});
 
-  await t.notThrows(
+  await t.notThrowsAsync(
     verify({}, {env, options: {repositoryUrl: `git@othertesturl.com:${owner}/${repo}.git`}, logger: t.context.logger})
   );
   t.true(gitlab.isDone());
@@ -221,7 +221,7 @@ test.serial('Verify "assets" is a String', async t => {
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, {permissions: {project_access: {access_level: 40}}});
 
-  await t.notThrows(
+  await t.notThrowsAsync(
     verify(
       {assets},
       {env, options: {repositoryUrl: `git@othertesturl.com:${owner}/${repo}.git`}, logger: t.context.logger}
@@ -240,7 +240,7 @@ test.serial('Verify "assets" is an Object with a path property', async t => {
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, {permissions: {project_access: {access_level: 40}}});
 
-  await t.notThrows(
+  await t.notThrowsAsync(
     verify(
       {assets},
       {env, options: {repositoryUrl: `git@othertesturl.com:${owner}/${repo}.git`}, logger: t.context.logger}
@@ -259,7 +259,7 @@ test.serial('Verify "assets" is an Array of Object with a path property', async 
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, {permissions: {project_access: {access_level: 40}}});
 
-  await t.notThrows(
+  await t.notThrowsAsync(
     verify(
       {assets},
       {env, options: {repositoryUrl: `git@othertesturl.com:${owner}/${repo}.git`}, logger: t.context.logger}
@@ -278,7 +278,7 @@ test.serial('Verify "assets" is an Array of glob Arrays', async t => {
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, {permissions: {project_access: {access_level: 40}}});
 
-  await t.notThrows(
+  await t.notThrowsAsync(
     verify(
       {assets},
       {env, options: {repositoryUrl: `git@othertesturl.com:${owner}/${repo}.git`}, logger: t.context.logger}
@@ -297,7 +297,7 @@ test.serial('Verify "assets" is an Array of Object with a glob Arrays in path pr
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, {permissions: {project_access: {access_level: 40}}});
 
-  await t.notThrows(
+  await t.notThrowsAsync(
     verify(
       {assets},
       {env, options: {repositoryUrl: `git@othertesturl.com:${owner}/${repo}.git`}, logger: t.context.logger}
@@ -311,7 +311,7 @@ test('Throw SemanticReleaseError if "assets" option is not a String or an Array 
   const env = {GITLAB_TOKEN: 'gitlab_token'};
   const assets = 42;
 
-  const [error] = await t.throws(
+  const [error] = await t.throwsAsync(
     verify(
       {assets},
       {env, options: {repositoryUrl: 'https://gitlab.com/semantic-release/gitlab.git'}, logger: t.context.logger}
@@ -326,7 +326,7 @@ test('Throw SemanticReleaseError if "assets" option is an Array with invalid ele
   const env = {GITLAB_TOKEN: 'gitlab_token'};
   const assets = ['file.js', 42];
 
-  const [error] = await t.throws(
+  const [error] = await t.throwsAsync(
     verify(
       {assets},
       {env, options: {repositoryUrl: 'https://gitlab.com/semantic-release/gitlab.git'}, logger: t.context.logger}
@@ -341,7 +341,7 @@ test('Throw SemanticReleaseError if "assets" option is an Object missing the "pa
   const env = {GITLAB_TOKEN: 'gitlab_token'};
   const assets = {name: 'file.js'};
 
-  const [error] = await t.throws(
+  const [error] = await t.throwsAsync(
     verify(
       {assets},
       {env, options: {repositoryUrl: 'https://gitlab.com/semantic-release/gitlab.git'}, logger: t.context.logger}
@@ -356,7 +356,7 @@ test('Throw SemanticReleaseError if "assets" option is an Array with objects mis
   const env = {GITLAB_TOKEN: 'gitlab_token'};
   const assets = [{path: 'lib/file.js'}, {name: 'file.js'}];
 
-  const [error] = await t.throws(
+  const [error] = await t.throwsAsync(
     verify(
       {assets},
       {env, options: {repositoryUrl: 'https://gitlab.com/semantic-release/gitlab.git'}, logger: t.context.logger}
@@ -369,7 +369,7 @@ test('Throw SemanticReleaseError if "assets" option is an Array with objects mis
 
 test.serial('Throw SemanticReleaseError for missing GitLab token', async t => {
   const env = {};
-  const [error] = await t.throws(
+  const [error] = await t.throwsAsync(
     verify(
       {},
       {env, options: {repositoryUrl: 'https://gitlab.com/semantic-release/gitlab.git'}, logger: t.context.logger}
@@ -388,7 +388,7 @@ test.serial('Throw SemanticReleaseError for invalid token', async t => {
     .get(`/projects/${owner}%2F${repo}`)
     .reply(401);
 
-  const [error] = await t.throws(
+  const [error] = await t.throwsAsync(
     verify({}, {env, options: {repositoryUrl: `https://gitlab.com:${owner}/${repo}.git`}, logger: t.context.logger})
   );
 
@@ -401,7 +401,7 @@ test.serial('Throw SemanticReleaseError for invalid repositoryUrl', async t => {
   const env = {GITLAB_TOKEN: 'gitlab_token'};
   const gitlabUrl = 'https://gitlab.com/context';
 
-  const [error] = await t.throws(
+  const [error] = await t.throwsAsync(
     verify(
       {gitlabUrl},
       {env, options: {repositoryUrl: 'git+ssh://git@gitlab.com/context.git'}, logger: t.context.logger}
@@ -420,7 +420,7 @@ test.serial("Throw SemanticReleaseError if token doesn't have the push permissio
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, {permissions: {project_access: {access_level: 10}, group_access: {access_level: 20}}});
 
-  const [error] = await t.throws(
+  const [error] = await t.throwsAsync(
     verify({}, {env, options: {repositoryUrl: `https://gitlab.com:${owner}/${repo}.git`}, logger: t.context.logger})
   );
 
@@ -437,7 +437,7 @@ test.serial("Throw SemanticReleaseError if the repository doesn't exist", async 
     .get(`/projects/${owner}%2F${repo}`)
     .reply(404);
 
-  const [error] = await t.throws(
+  const [error] = await t.throwsAsync(
     verify({}, {env, options: {repositoryUrl: `https://gitlab.com:${owner}/${repo}.git`}, logger: t.context.logger})
   );
 
@@ -455,7 +455,7 @@ test.serial('Throw error if GitLab API return any other errors', async t => {
     .times(3)
     .reply(500);
 
-  const error = await t.throws(
+  const error = await t.throwsAsync(
     verify({}, {env, options: {repositoryUrl: `https://gitlab.com:${owner}/${repo}.git`}, logger: t.context.logger})
   );
 
