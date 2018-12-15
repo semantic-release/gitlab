@@ -30,7 +30,7 @@ test.serial('Verify GitLab auth', async t => {
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, {permissions: {project_access: {access_level: 30}}});
 
-  await t.notThrows(t.context.m.verifyConditions({}, {env, options, logger: t.context.logger}));
+  await t.notThrowsAsync(t.context.m.verifyConditions({}, {env, options, logger: t.context.logger}));
 
   t.true(github.isDone());
 });
@@ -43,7 +43,7 @@ test.serial('Throw SemanticReleaseError if invalid config', async t => {
   };
 
   const errors = [
-    ...(await t.throws(
+    ...(await t.throwsAsync(
       t.context.m.verifyConditions({gitlabUrl: 'https://gitlab.com/context'}, {env, options, logger: t.context.logger})
     )),
   ];
@@ -96,7 +96,7 @@ test.serial('Verify Github auth and release', async t => {
     })
     .reply(200);
 
-  await t.notThrows(t.context.m.verifyConditions({}, {env, options, logger: t.context.logger}));
+  await t.notThrowsAsync(t.context.m.verifyConditions({}, {env, options, logger: t.context.logger}));
   const result = await t.context.m.publish({}, {env, options, nextRelease, logger: t.context.logger});
 
   t.is(result.url, `https://gitlab.com/${encodedRepoId}/tags/${nextRelease.gitTag}`);
