@@ -13,6 +13,7 @@ async function publish(pluginConfig, context) {
     await verifyGitLab(pluginConfig, context);
     verified = true;
   }
+
   return publishGitLab(pluginConfig, context);
 }
 
