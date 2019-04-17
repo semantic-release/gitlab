@@ -20,7 +20,7 @@
     "aggregate-error": "^3.0.0",
     "debug": "^4.0.0",
     "dir-glob": "^2.0.0",
-    "escape-string-regexp": "^1.0.5",
+    "escape-string-regexp": "^2.0.0",
     "form-data": "^2.3.3",
     "fs-extra": "^7.0.1",
     "globby": "^9.0.0",
