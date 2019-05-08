@@ -36,7 +36,7 @@
     "commitizen": "^3.0.0",
     "cz-conventional-changelog": "^2.0.0",
     "nock": "^10.0.0",
-    "nyc": "^13.1.0",
+    "nyc": "^14.0.0",
     "semantic-release": "^15.0.0",
     "sinon": "^7.1.1",
     "tempy": "^0.3.0",
