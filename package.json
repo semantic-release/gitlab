@@ -3,6 +3,14 @@
   "description": "semantic-release plugin to publish a GitLab release",
   "version": "0.0.0-development",
   "author": "Pierre Vanduynslager (https://twitter.com/@pvdlg_)",
+  "ava": {
+    "files": [
+      "test/**/*.test.js"
+    ],
+    "helpers": [
+      "test/helpers/**/*"
+    ]
+  },
   "bugs": {
     "url": "https://github.com/semantic-release/gitlab/issues"
   },
@@ -30,7 +38,7 @@
     "url-join": "^4.0.0"
   },
   "devDependencies": {
-    "ava": "^1.0.1",
+    "ava": "^2.0.0",
     "clear-module": "^3.0.0",
     "codecov": "^3.0.0",
     "commitizen": "^3.0.0",
