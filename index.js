@@ -1,3 +1,5 @@
+/* eslint require-atomic-updates: off */
+
 const verifyGitLab = require('./lib/verify');
 const publishGitLab = require('./lib/publish');
 
