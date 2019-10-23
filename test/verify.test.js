@@ -1,6 +1,8 @@
 import test from 'ava';
 import nock from 'nock';
 import {stub} from 'sinon';
+import AggregateError from 'aggregate-error';
+import {HTTPError} from 'got';
 import verify from '../lib/verify';
 import authenticate from './helpers/mock-gitlab';
 
@@ -307,77 +309,129 @@ test.serial('Verify "assets" is an Array of Object with a glob Arrays in path pr
   t.true(gitlab.isDone());
 });
 
-test('Throw SemanticReleaseError if "assets" option is not a String or an Array of Objects', async t => {
+test.serial('Throw SemanticReleaseError if "assets" option is not a String or an Array of Objects', async t => {
+  const owner = 'test_user';
+  const repo = 'test_repo';
   const env = {GITLAB_TOKEN: 'gitlab_token'};
   const assets = 42;
+  const gitlab = authenticate(env)
+    .get(`/projects/${owner}%2F${repo}`)
+    .reply(200, {permissions: {project_access: {access_level: 40}}});
 
-  const [error] = await t.throwsAsync(
+  const aggregateError = await t.throwsAsync(
     verify(
       {assets},
-      {env, options: {repositoryUrl: 'https://gitlab.com/semantic-release/gitlab.git'}, logger: t.context.logger}
-    )
+      {env, options: {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`}, logger: t.context.logger}
+    ),
+    AggregateError,
+    'Error thrown but of unexpected type.'
   );
+  const errors = [...aggregateError];
 
-  t.is(error.name, 'SemanticReleaseError');
-  t.is(error.code, 'EINVALIDASSETS');
+  const expectedNumOfErrors = 1;
+  t.is(errors.length, expectedNumOfErrors, `Expected ${expectedNumOfErrors} error but got ${errors.length}.`);
+  t.is(errors[0].name, 'SemanticReleaseError', 'Unexpected error name.');
+  t.is(errors[0].code, 'EINVALIDASSETS', 'Unexpected error code.');
+  t.true(gitlab.isDone());
 });
 
-test('Throw SemanticReleaseError if "assets" option is an Array with invalid elements', async t => {
+test.serial('Throw SemanticReleaseError if "assets" option is an Array with invalid elements', async t => {
+  const owner = 'test_user';
+  const repo = 'test_repo';
   const env = {GITLAB_TOKEN: 'gitlab_token'};
   const assets = ['file.js', 42];
+  const gitlab = authenticate(env)
+    .get(`/projects/${owner}%2F${repo}`)
+    .reply(200, {permissions: {project_access: {access_level: 40}}});
 
-  const [error] = await t.throwsAsync(
+  const aggregateError = await t.throwsAsync(
     verify(
       {assets},
-      {env, options: {repositoryUrl: 'https://gitlab.com/semantic-release/gitlab.git'}, logger: t.context.logger}
-    )
+      {env, options: {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`}, logger: t.context.logger}
+    ),
+    AggregateError,
+    'Error thrown but of unexpected type.'
   );
+  const errors = [...aggregateError];
 
-  t.is(error.name, 'SemanticReleaseError');
-  t.is(error.code, 'EINVALIDASSETS');
+  const expectedNumOfErrors = 1;
+  t.is(errors.length, expectedNumOfErrors, `Expected ${expectedNumOfErrors} error but got ${errors.length}.`);
+  t.is(errors[0].name, 'SemanticReleaseError', 'Unexpected error name.');
+  t.is(errors[0].code, 'EINVALIDASSETS', 'Unexpected error code.');
+  t.true(gitlab.isDone());
 });
 
-test('Throw SemanticReleaseError if "assets" option is an Object missing the "path" property', async t => {
+test.serial('Throw SemanticReleaseError if "assets" option is an Object missing the "path" property', async t => {
+  const owner = 'test_user';
+  const repo = 'test_repo';
   const env = {GITLAB_TOKEN: 'gitlab_token'};
   const assets = {name: 'file.js'};
+  const gitlab = authenticate(env)
+    .get(`/projects/${owner}%2F${repo}`)
+    .reply(200, {permissions: {project_access: {access_level: 40}}});
 
-  const [error] = await t.throwsAsync(
+  const aggregateError = await t.throwsAsync(
     verify(
       {assets},
-      {env, options: {repositoryUrl: 'https://gitlab.com/semantic-release/gitlab.git'}, logger: t.context.logger}
-    )
+      {env, options: {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`}, logger: t.context.logger}
+    ),
+    AggregateError,
+    'Error thrown but of unexpected type.'
   );
+  const errors = [...aggregateError];
 
-  t.is(error.name, 'SemanticReleaseError');
-  t.is(error.code, 'EINVALIDASSETS');
+  const expectedNumOfErrors = 1;
+  t.is(errors.length, expectedNumOfErrors, `Expected ${expectedNumOfErrors} error but got ${errors.length}.`);
+  t.is(errors[0].name, 'SemanticReleaseError', 'Unexpected error name.');
+  t.is(errors[0].code, 'EINVALIDASSETS', 'Unexpected error code.');
+  t.true(gitlab.isDone());
 });
 
-test('Throw SemanticReleaseError if "assets" option is an Array with objects missing the "path" property', async t => {
-  const env = {GITLAB_TOKEN: 'gitlab_token'};
-  const assets = [{path: 'lib/file.js'}, {name: 'file.js'}];
+test.serial(
+  'Throw SemanticReleaseError if "assets" option is an Array with objects missing the "path" property',
+  async t => {
+    const owner = 'test_user';
+    const repo = 'test_repo';
+    const env = {GITLAB_TOKEN: 'gitlab_token'};
+    const assets = [{path: 'lib/file.js'}, {name: 'file.js'}];
+    const gitlab = authenticate(env)
+      .get(`/projects/${owner}%2F${repo}`)
+      .reply(200, {permissions: {project_access: {access_level: 40}}});
 
-  const [error] = await t.throwsAsync(
-    verify(
-      {assets},
-      {env, options: {repositoryUrl: 'https://gitlab.com/semantic-release/gitlab.git'}, logger: t.context.logger}
-    )
-  );
+    const aggregateError = await t.throwsAsync(
+      verify(
+        {assets},
+        {env, options: {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`}, logger: t.context.logger}
+      ),
+      AggregateError,
+      'Error thrown but of unexpected type.'
+    );
+    const errors = [...aggregateError];
 
-  t.is(error.name, 'SemanticReleaseError');
-  t.is(error.code, 'EINVALIDASSETS');
-});
+    const expectedNumOfErrors = 1;
+    t.is(errors.length, expectedNumOfErrors, `Expected ${expectedNumOfErrors} error but got ${errors.length}.`);
+    t.is(errors[0].name, 'SemanticReleaseError', 'Unexpected error name.');
+    t.is(errors[0].code, 'EINVALIDASSETS', 'Unexpected error code.');
+    t.true(gitlab.isDone());
+  }
+);
 
 test.serial('Throw SemanticReleaseError for missing GitLab token', async t => {
   const env = {};
-  const [error] = await t.throwsAsync(
+  const aggregateError = await t.throwsAsync(
     verify(
       {},
       {env, options: {repositoryUrl: 'https://gitlab.com/semantic-release/gitlab.git'}, logger: t.context.logger}
-    )
+    ),
+    AggregateError,
+    'Error thrown but of unexpected type.'
   );
+  const errors = [...aggregateError];
 
-  t.is(error.name, 'SemanticReleaseError');
-  t.is(error.code, 'ENOGLTOKEN');
+  const expectedNumOfErrors = 1;
+  t.is(errors.length, expectedNumOfErrors, `Expected ${expectedNumOfErrors} error but got ${errors.length}.`);
+  t.is(errors[0].name, 'SemanticReleaseError', 'Unexpected error name.');
+  t.is(errors[0].code, 'ENOGLTOKEN', 'Unexpected error code.');
 });
 
 test.serial('Throw SemanticReleaseError for invalid token', async t => {
@@ -388,12 +442,17 @@ test.serial('Throw SemanticReleaseError for invalid token', async t => {
     .get(`/projects/${owner}%2F${repo}`)
     .reply(401);
 
-  const [error] = await t.throwsAsync(
-    verify({}, {env, options: {repositoryUrl: `https://gitlab.com:${owner}/${repo}.git`}, logger: t.context.logger})
+  const aggregateError = await t.throwsAsync(
+    verify({}, {env, options: {repositoryUrl: `https://gitlab.com:${owner}/${repo}.git`}, logger: t.context.logger}),
+    AggregateError,
+    'Error thrown but of unexpected type.'
   );
+  const errors = [...aggregateError];
 
-  t.is(error.name, 'SemanticReleaseError');
-  t.is(error.code, 'EINVALIDGLTOKEN');
+  const expectedNumOfErrors = 1;
+  t.is(errors.length, expectedNumOfErrors, `Expected ${expectedNumOfErrors} error but got ${errors.length}.`);
+  t.is(errors[0].name, 'SemanticReleaseError', 'Unexpected error name.');
+  t.is(errors[0].code, 'EINVALIDGLTOKEN', 'Unexpected error code.');
   t.true(gitlab.isDone());
 });
 
@@ -420,12 +479,17 @@ test.serial("Throw SemanticReleaseError if token doesn't have the push permissio
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, {permissions: {project_access: {access_level: 10}, group_access: {access_level: 20}}});
 
-  const [error] = await t.throwsAsync(
-    verify({}, {env, options: {repositoryUrl: `https://gitlab.com:${owner}/${repo}.git`}, logger: t.context.logger})
+  const aggregateError = await t.throwsAsync(
+    verify({}, {env, options: {repositoryUrl: `https://gitlab.com:${owner}/${repo}.git`}, logger: t.context.logger}),
+    AggregateError,
+    'Error thrown but of unexpected type.'
   );
+  const errors = [...aggregateError];
 
-  t.is(error.name, 'SemanticReleaseError');
-  t.is(error.code, 'EGLNOPERMISSION');
+  const expectedNumOfErrors = 1;
+  t.is(errors.length, expectedNumOfErrors, `Expected ${expectedNumOfErrors} error but got ${errors.length}.`);
+  t.is(errors[0].name, 'SemanticReleaseError', 'Unexpected error name.');
+  t.is(errors[0].code, 'EGLNOPERMISSION', 'Unexpected error code.');
   t.true(gitlab.isDone());
 });
 
@@ -437,12 +501,17 @@ test.serial("Throw SemanticReleaseError if the repository doesn't exist", async 
     .get(`/projects/${owner}%2F${repo}`)
     .reply(404);
 
-  const [error] = await t.throwsAsync(
-    verify({}, {env, options: {repositoryUrl: `https://gitlab.com:${owner}/${repo}.git`}, logger: t.context.logger})
+  const aggregateError = await t.throwsAsync(
+    verify({}, {env, options: {repositoryUrl: `https://gitlab.com:${owner}/${repo}.git`}, logger: t.context.logger}),
+    AggregateError,
+    'Error thrown but of unexpected type.'
   );
+  const errors = [...aggregateError];
 
-  t.is(error.name, 'SemanticReleaseError');
-  t.is(error.code, 'EMISSINGREPO');
+  const expectedNumOfErrors = 1;
+  t.is(errors.length, expectedNumOfErrors, `Expected ${expectedNumOfErrors} error but got ${errors.length}.`);
+  t.is(errors[0].name, 'SemanticReleaseError', 'Unexpected error name.');
+  t.is(errors[0].code, 'EMISSINGREPO', 'Unexpected error code.');
   t.true(gitlab.isDone());
 });
 
@@ -456,7 +525,9 @@ test.serial('Throw error if GitLab API return any other errors', async t => {
     .reply(500);
 
   const error = await t.throwsAsync(
-    verify({}, {env, options: {repositoryUrl: `https://gitlab.com:${owner}/${repo}.git`}, logger: t.context.logger})
+    verify({}, {env, options: {repositoryUrl: `https://gitlab.com:${owner}/${repo}.git`}, logger: t.context.logger}),
+    HTTPError,
+    'Error thrown but of unexpected type.'
   );
 
   t.is(error.statusCode, 500);
