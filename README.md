@@ -50,8 +50,7 @@ With this example [GitLab releases](https://docs.gitlab.com/ce/workflow/releases
 The GitLab authentication configuration is **required** and can be set via
 [environment variables](#environment-variables).
 
-Only the [personal access token](https://docs.gitlab.com/ce/user/profile/personal_access_tokens.html)
-authentication is supported.
+Create a [personal access token](https://docs.gitlab.com/ce/user/profile/personal_access_tokens.html) with the `api` scope and make it available in your CI environment via the `GL_TOKEN` environment variable. If you are using `GL_TOKEN` as the [remote Git repository authentication](https://github.com/semantic-release/semantic-release/blob/master/docs/usage/ci-configuration.md#authentication) it must also have the `write_repository` scope.
 
 ### Environment variables
 
