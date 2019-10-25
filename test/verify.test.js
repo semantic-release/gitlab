@@ -307,75 +307,107 @@ test.serial('Verify "assets" is an Array of Object with a glob Arrays in path pr
   t.true(gitlab.isDone());
 });
 
-test('Throw SemanticReleaseError if "assets" option is not a String or an Array of Objects', async t => {
+test.serial('Throw SemanticReleaseError if "assets" option is not a String or an Array of Objects', async t => {
+  const owner = 'test_user';
+  const repo = 'test_repo';
   const env = {GITLAB_TOKEN: 'gitlab_token'};
   const assets = 42;
+  const gitlab = authenticate(env)
+    .get(`/projects/${owner}%2F${repo}`)
+    .reply(200, {permissions: {project_access: {access_level: 40}}});
 
-  const [error] = await t.throwsAsync(
+  const [error, ...errors] = await t.throwsAsync(
     verify(
       {assets},
-      {env, options: {repositoryUrl: 'https://gitlab.com/semantic-release/gitlab.git'}, logger: t.context.logger}
+      {env, options: {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`}, logger: t.context.logger}
     )
   );
 
+  t.is(errors.length, 0);
   t.is(error.name, 'SemanticReleaseError');
   t.is(error.code, 'EINVALIDASSETS');
+  t.true(gitlab.isDone());
 });
 
-test('Throw SemanticReleaseError if "assets" option is an Array with invalid elements', async t => {
+test.serial('Throw SemanticReleaseError if "assets" option is an Array with invalid elements', async t => {
+  const owner = 'test_user';
+  const repo = 'test_repo';
   const env = {GITLAB_TOKEN: 'gitlab_token'};
   const assets = ['file.js', 42];
+  const gitlab = authenticate(env)
+    .get(`/projects/${owner}%2F${repo}`)
+    .reply(200, {permissions: {project_access: {access_level: 40}}});
 
-  const [error] = await t.throwsAsync(
+  const [error, ...errors] = await t.throwsAsync(
     verify(
       {assets},
-      {env, options: {repositoryUrl: 'https://gitlab.com/semantic-release/gitlab.git'}, logger: t.context.logger}
+      {env, options: {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`}, logger: t.context.logger}
     )
   );
 
+  t.is(errors.length, 0);
   t.is(error.name, 'SemanticReleaseError');
   t.is(error.code, 'EINVALIDASSETS');
+  t.true(gitlab.isDone());
 });
 
-test('Throw SemanticReleaseError if "assets" option is an Object missing the "path" property', async t => {
+test.serial('Throw SemanticReleaseError if "assets" option is an Object missing the "path" property', async t => {
+  const owner = 'test_user';
+  const repo = 'test_repo';
   const env = {GITLAB_TOKEN: 'gitlab_token'};
   const assets = {name: 'file.js'};
+  const gitlab = authenticate(env)
+    .get(`/projects/${owner}%2F${repo}`)
+    .reply(200, {permissions: {project_access: {access_level: 40}}});
 
-  const [error] = await t.throwsAsync(
+  const [error, ...errors] = await t.throwsAsync(
     verify(
       {assets},
-      {env, options: {repositoryUrl: 'https://gitlab.com/semantic-release/gitlab.git'}, logger: t.context.logger}
+      {env, options: {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`}, logger: t.context.logger}
     )
   );
 
+  t.is(errors.length, 0);
   t.is(error.name, 'SemanticReleaseError');
   t.is(error.code, 'EINVALIDASSETS');
+  t.true(gitlab.isDone());
 });
 
-test('Throw SemanticReleaseError if "assets" option is an Array with objects missing the "path" property', async t => {
-  const env = {GITLAB_TOKEN: 'gitlab_token'};
-  const assets = [{path: 'lib/file.js'}, {name: 'file.js'}];
+test.serial(
+  'Throw SemanticReleaseError if "assets" option is an Array with objects missing the "path" property',
+  async t => {
+    const owner = 'test_user';
+    const repo = 'test_repo';
+    const env = {GITLAB_TOKEN: 'gitlab_token'};
+    const assets = [{path: 'lib/file.js'}, {name: 'file.js'}];
+    const gitlab = authenticate(env)
+      .get(`/projects/${owner}%2F${repo}`)
+      .reply(200, {permissions: {project_access: {access_level: 40}}});
 
-  const [error] = await t.throwsAsync(
-    verify(
-      {assets},
-      {env, options: {repositoryUrl: 'https://gitlab.com/semantic-release/gitlab.git'}, logger: t.context.logger}
-    )
-  );
+    const [error, ...errors] = await t.throwsAsync(
+      verify(
+        {assets},
+        {env, options: {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`}, logger: t.context.logger}
+      )
+    );
 
-  t.is(error.name, 'SemanticReleaseError');
-  t.is(error.code, 'EINVALIDASSETS');
-});
+    t.is(errors.length, 0);
+    t.is(error.name, 'SemanticReleaseError');
+    t.is(error.code, 'EINVALIDASSETS');
+    t.true(gitlab.isDone());
+  }
+);
 
-test.serial('Throw SemanticReleaseError for missing GitLab token', async t => {
+test('Throw SemanticReleaseError for missing GitLab token', async t => {
   const env = {};
-  const [error] = await t.throwsAsync(
+  const [error, ...errors] = await t.throwsAsync(
     verify(
       {},
       {env, options: {repositoryUrl: 'https://gitlab.com/semantic-release/gitlab.git'}, logger: t.context.logger}
     )
   );
 
+  t.is(errors.length, 0);
   t.is(error.name, 'SemanticReleaseError');
   t.is(error.code, 'ENOGLTOKEN');
 });
@@ -388,10 +420,11 @@ test.serial('Throw SemanticReleaseError for invalid token', async t => {
     .get(`/projects/${owner}%2F${repo}`)
     .reply(401);
 
-  const [error] = await t.throwsAsync(
+  const [error, ...errors] = await t.throwsAsync(
     verify({}, {env, options: {repositoryUrl: `https://gitlab.com:${owner}/${repo}.git`}, logger: t.context.logger})
   );
 
+  t.is(errors.length, 0);
   t.is(error.name, 'SemanticReleaseError');
   t.is(error.code, 'EINVALIDGLTOKEN');
   t.true(gitlab.isDone());
@@ -401,15 +434,37 @@ test.serial('Throw SemanticReleaseError for invalid repositoryUrl', async t => {
   const env = {GITLAB_TOKEN: 'gitlab_token'};
   const gitlabUrl = 'https://gitlab.com/context';
 
-  const [error] = await t.throwsAsync(
+  const [error, ...errors] = await t.throwsAsync(
     verify(
       {gitlabUrl},
       {env, options: {repositoryUrl: 'git+ssh://git@gitlab.com/context.git'}, logger: t.context.logger}
     )
   );
 
+  t.is(errors.length, 0);
   t.is(error.name, 'SemanticReleaseError');
   t.is(error.code, 'EINVALIDGITLABURL');
+});
+
+test.serial('Throw AggregateError if multiple verification fails', async t => {
+  const env = {};
+  const gitlabUrl = 'https://gitlab.com/context';
+  const assets = 42;
+
+  const [invalidUrlError, invalidAssetsError, noTokenError, ...errors] = await t.throwsAsync(
+    verify(
+      {assets, gitlabUrl},
+      {env, options: {repositoryUrl: 'git+ssh://git@gitlab.com/context.git'}, logger: t.context.logger}
+    )
+  );
+
+  t.is(errors.length, 0);
+  t.is(invalidUrlError.name, 'SemanticReleaseError');
+  t.is(invalidUrlError.code, 'EINVALIDGITLABURL');
+  t.is(invalidAssetsError.name, 'SemanticReleaseError');
+  t.is(invalidAssetsError.code, 'EINVALIDASSETS');
+  t.is(noTokenError.name, 'SemanticReleaseError');
+  t.is(noTokenError.code, 'ENOGLTOKEN');
 });
 
 test.serial("Throw SemanticReleaseError if token doesn't have the push permission on the repository", async t => {
@@ -420,10 +475,11 @@ test.serial("Throw SemanticReleaseError if token doesn't have the push permissio
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, {permissions: {project_access: {access_level: 10}, group_access: {access_level: 20}}});
 
-  const [error] = await t.throwsAsync(
+  const [error, ...errors] = await t.throwsAsync(
     verify({}, {env, options: {repositoryUrl: `https://gitlab.com:${owner}/${repo}.git`}, logger: t.context.logger})
   );
 
+  t.is(errors.length, 0);
   t.is(error.name, 'SemanticReleaseError');
   t.is(error.code, 'EGLNOPERMISSION');
   t.true(gitlab.isDone());
@@ -437,10 +493,11 @@ test.serial("Throw SemanticReleaseError if the repository doesn't exist", async 
     .get(`/projects/${owner}%2F${repo}`)
     .reply(404);
 
-  const [error] = await t.throwsAsync(
+  const [error, ...errors] = await t.throwsAsync(
     verify({}, {env, options: {repositoryUrl: `https://gitlab.com:${owner}/${repo}.git`}, logger: t.context.logger})
   );
 
+  t.is(errors.length, 0);
   t.is(error.name, 'SemanticReleaseError');
   t.is(error.code, 'EMISSINGREPO');
   t.true(gitlab.isDone());
