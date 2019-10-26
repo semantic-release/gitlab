@@ -491,7 +491,7 @@ test.serial("Throw SemanticReleaseError if the repository doesn't exist", async 
   const env = {GITLAB_TOKEN: 'gitlab_token'};
   const gitlab = authenticate(env)
     .get(`/projects/${owner}%2F${repo}`)
-    .reply(404);
+    .reply(404, {error: 'Project Not Found'});
 
   const [error, ...errors] = await t.throwsAsync(
     verify({}, {env, options: {repositoryUrl: `https://gitlab.com:${owner}/${repo}.git`}, logger: t.context.logger})
@@ -500,6 +500,24 @@ test.serial("Throw SemanticReleaseError if the repository doesn't exist", async 
   t.is(errors.length, 0);
   t.is(error.name, 'SemanticReleaseError');
   t.is(error.code, 'EMISSINGREPO');
+  t.true(gitlab.isDone());
+});
+
+test.serial('Throw SemanticReleaseError if an unexpected 404 response is received', async t => {
+  const owner = 'test_user';
+  const repo = 'test_repo';
+  const env = {GITLAB_TOKEN: 'gitlab_token'};
+  const gitlab = authenticate(env)
+    .get(`/projects/${owner}%2F${repo}`)
+    .reply(404, {error: 'Not Found'});
+
+  const [error, ...errors] = await t.throwsAsync(
+    verify({}, {env, options: {repositoryUrl: `https://gitlab.com:${owner}/${repo}.git`}, logger: t.context.logger})
+  );
+
+  t.is(errors.length, 0);
+  t.is(error.name, 'SemanticReleaseError');
+  t.is(error.code, 'EUNEXPECTED404');
   t.true(gitlab.isDone());
 });
 
