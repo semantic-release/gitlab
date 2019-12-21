@@ -62,11 +62,11 @@ Create a [personal access token](https://docs.gitlab.com/ce/user/profile/persona
 
 ### Options
 
-| Option                | Description                                                        | Default                                                                |
-|-----------------------|--------------------------------------------------------------------|------------------------------------------------------------------------|
-| `gitlabUrl`           | The GitLab endpoint.                                               | `GL_URL` or `GITLAB_URL` environment variable or `https://gitlab.com`. |
-| `gitlabApiPathPrefix` | The GitLab API prefix.                                             | `GL_PREFIX` or `GITLAB_PREFIX` environment variable or `/api/v4`.      |
-| `assets`              | An array of files to upload to the release. See [assets](#assets). | -                                                                      |
+| Option                | Description                                                        | Default                                                                                                                                                                 |
+|-----------------------|--------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `gitlabUrl`           | The GitLab endpoint.                                               | `GL_URL` or `GITLAB_URL` environment variable or CI provided environment variables if running on [GitLab CI/CD](https://docs.gitlab.com/ee/ci) or `https://gitlab.com`. |
+| `gitlabApiPathPrefix` | The GitLab API prefix.                                             | `GL_PREFIX` or `GITLAB_PREFIX` environment variable or CI provided environment variables if running on [GitLab CI/CD](https://docs.gitlab.com/ee/ci) or `/api/v4`.      |
+| `assets`              | An array of files to upload to the release. See [assets](#assets). | -                                                                                                                                                                       |
 
 #### assets
 
