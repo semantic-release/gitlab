@@ -34,7 +34,8 @@ The plugin can be configured in the [**semantic-release** configuration file](ht
       "gitlabUrl": "https://custom.gitlab.com",
       "assets": [
         {"path": "dist/asset.min.css", "label": "CSS distribution"},
-        {"path": "dist/asset.min.js", "label": "JS distribution"}
+        {"path": "dist/asset.min.js", "label": "JS distribution"},
+        {"url": "https://s3.amazonaws.com/{{env.ASSETS_BUCKET}}", "label": "asset-{{nextRelease.version}}"},
       ]
     }],
   ]
@@ -66,9 +67,13 @@ Create a [personal access token](https://docs.gitlab.com/ce/user/profile/persona
 |-----------------------|--------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `gitlabUrl`           | The GitLab endpoint.                                               | `GL_URL` or `GITLAB_URL` environment variable or CI provided environment variables if running on [GitLab CI/CD](https://docs.gitlab.com/ee/ci) or `https://gitlab.com`. |
 | `gitlabApiPathPrefix` | The GitLab API prefix.                                             | `GL_PREFIX` or `GITLAB_PREFIX` environment variable or CI provided environment variables if running on [GitLab CI/CD](https://docs.gitlab.com/ee/ci) or `/api/v4`.      |
-| `assets`              | An array of files to upload to the release. See [assets](#assets). | -                                                                                                                                                                       |
+| `assets`              | An array of files to upload or external urls to add to the release. See [assets](#assets). | -                                                                                                                                                                       |
 
-#### assets
+#### `assets`
+
+Assets can be either **files to be uploaded** to Gitlab and attached to the release or **custom URLs linking to external resources**. Both can be used and configured interchangeably using the `assets` configuration setting.
+
+##### File assets
 
 Can be a [glob](https://github.com/isaacs/node-glob#glob-primer) or and `Array` of
 [globs](https://github.com/isaacs/node-glob#glob-primer) and `Object`s with the following properties:
@@ -84,19 +89,36 @@ can be a `String` (`"dist/**/*.js"` or `"dist/mylib.js"`) or an `Array` of `Stri
 
 If a directory is configured, all the files under this directory and its children will be included.
 
-**Note**: If a file has a match in `assets` it will be included even if it also has a match in `.gitignore`.
+> **Note**: If a file has a match in `assets` it will be included even if it also has a match in `.gitignore`.
 
-##### assets examples
+Examples:
 
-`'dist/*.js'`: include all the `js` files in the `dist` directory, but not in its sub-directories.
+- `'dist/*.js'`: include all the `js` files in the `dist` directory, but not in its sub-directories.
 
-`[['dist', '!**/*.css']]`: include all the files in the `dist` directory and its sub-directories excluding the `css`
+- `[['dist', '!**/*.css']]`: include all the files in the `dist` directory and its sub-directories excluding the `css`
 files.
 
-`[{path: 'dist/MyLibrary.js', label: 'MyLibrary JS distribution'}, {path: 'dist/MyLibrary.css', label: 'MyLibrary CSS
+- `[{path: 'dist/MyLibrary.js', label: 'MyLibrary JS distribution'}, {path: 'dist/MyLibrary.css', label: 'MyLibrary CSS
 distribution'}]`: include the `dist/MyLibrary.js` and `dist/MyLibrary.css` files, and label them `MyLibrary JS
 distribution` and `MyLibrary CSS distribution` in the GitLab release.
 
-`[['dist/**/*.{js,css}', '!**/*.min.*'], {path: 'build/MyLibrary.zip', label: 'MyLibrary'}]`: include all the `js` and
+- `[['dist/**/*.{js,css}', '!**/*.min.*'], {path: 'build/MyLibrary.zip', label: 'MyLibrary'}]`: include all the `js` and
 `css` files in the `dist` directory and its sub-directories excluding the minified version, plus the
 `build/MyLibrary.zip` file and label it `MyLibrary` in the GitLab release.
+
+##### External URL assets
+
+An `Array` of `Object`s with the following properties:
+
+| Property          | Description                                                                                                                                                                                              | Default             |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
+| `url`             | **Required.** An absolute URL linking to an external resource.  | -                   |
+| `label` or `name` | Text of the anchor link on the release.                                                                                                                                                             | The value of `url`. |
+
+> All properties support interpolation of `context` variables through [`lodash.template`](https://lodash.com/docs/4.17.15#template), using `{{}}` as delimiter.
+
+Examples:
+
+- `[{url: 'https://assets.company.io/releases/latest', label: 'Latest Release' }]`: set a link to `https://assets.company.io/releases/latest` with the text _'Latest Release'_ in the GitLab release.
+
+- `[{url: '{{env.ASSETS_REPOSITORY_URL}}/releases/{{env.ARTIFACT_NAME}}.zip', label: '{{env.ARTIFACT_NAME}}-{{nextRelease.version}}.zip' ]`: interpolate variables present in `semantic-release` `context` to produce a link to a custom URL with a label.

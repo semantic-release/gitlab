@@ -140,3 +140,67 @@ test.serial('Publish a release with one asset and custom label', async t => {
   t.true(gitlab.isDone());
   t.true(gitlabAssetLink.isDone());
 });
+
+test.serial('Publish a release with an asset defining a custom url', async t => {
+  const cwd = 'test/fixtures/files';
+  const owner = 'test_user';
+  const repo = 'test_repo';
+  const env = {GITLAB_TOKEN: 'gitlab_token'};
+  const nextRelease = {gitHead: '123', gitTag: '@scope/v1.0.0', notes: 'Test release note body'};
+  const options = {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`};
+  const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
+  const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
+  const assets = [{name: 'asset.zip', url: 'https://foo.com/asset.zip'}];
+  const gitlab = authenticate(env)
+    .post(`/projects/${encodedRepoId}/repository/tags/${encodedGitTag}/release`, {
+      tag_name: nextRelease.gitTag,
+      description: nextRelease.notes,
+    })
+    .reply(200);
+
+  const gitlabAssetLink = authenticate(env)
+    .post(`/projects/${encodedRepoId}/releases/${encodedGitTag}/assets/links`, {
+      url: 'https://foo.com/asset.zip',
+      name: 'asset.zip',
+    })
+    .reply(200, {});
+
+  const result = await publish({assets}, {env, cwd, options, nextRelease, logger: t.context.logger});
+
+  t.is(result.url, `https://gitlab.com/${encodedRepoId}/tags/${encodedGitTag}`);
+  t.deepEqual(t.context.log.args[0], ['Added link to asset %s (%s)', 'https://foo.com/asset.zip', 'asset.zip']);
+  t.true(gitlab.isDone());
+  t.true(gitlabAssetLink.isDone());
+});
+
+test.serial('Publish a release with an asset defining a templated custom url and name', async t => {
+  const cwd = 'test/fixtures/files';
+  const owner = 'test_user';
+  const repo = 'test_repo';
+  const env = {GITLAB_TOKEN: 'gitlab_token', ASSET_NAME: 'asset', ASSET_REPOSITORY_URL: 'https://foo.com'};
+  const nextRelease = {gitHead: '123', gitTag: '@scope/v1.0.0', notes: 'Test release note body'};
+  const options = {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`};
+  const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
+  const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
+  const assets = [{name: '{{env.ASSET_NAME}}.zip', url: '{{env.ASSET_REPOSITORY_URL}}/{{env.ASSET_NAME}}.zip'}];
+  const gitlab = authenticate(env)
+    .post(`/projects/${encodedRepoId}/repository/tags/${encodedGitTag}/release`, {
+      tag_name: nextRelease.gitTag,
+      description: nextRelease.notes,
+    })
+    .reply(200);
+
+  const gitlabAssetLink = authenticate(env)
+    .post(`/projects/${encodedRepoId}/releases/${encodedGitTag}/assets/links`, {
+      url: 'https://foo.com/asset.zip',
+      name: 'asset.zip',
+    })
+    .reply(200, {});
+
+  const result = await publish({assets}, {env, cwd, options, nextRelease, logger: t.context.logger});
+
+  t.is(result.url, `https://gitlab.com/${encodedRepoId}/tags/${encodedGitTag}`);
+  t.deepEqual(t.context.log.args[0], ['Added link to asset %s (%s)', 'https://foo.com/asset.zip', 'asset.zip']);
+  t.true(gitlab.isDone());
+  t.true(gitlabAssetLink.isDone());
+});
