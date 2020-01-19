@@ -6,9 +6,6 @@
   "ava": {
     "files": [
       "test/**/*.test.js"
-    ],
-    "helpers": [
-      "test/helpers/**/*"
     ]
   },
   "bugs": {
@@ -33,7 +30,7 @@
     "url-join": "^4.0.0"
   },
   "devDependencies": {
-    "ava": "^2.0.0",
+    "ava": "^3.1.0",
     "clear-module": "^4.0.0",
     "codecov": "^3.0.0",
     "nock": "^11.0.0",

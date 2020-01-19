@@ -1,6 +1,6 @@
-import test from 'ava';
-import urlJoin from 'url-join';
-import resolveConfig from '../lib/resolve-config';
+const test = require('ava');
+const urlJoin = require('url-join');
+const resolveConfig = require('../lib/resolve-config');
 
 test('Returns user config', t => {
   const gitlabToken = 'TOKEN';

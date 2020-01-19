@@ -1,8 +1,8 @@
-import test from 'ava';
-import nock from 'nock';
-import {stub} from 'sinon';
-import verify from '../lib/verify';
-import authenticate from './helpers/mock-gitlab';
+const test = require('ava');
+const nock = require('nock');
+const {stub} = require('sinon');
+const verify = require('../lib/verify');
+const authenticate = require('./helpers/mock-gitlab');
 
 /* eslint camelcase: ["error", {properties: "never"}] */
 
