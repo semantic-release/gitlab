@@ -1,9 +1,9 @@
-import test from 'ava';
-import nock from 'nock';
-import tempy from 'tempy';
-import {stub} from 'sinon';
-import publish from '../lib/publish';
-import authenticate from './helpers/mock-gitlab';
+const test = require('ava');
+const nock = require('nock');
+const tempy = require('tempy');
+const {stub} = require('sinon');
+const publish = require('../lib/publish');
+const authenticate = require('./helpers/mock-gitlab');
 
 /* eslint camelcase: ["error", {properties: "never"}] */
 

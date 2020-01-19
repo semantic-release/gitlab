@@ -1,5 +1,5 @@
-import test from 'ava';
-import getRepoId from '../lib/get-repo-id';
+const test = require('ava');
+const getRepoId = require('../lib/get-repo-id');
 
 test('Parse repo id with https URL', t => {
   t.is(getRepoId({env: {}}, 'https://gitlbab.com', 'https://gitlab.com/owner/repo.git'), 'owner/repo');
@@ -35,7 +35,7 @@ test('Parse repo id with organization and subgroup', t => {
   );
 });
 
-test('Get repo id from GitLab CI', t => {
+test('Get repo id = require(GitLab CI', t => {
   t.is(
     getRepoId(
       {envCi: {service: 'gitlab'}, env: {CI_PROJECT_PATH: 'other-owner/other-repo'}},
