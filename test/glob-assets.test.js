@@ -9,7 +9,7 @@ const sortAssets = assets => sortBy(assets, asset => (isPlainObject(asset) ? ass
 
 const fixtures = 'test/fixtures/files';
 
-test('Retrieve file = require(single path', async t => {
+test('Retrieve file from single path', async t => {
   const cwd = tempy.directory();
   await copy(fixtures, cwd);
   const globbedAssets = await globAssets({cwd}, ['upload.txt']);
@@ -17,7 +17,7 @@ test('Retrieve file = require(single path', async t => {
   t.deepEqual(globbedAssets, ['upload.txt']);
 });
 
-test('Retrieve multiple files = require(path', async t => {
+test('Retrieve multiple files from path', async t => {
   const cwd = tempy.directory();
   await copy(fixtures, cwd);
   const globbedAssets = await globAssets({cwd}, ['upload.txt', 'upload_other.txt']);
@@ -33,7 +33,7 @@ test('Include missing files as defined, using Object definition', async t => {
   t.deepEqual(sortAssets(globbedAssets), sortAssets(['upload.txt', {path: 'miss*.txt', label: 'Missing'}]));
 });
 
-test('Retrieve multiple files = require(Object', async t => {
+test('Retrieve multiple files from Object', async t => {
   const cwd = tempy.directory();
   await copy(fixtures, cwd);
   const globbedAssets = await globAssets({cwd}, [
@@ -84,7 +84,7 @@ test('Favor Object over String values when removing duplicates', async t => {
   );
 });
 
-test('Retrieve file = require(single glob', async t => {
+test('Retrieve file from single glob', async t => {
   const cwd = tempy.directory();
   await copy(fixtures, cwd);
   const globbedAssets = await globAssets({cwd}, ['upload.*']);
@@ -92,7 +92,7 @@ test('Retrieve file = require(single glob', async t => {
   t.deepEqual(globbedAssets, ['upload.txt']);
 });
 
-test('Retrieve multiple files = require(single glob', async t => {
+test('Retrieve multiple files from single glob', async t => {
   const cwd = tempy.directory();
   await copy(fixtures, cwd);
   const globbedAssets = await globAssets({cwd}, ['*.txt']);

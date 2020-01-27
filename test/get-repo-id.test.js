@@ -35,7 +35,7 @@ test('Parse repo id with organization and subgroup', t => {
   );
 });
 
-test('Get repo id = require(GitLab CI', t => {
+test('Get repo id from GitLab CI', t => {
   t.is(
     getRepoId(
       {envCi: {service: 'gitlab'}, env: {CI_PROJECT_PATH: 'other-owner/other-repo'}},
