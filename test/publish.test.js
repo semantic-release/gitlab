@@ -140,3 +140,26 @@ test.serial('Publish a release with one asset and custom label', async t => {
   t.true(gitlab.isDone());
   t.true(gitlabAssetLink.isDone());
 });
+
+test.serial('Publish a release with missing releasae notes', async t => {
+  const owner = 'test_user';
+  const repo = 'test_repo';
+  const env = {GITLAB_TOKEN: 'gitlab_token'};
+  const pluginConfig = {};
+  const nextRelease = {gitHead: '123', gitTag: 'v1.0.0'};
+  const options = {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`};
+  const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
+  const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
+  const gitlab = authenticate(env)
+    .post(`/projects/${encodedRepoId}/repository/tags/${encodedGitTag}/release`, {
+      tag_name: nextRelease.gitTag,
+      description: nextRelease.gitTag,
+    })
+    .reply(200);
+
+  const result = await publish(pluginConfig, {env, options, nextRelease, logger: t.context.logger});
+
+  t.is(result.url, `https://gitlab.com/${encodedRepoId}/tags/${encodedGitTag}`);
+  t.deepEqual(t.context.log.args[0], ['Published GitLab release: %s', nextRelease.gitTag]);
+  t.true(gitlab.isDone());
+});
