@@ -69,10 +69,10 @@ Create a [personal access token](https://docs.gitlab.com/ce/user/profile/persona
 Can be a [glob](https://github.com/isaacs/node-glob#glob-primer) or and `Array` of
 [globs](https://github.com/isaacs/node-glob#glob-primer) and `Object`s with the following properties:
 
-| Property | Description                                                                                              | Default                              |
-| -------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------ |
-| `path`   | **Required.** A [glob](https://github.com/isaacs/node-glob#glob-primer) to identify the files to upload. | -                                    |
-| `label`  | Short description of the file displayed on the GitLab release.                                           | File name extracted from the `path`. |
+| Property | Description                                                                                                 | Default                              |
+| -------- | ----------------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| `path`   | **Required.** A [glob](https://github.com/isaacs/node-glob#glob-primer) to identify the files to upload.    | -                                    |
+| `label`  | Short description of the file displayed on the GitLab release. Ignored if `path` matches more than one file.| File name extracted from the `path`. |
 
 Each entry in the `assets` `Array` is globbed individually. A [glob](https://github.com/isaacs/node-glob#glob-primer)
 can be a `String` (`"dist/**/*.js"` or `"dist/mylib.js"`) or an `Array` of `String`s that will be globbed together
