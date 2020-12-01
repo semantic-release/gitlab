@@ -127,13 +127,13 @@ test('Accept glob array with one value for missing files', async t => {
 test('Replace name by filename for Object that match multiple files', async t => {
   const cwd = tempy.directory();
   await copy(fixtures, cwd);
-  const globbedAssets = await globAssets({cwd}, [{path: '*.txt', name: 'upload_name', label: 'Upload label'}]);
+  const globbedAssets = await globAssets({cwd}, [{path: '*.txt', label: 'Upload label'}]);
 
   t.deepEqual(
     sortAssets(globbedAssets),
     sortAssets([
-      {path: 'upload.txt', name: 'upload.txt', label: 'Upload label'},
-      {path: 'upload_other.txt', name: 'upload_other.txt', label: 'Upload label'},
+      {path: 'upload.txt', label: 'upload.txt'},
+      {path: 'upload_other.txt', label: 'upload_other.txt'},
     ])
   );
 });
