@@ -29,9 +29,12 @@ test.serial('Publish a release', async t => {
   const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
   const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
   const gitlab = authenticate(env)
-    .post(`/projects/${encodedRepoId}/repository/tags/${encodedGitTag}/release`, {
+    .post(`/projects/${encodedRepoId}/releases`, {
       tag_name: nextRelease.gitTag,
       description: nextRelease.notes,
+      assets: {
+        links: [],
+      },
     })
     .reply(200);
 
@@ -54,20 +57,22 @@ test.serial('Publish a release with assets', async t => {
   const uploaded = {url: '/uploads/file.css', alt: 'file.css'};
   const assets = [['**', '!**/*.txt', '!.dotfile']];
   const gitlab = authenticate(env)
-    .post(`/projects/${encodedRepoId}/repository/tags/${encodedGitTag}/release`, {
+    .post(`/projects/${encodedRepoId}/releases`, {
       tag_name: nextRelease.gitTag,
       description: nextRelease.notes,
+      assets: {
+        links: [
+          {
+            name: uploaded.alt,
+            url: `https://gitlab.com/${owner}/${repo}${uploaded.url}`,
+          },
+        ],
+      },
     })
     .reply(200);
   const gitlabUpload = authenticate(env)
     .post(`/projects/${encodedRepoId}/uploads`, /filename="file.css"/gm)
     .reply(200, uploaded);
-  const gitlabAssetLink = authenticate(env)
-    .post(`/projects/${encodedRepoId}/releases/${encodedGitTag}/assets/links`, {
-      url: `https://gitlab.com/${owner}/${repo}${uploaded.url}`,
-      name: uploaded.alt,
-    })
-    .reply(200, {});
 
   const result = await publish({assets}, {env, cwd, options, nextRelease, logger: t.context.logger});
 
@@ -76,7 +81,6 @@ test.serial('Publish a release with assets', async t => {
   t.deepEqual(t.context.log.args[1], ['Published GitLab release: %s', nextRelease.gitTag]);
   t.true(gitlabUpload.isDone());
   t.true(gitlab.isDone());
-  t.true(gitlabAssetLink.isDone());
 });
 
 test.serial('Publish a release with array of missing assets', async t => {
@@ -91,9 +95,12 @@ test.serial('Publish a release with array of missing assets', async t => {
   const emptyDirectory = tempy.directory();
   const assets = [emptyDirectory, {path: 'missing.txt', label: 'missing.txt'}];
   const gitlab = authenticate(env)
-    .post(`/projects/${encodedRepoId}/repository/tags/${encodedGitTag}/release`, {
+    .post(`/projects/${encodedRepoId}/releases`, {
       tag_name: nextRelease.gitTag,
       description: nextRelease.notes,
+      assets: {
+        links: [],
+      },
     })
     .reply(200);
   const result = await publish({assets}, {env, cwd, options, nextRelease, logger: t.context.logger});
@@ -116,20 +123,22 @@ test.serial('Publish a release with one asset and custom label', async t => {
   const assetLabel = 'Custom Label';
   const assets = [{path: 'upload.txt', label: assetLabel}];
   const gitlab = authenticate(env)
-    .post(`/projects/${encodedRepoId}/repository/tags/${encodedGitTag}/release`, {
+    .post(`/projects/${encodedRepoId}/releases`, {
       tag_name: nextRelease.gitTag,
       description: nextRelease.notes,
+      assets: {
+        links: [
+          {
+            name: assetLabel,
+            url: `https://gitlab.com/${owner}/${repo}${uploaded.url}`,
+          },
+        ],
+      },
     })
     .reply(200);
   const gitlabUpload = authenticate(env)
     .post(`/projects/${encodedRepoId}/uploads`, /filename="upload.txt"/gm)
     .reply(200, uploaded);
-  const gitlabAssetLink = authenticate(env)
-    .post(`/projects/${encodedRepoId}/releases/${encodedGitTag}/assets/links`, {
-      url: `https://gitlab.com/${owner}/${repo}${uploaded.url}`,
-      name: assetLabel,
-    })
-    .reply(200, {});
 
   const result = await publish({assets}, {env, cwd, options, nextRelease, logger: t.context.logger});
 
@@ -138,10 +147,9 @@ test.serial('Publish a release with one asset and custom label', async t => {
   t.deepEqual(t.context.log.args[1], ['Published GitLab release: %s', nextRelease.gitTag]);
   t.true(gitlabUpload.isDone());
   t.true(gitlab.isDone());
-  t.true(gitlabAssetLink.isDone());
 });
 
-test.serial('Publish a release with missing releasae notes', async t => {
+test.serial('Publish a release with missing release notes', async t => {
   const owner = 'test_user';
   const repo = 'test_repo';
   const env = {GITLAB_TOKEN: 'gitlab_token'};
@@ -151,9 +159,12 @@ test.serial('Publish a release with missing releasae notes', async t => {
   const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
   const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
   const gitlab = authenticate(env)
-    .post(`/projects/${encodedRepoId}/repository/tags/${encodedGitTag}/release`, {
+    .post(`/projects/${encodedRepoId}/releases`, {
       tag_name: nextRelease.gitTag,
       description: nextRelease.gitTag,
+      assets: {
+        links: [],
+      },
     })
     .reply(200);
 
