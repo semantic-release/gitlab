@@ -65,9 +65,12 @@ test.serial('Publish a release', async t => {
   const gitlab = authenticate(env)
     .get(`/projects/${encodedRepoId}`)
     .reply(200, {permissions: {project_access: {access_level: 30}}})
-    .post(`/projects/${encodedRepoId}/repository/tags/${nextRelease.gitTag}/release`, {
+    .post(`/projects/${encodedRepoId}/releases`, {
       tag_name: nextRelease.gitTag,
       description: nextRelease.notes,
+      assets: {
+        links: [],
+      },
     })
     .reply(200);
 
@@ -90,9 +93,12 @@ test.serial('Verify Github auth and release', async t => {
   const gitlab = authenticate(env)
     .get(`/projects/${encodedRepoId}`)
     .reply(200, {permissions: {project_access: {access_level: 30}}})
-    .post(`/projects/${encodedRepoId}/repository/tags/${nextRelease.gitTag}/release`, {
+    .post(`/projects/${encodedRepoId}/releases`, {
       tag_name: nextRelease.gitTag,
       description: nextRelease.notes,
+      assets: {
+        links: [],
+      },
     })
     .reply(200);
 
