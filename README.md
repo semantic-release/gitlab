@@ -1,7 +1,7 @@
 # @semantic-release/gitlab
 
 [**semantic-release**](https://github.com/semantic-release/semantic-release) plugin to publish a
-[GitLab release](https://docs.gitlab.com/ce/workflow/releases.html).
+[GitLab release](https://docs.gitlab.com/ee/user/project/releases/).
 
 [![Build Status](https://github.com/semantic-release/gitlab/workflows/Test/badge.svg)](https://github.com/semantic-release/gitlab/actions?query=workflow%3ATest+branch%3Amaster) [![npm latest version](https://img.shields.io/npm/v/@semantic-release/gitlab/latest.svg)](https://www.npmjs.com/package/@semantic-release/gitlab)
 [![npm next version](https://img.shields.io/npm/v/@semantic-release/gitlab/next.svg)](https://www.npmjs.com/package/@semantic-release/gitlab)
@@ -9,7 +9,7 @@
 | Step               | Description                                                                                                           |
 |--------------------|-----------------------------------------------------------------------------------------------------------------------|
 | `verifyConditions` | Verify the presence and the validity of the authentication (set via [environment variables](#environment-variables)). |
-| `publish`          | Publish a [GitLab release](https://docs.gitlab.com/ce/workflow/releases.html).                                        |
+| `publish`          | Publish a [GitLab release](https://docs.gitlab.com/ee/user/project/releases/).                                        |
 
 ## Install
 
@@ -37,7 +37,7 @@ The plugin can be configured in the [**semantic-release** configuration file](ht
 }
 ```
 
-With this example [GitLab releases](https://docs.gitlab.com/ce/workflow/releases.html) will be published to the `https://custom.gitlab.com` instance.
+With this example [GitLab releases](https://docs.gitlab.com/ee/user/project/releases/) will be published to the `https://custom.gitlab.com` instance.
 
 ## Configuration
 
