@@ -55,6 +55,7 @@ Create a [personal access token](https://docs.gitlab.com/ce/user/profile/persona
 | `GL_TOKEN` or `GITLAB_TOKEN`   | **Required.** The token used to authenticate with GitLab. |
 | `GL_URL` or `GITLAB_URL`       | The GitLab endpoint.                                      |
 | `GL_PREFIX` or `GITLAB_PREFIX` | The GitLab API prefix.                                    |
+| `HTTP_PROXY` or `HTTPS_PROXY`  | HTTP or HTTPS proxy to use.                               |
 
 ### Options
 
