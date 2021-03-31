@@ -9,7 +9,7 @@ test('Returns user config', t => {
   const gitlabUrl = 'https://host.com';
   const gitlabApiPathPrefix = '/api/prefix';
   const assets = ['file.js'];
-  const proxy = undefined;
+  const proxy = {};
 
   t.deepEqual(resolveConfig({gitlabUrl, gitlabApiPathPrefix, assets, proxy}, {env: {GITLAB_TOKEN: gitlabToken}}), {
     gitlabToken,
@@ -25,7 +25,7 @@ test('Returns user config via environment variables', t => {
   const gitlabUrl = 'https://host.com';
   const gitlabApiPathPrefix = '/api/prefix';
   const assets = ['file.js'];
-  const proxy = undefined;
+  const proxy = {};
 
   t.deepEqual(
     resolveConfig(
@@ -41,7 +41,7 @@ test('Returns user config via alternative environment variables', t => {
   const gitlabUrl = 'https://host.com';
   const gitlabApiPathPrefix = '/api/prefix';
   const assets = ['file.js'];
-  const proxy = undefined;
+  const proxy = {};
 
   t.deepEqual(
     resolveConfig(
@@ -122,7 +122,7 @@ test('Returns default config', t => {
     gitlabUrl: 'https://gitlab.com',
     gitlabApiUrl: urlJoin('https://gitlab.com', '/api/v4'),
     assets: undefined,
-    proxy: undefined,
+    proxy: {},
   });
 
   t.deepEqual(resolveConfig({gitlabApiPathPrefix}, {env: {GL_TOKEN: gitlabToken}}), {
@@ -130,7 +130,7 @@ test('Returns default config', t => {
     gitlabUrl: 'https://gitlab.com',
     gitlabApiUrl: urlJoin('https://gitlab.com', gitlabApiPathPrefix),
     assets: undefined,
-    proxy: undefined,
+    proxy: {},
   });
 
   t.deepEqual(resolveConfig({gitlabUrl}, {env: {GL_TOKEN: gitlabToken}}), {
@@ -138,7 +138,7 @@ test('Returns default config', t => {
     gitlabUrl: 'https://gitlab.com',
     gitlabApiUrl: urlJoin(gitlabUrl, '/api/v4'),
     assets: undefined,
-    proxy: undefined,
+    proxy: {},
   });
 });
 
@@ -156,7 +156,7 @@ test('Returns default config via GitLab CI/CD environment variables', t => {
         env: {GL_TOKEN: gitlabToken, CI_PROJECT_URL, CI_PROJECT_PATH, CI_API_V4_URL},
       }
     ),
-    {gitlabToken, gitlabUrl: 'http://ci-host.com', gitlabApiUrl: CI_API_V4_URL, assets: undefined, proxy: undefined}
+    {gitlabToken, gitlabUrl: 'http://ci-host.com', gitlabApiUrl: CI_API_V4_URL, assets: undefined, proxy: {}}
   );
 });
 
@@ -165,7 +165,7 @@ test('Returns user config over GitLab CI/CD environment variables', t => {
   const gitlabUrl = 'https://host.com';
   const gitlabApiPathPrefix = '/api/prefix';
   const assets = ['file.js'];
-  const proxy = undefined;
+  const proxy = {};
   const CI_PROJECT_URL = 'http://ci-host.com/ci-owner/ci-repo';
   const CI_PROJECT_PATH = 'ci-owner/ci-repo';
   const CI_API_V4_URL = 'http://ci-host-api.com/prefix';
@@ -205,7 +205,7 @@ test('Returns user config via environment variables over GitLab CI/CD environmen
         },
       }
     ),
-    {gitlabToken, gitlabUrl, gitlabApiUrl: urlJoin(gitlabUrl, gitlabApiPathPrefix), assets: undefined, proxy: undefined}
+    {gitlabToken, gitlabUrl, gitlabApiUrl: urlJoin(gitlabUrl, gitlabApiPathPrefix), assets: undefined, proxy: {}}
   );
 });
 
@@ -232,7 +232,7 @@ test('Returns user config via alternative environment variables over GitLab CI/C
         },
       }
     ),
-    {gitlabToken, gitlabUrl, gitlabApiUrl: urlJoin(gitlabUrl, gitlabApiPathPrefix), assets: undefined, proxy: undefined}
+    {gitlabToken, gitlabUrl, gitlabApiUrl: urlJoin(gitlabUrl, gitlabApiPathPrefix), assets: undefined, proxy: {}}
   );
 });
 
@@ -255,7 +255,7 @@ test('Ignore GitLab CI/CD environment variables if not running on GitLab CI/CD',
       gitlabUrl: 'https://gitlab.com',
       gitlabApiUrl: urlJoin('https://gitlab.com', '/api/v4'),
       assets: undefined,
-      proxy: undefined,
+      proxy: {},
     }
   );
 });
