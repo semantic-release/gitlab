@@ -13,6 +13,7 @@ test('Returns user config', t => {
     gitlabUrl,
     gitlabApiUrl: urlJoin(gitlabUrl, gitlabApiPathPrefix),
     assets,
+    milestones: undefined,
   });
 });
 
@@ -21,13 +22,20 @@ test('Returns user config via environment variables', t => {
   const gitlabUrl = 'https://host.com';
   const gitlabApiPathPrefix = '/api/prefix';
   const assets = ['file.js'];
+  const milestones = ['1.2.3'];
 
   t.deepEqual(
     resolveConfig(
-      {assets},
+      {assets, milestones},
       {env: {GITLAB_TOKEN: gitlabToken, GITLAB_URL: gitlabUrl, GITLAB_PREFIX: gitlabApiPathPrefix}}
     ),
-    {gitlabToken, gitlabUrl, gitlabApiUrl: urlJoin(gitlabUrl, gitlabApiPathPrefix), assets}
+    {
+      gitlabToken,
+      gitlabUrl,
+      gitlabApiUrl: urlJoin(gitlabUrl, gitlabApiPathPrefix),
+      assets,
+      milestones,
+    }
   );
 });
 
@@ -39,7 +47,13 @@ test('Returns user config via alternative environment variables', t => {
 
   t.deepEqual(
     resolveConfig({assets}, {env: {GL_TOKEN: gitlabToken, GL_URL: gitlabUrl, GL_PREFIX: gitlabApiPathPrefix}}),
-    {gitlabToken, gitlabUrl, gitlabApiUrl: urlJoin(gitlabUrl, gitlabApiPathPrefix), assets}
+    {
+      gitlabToken,
+      gitlabUrl,
+      gitlabApiUrl: urlJoin(gitlabUrl, gitlabApiPathPrefix),
+      assets,
+      milestones: undefined,
+    }
   );
 });
 
@@ -53,6 +67,7 @@ test('Returns default config', t => {
     gitlabUrl: 'https://gitlab.com',
     gitlabApiUrl: urlJoin('https://gitlab.com', '/api/v4'),
     assets: undefined,
+    milestones: undefined,
   });
 
   t.deepEqual(resolveConfig({gitlabApiPathPrefix}, {env: {GL_TOKEN: gitlabToken}}), {
@@ -60,6 +75,7 @@ test('Returns default config', t => {
     gitlabUrl: 'https://gitlab.com',
     gitlabApiUrl: urlJoin('https://gitlab.com', gitlabApiPathPrefix),
     assets: undefined,
+    milestones: undefined,
   });
 
   t.deepEqual(resolveConfig({gitlabUrl}, {env: {GL_TOKEN: gitlabToken}}), {
@@ -67,6 +83,7 @@ test('Returns default config', t => {
     gitlabUrl: 'https://gitlab.com',
     gitlabApiUrl: urlJoin(gitlabUrl, '/api/v4'),
     assets: undefined,
+    milestones: undefined,
   });
 });
 
@@ -84,7 +101,13 @@ test('Returns default config via GitLab CI/CD environment variables', t => {
         env: {GL_TOKEN: gitlabToken, CI_PROJECT_URL, CI_PROJECT_PATH, CI_API_V4_URL},
       }
     ),
-    {gitlabToken, gitlabUrl: 'http://ci-host.com', gitlabApiUrl: CI_API_V4_URL, assets: undefined}
+    {
+      gitlabToken,
+      gitlabUrl: 'http://ci-host.com',
+      gitlabApiUrl: CI_API_V4_URL,
+      assets: undefined,
+      milestones: undefined,
+    }
   );
 });
 
@@ -105,7 +128,13 @@ test('Returns user config over GitLab CI/CD environment variables', t => {
         env: {GL_TOKEN: gitlabToken, CI_PROJECT_URL, CI_PROJECT_PATH, CI_API_V4_URL},
       }
     ),
-    {gitlabToken, gitlabUrl, gitlabApiUrl: urlJoin(gitlabUrl, gitlabApiPathPrefix), assets}
+    {
+      gitlabToken,
+      gitlabUrl,
+      gitlabApiUrl: urlJoin(gitlabUrl, gitlabApiPathPrefix),
+      assets,
+      milestones: undefined,
+    }
   );
 });
 
@@ -132,7 +161,13 @@ test('Returns user config via environment variables over GitLab CI/CD environmen
         },
       }
     ),
-    {gitlabToken, gitlabUrl, gitlabApiUrl: urlJoin(gitlabUrl, gitlabApiPathPrefix), assets: undefined}
+    {
+      gitlabToken,
+      gitlabUrl,
+      gitlabApiUrl: urlJoin(gitlabUrl, gitlabApiPathPrefix),
+      assets: undefined,
+      milestones: undefined,
+    }
   );
 });
 
@@ -159,7 +194,13 @@ test('Returns user config via alternative environment variables over GitLab CI/C
         },
       }
     ),
-    {gitlabToken, gitlabUrl, gitlabApiUrl: urlJoin(gitlabUrl, gitlabApiPathPrefix), assets: undefined}
+    {
+      gitlabToken,
+      gitlabUrl,
+      gitlabApiUrl: urlJoin(gitlabUrl, gitlabApiPathPrefix),
+      assets: undefined,
+      milestones: undefined,
+    }
   );
 });
 
@@ -182,6 +223,7 @@ test('Ignore GitLab CI/CD environment variables if not running on GitLab CI/CD',
       gitlabUrl: 'https://gitlab.com',
       gitlabApiUrl: urlJoin('https://gitlab.com', '/api/v4'),
       assets: undefined,
+      milestones: undefined,
     }
   );
 });
