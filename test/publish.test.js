@@ -95,7 +95,7 @@ test.serial('Publish a release with asset type and permalink', async t => {
   const uploaded = {url: '/uploads/file.css', alt: 'file.css', link_type: 'package', filepath: '/dist/file.css'};
   const assets = [
     {
-      path: 'file.css',
+      path: ['**', '!**/*.txt', '!.dotfile'],
       type: 'package',
       filepath: '/dist/file.css',
     },
