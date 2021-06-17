@@ -99,3 +99,15 @@ distribution` and `MyLibrary CSS distribution` in the GitLab release.
 `[['dist/**/*.{js,css}', '!**/*.min.*'], {path: 'build/MyLibrary.zip', label: 'MyLibrary'}]`: include all the `js` and
 `css` files in the `dist` directory and its sub-directories excluding the minified version, plus the
 `build/MyLibrary.zip` file and label it `MyLibrary` in the GitLab release.
+
+## Compatibility
+
+The latest version of this plugin is compatible with all currently-supported versions of GitLab, [which is the current major version and previous two major versions](https://about.gitlab.com/support/statement-of-support.html#version-support). This plugin is not guaranteed to work with unsupported versions of GitLab.
+
+### Breaking changes in 14.0
+
+If you are using GitLab.com or have upgraded your self-hosted GitLab instance to 14.0, please use version `>=6.0.7` of this plugin.
+
+#### Why?
+
+In GitLab 14.0, creating a release using the [Tags API](https://docs.gitlab.com/ee/api/tags.html) has been removed (see [<span>#</span>290311](https://gitlab.com/gitlab-org/gitlab/-/issues/290311)). This plugin was updated to use the Release API instead in https://github.com/semantic-release/gitlab/pull/184, which is available in version `6.0.7` and beyond.
