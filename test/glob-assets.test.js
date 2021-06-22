@@ -70,7 +70,7 @@ test('Favor Object over String values when removing duplicates', async t => {
     'upload.txt',
     {path: 'upload.txt', name: 'upload_name'},
     'upload.txt',
-    {path: 'upload_other.txt', name: 'upload_other_name'},
+    {path: 'upload_other.txt', name: 'upload_other_name', filepath: '/path/to/other'},
     'upload.txt',
     'upload_other.txt',
   ]);
@@ -79,7 +79,7 @@ test('Favor Object over String values when removing duplicates', async t => {
     sortAssets(globbedAssets),
     sortAssets([
       {path: 'upload.txt', name: 'upload_name'},
-      {path: 'upload_other.txt', name: 'upload_other_name'},
+      {path: 'upload_other.txt', name: 'upload_other_name', filepath: '/path/to/other'},
     ])
   );
 });
@@ -128,6 +128,20 @@ test('Replace name by filename for Object that match multiple files', async t =>
   const cwd = tempy.directory();
   await copy(fixtures, cwd);
   const globbedAssets = await globAssets({cwd}, [{path: '*.txt', label: 'Upload label'}]);
+
+  t.deepEqual(
+    sortAssets(globbedAssets),
+    sortAssets([
+      {path: 'upload.txt', label: 'upload.txt'},
+      {path: 'upload_other.txt', label: 'upload_other.txt'},
+    ])
+  );
+});
+
+test('Ignore filepath for Object that match multiple files', async t => {
+  const cwd = tempy.directory();
+  await copy(fixtures, cwd);
+  const globbedAssets = await globAssets({cwd}, [{path: '*.txt', filepath: '/path/to/file'}]);
 
   t.deepEqual(
     sortAssets(globbedAssets),

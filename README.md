@@ -74,6 +74,8 @@ Can be a [glob](https://github.com/isaacs/node-glob#glob-primer) or and `Array` 
 | -------- | ----------------------------------------------------------------------------------------------------------- | ------------------------------------ |
 | `path`   | **Required.** A [glob](https://github.com/isaacs/node-glob#glob-primer) to identify the files to upload.    | -                                    |
 | `label`  | Short description of the file displayed on the GitLab release. Ignored if `path` matches more than one file.| File name extracted from the `path`. |
+| `type` | Asset type displayed on the GitLab release. Can be `runbook`, `package`, `image` and `other` (see official documents on [release assets](https://docs.gitlab.com/ee/user/project/releases/#release-assets)). | `other` |
+| `filepath` | A filepath for creating a permalink pointing to the asset (requires GitLab 12.9+, see official documents on [permanent links](https://docs.gitlab.com/ee/user/project/releases/#permanent-links-to-release-assets)). Ignored if `path` matches more than one file. | - |
 
 Each entry in the `assets` `Array` is globbed individually. A [glob](https://github.com/isaacs/node-glob#glob-primer)
 can be a `String` (`"dist/**/*.js"` or `"dist/mylib.js"`) or an `Array` of `String`s that will be globbed together
