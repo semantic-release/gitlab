@@ -110,4 +110,4 @@ If you are using GitLab.com or have upgraded your self-hosted GitLab instance to
 
 #### Why?
 
-In GitLab 14.0, creating a release using the [Tags API](https://docs.gitlab.com/ee/api/tags.html) has been removed (see [<span>#</span>290311](https://gitlab.com/gitlab-org/gitlab/-/issues/290311)). This plugin was updated to use the Release API instead in https://github.com/semantic-release/gitlab/pull/184, which is available in version `6.0.7` and beyond.
+In GitLab 14.0, creating a release using the [Tags API](https://docs.gitlab.com/ee/api/tags.html) has been removed (see [<span>#</span>290311](https://gitlab.com/gitlab-org/gitlab/-/issues/290311)). This plugin was updated to use the [Releases API](https://docs.gitlab.com/ee/api/releases/#create-a-release) instead in https://github.com/semantic-release/gitlab/pull/184, which is available in version `6.0.7` and beyond.
