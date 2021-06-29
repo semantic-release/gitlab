@@ -22,7 +22,7 @@
     "dir-glob": "^3.0.0",
     "escape-string-regexp": "^3.0.0",
     "form-data": "^3.0.0",
-    "fs-extra": "^9.0.0",
+    "fs-extra": "^10.0.0",
     "globby": "^11.0.0",
     "got": "^10.5.2",
     "lodash": "^4.17.11",
