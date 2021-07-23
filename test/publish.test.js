@@ -31,6 +31,7 @@ test.serial('Publish a release', async t => {
   const gitlab = authenticate(env)
     .post(`/projects/${encodedRepoId}/releases`, {
       tag_name: nextRelease.gitTag,
+      name: `Bump tag: ${nextRelease.gitTag}`,
       description: nextRelease.notes,
       assets: {
         links: [],
@@ -59,6 +60,7 @@ test.serial('Publish a release with assets', async t => {
   const gitlab = authenticate(env)
     .post(`/projects/${encodedRepoId}/releases`, {
       tag_name: nextRelease.gitTag,
+      name: `Bump tag: ${nextRelease.gitTag}`,
       description: nextRelease.notes,
       assets: {
         links: [
@@ -103,6 +105,7 @@ test.serial('Publish a release with asset type and permalink', async t => {
   const gitlab = authenticate(env)
     .post(`/projects/${encodedRepoId}/releases`, {
       tag_name: nextRelease.gitTag,
+      name: `Bump tag: ${nextRelease.gitTag}`,
       description: nextRelease.notes,
       assets: {
         links: [
@@ -141,6 +144,7 @@ test.serial('Publish a release with a milestone', async t => {
   const gitlab = authenticate(env)
     .post(`/projects/${encodedRepoId}/releases`, {
       tag_name: nextRelease.gitTag,
+      name: `Bump tag: ${nextRelease.gitTag}`,
       description: nextRelease.notes,
       assets: {
         links: [],
@@ -170,6 +174,7 @@ test.serial('Publish a release with array of missing assets', async t => {
   const gitlab = authenticate(env)
     .post(`/projects/${encodedRepoId}/releases`, {
       tag_name: nextRelease.gitTag,
+      name: `Bump tag: ${nextRelease.gitTag}`,
       description: nextRelease.notes,
       assets: {
         links: [],
@@ -198,6 +203,7 @@ test.serial('Publish a release with one asset and custom label', async t => {
   const gitlab = authenticate(env)
     .post(`/projects/${encodedRepoId}/releases`, {
       tag_name: nextRelease.gitTag,
+      name: `Bump tag: ${nextRelease.gitTag}`,
       description: nextRelease.notes,
       assets: {
         links: [
@@ -234,6 +240,7 @@ test.serial('Publish a release with missing release notes', async t => {
   const gitlab = authenticate(env)
     .post(`/projects/${encodedRepoId}/releases`, {
       tag_name: nextRelease.gitTag,
+      name: `Bump tag: ${nextRelease.gitTag}`,
       description: nextRelease.gitTag,
       assets: {
         links: [],
