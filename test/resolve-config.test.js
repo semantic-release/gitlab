@@ -14,6 +14,7 @@ test('Returns user config', t => {
     gitlabApiUrl: urlJoin(gitlabUrl, gitlabApiPathPrefix),
     assets,
     milestones: undefined,
+    pkgRoot: undefined,
   });
 });
 
@@ -35,6 +36,7 @@ test('Returns user config via environment variables', t => {
       gitlabApiUrl: urlJoin(gitlabUrl, gitlabApiPathPrefix),
       assets,
       milestones,
+      pkgRoot: undefined,
     }
   );
 });
@@ -53,6 +55,7 @@ test('Returns user config via alternative environment variables', t => {
       gitlabApiUrl: urlJoin(gitlabUrl, gitlabApiPathPrefix),
       assets,
       milestones: undefined,
+      pkgRoot: undefined,
     }
   );
 });
@@ -68,6 +71,7 @@ test('Returns default config', t => {
     gitlabApiUrl: urlJoin('https://gitlab.com', '/api/v4'),
     assets: undefined,
     milestones: undefined,
+    pkgRoot: undefined,
   });
 
   t.deepEqual(resolveConfig({gitlabApiPathPrefix}, {env: {GL_TOKEN: gitlabToken}}), {
@@ -76,6 +80,7 @@ test('Returns default config', t => {
     gitlabApiUrl: urlJoin('https://gitlab.com', gitlabApiPathPrefix),
     assets: undefined,
     milestones: undefined,
+    pkgRoot: undefined,
   });
 
   t.deepEqual(resolveConfig({gitlabUrl}, {env: {GL_TOKEN: gitlabToken}}), {
@@ -84,6 +89,7 @@ test('Returns default config', t => {
     gitlabApiUrl: urlJoin(gitlabUrl, '/api/v4'),
     assets: undefined,
     milestones: undefined,
+    pkgRoot: undefined,
   });
 });
 
@@ -107,6 +113,7 @@ test('Returns default config via GitLab CI/CD environment variables', t => {
       gitlabApiUrl: CI_API_V4_URL,
       assets: undefined,
       milestones: undefined,
+      pkgRoot: undefined,
     }
   );
 });
@@ -134,6 +141,7 @@ test('Returns user config over GitLab CI/CD environment variables', t => {
       gitlabApiUrl: urlJoin(gitlabUrl, gitlabApiPathPrefix),
       assets,
       milestones: undefined,
+      pkgRoot: undefined,
     }
   );
 });
@@ -167,6 +175,7 @@ test('Returns user config via environment variables over GitLab CI/CD environmen
       gitlabApiUrl: urlJoin(gitlabUrl, gitlabApiPathPrefix),
       assets: undefined,
       milestones: undefined,
+      pkgRoot: undefined,
     }
   );
 });
@@ -200,6 +209,7 @@ test('Returns user config via alternative environment variables over GitLab CI/C
       gitlabApiUrl: urlJoin(gitlabUrl, gitlabApiPathPrefix),
       assets: undefined,
       milestones: undefined,
+      pkgRoot: undefined,
     }
   );
 });
@@ -224,6 +234,7 @@ test('Ignore GitLab CI/CD environment variables if not running on GitLab CI/CD',
       gitlabApiUrl: urlJoin('https://gitlab.com', '/api/v4'),
       assets: undefined,
       milestones: undefined,
+      pkgRoot: undefined,
     }
   );
 });
