@@ -34,7 +34,7 @@
     "clear-module": "4.1.1",
     "nock": "13.1.3",
     "nyc": "15.1.0",
-    "semantic-release": "17.4.2",
+    "semantic-release": "17.4.7",
     "sinon": "9.2.4",
     "tempy": "1.0.1",
     "xo": "0.28.3"
