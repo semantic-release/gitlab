@@ -398,6 +398,154 @@ test.serial(
   }
 );
 
+test.serial('Verify "generics" is a String', async t => {
+  const owner = 'test_user';
+  const repo = 'test_repo';
+  const env = {GITLAB_URL: 'https://othertesturl.com:443', GITLAB_TOKEN: 'gitlab_token', GITLAB_PREFIX: 'prefix'};
+  const generics = 'file2.js';
+  const gitlab = authenticate(env)
+    .get(`/projects/${owner}%2F${repo}`)
+    .reply(200, {permissions: {project_access: {access_level: 40}}});
+
+  await t.notThrowsAsync(
+    verify(
+      {generics},
+      {env, options: {repositoryUrl: `git@othertesturl.com:${owner}/${repo}.git`}, logger: t.context.logger}
+    )
+  );
+
+  t.true(gitlab.isDone());
+});
+
+test.serial('Verify "generics" is an Object with a path property', async t => {
+  const owner = 'test_user';
+  const repo = 'test_repo';
+  const env = {GITLAB_URL: 'https://othertesturl.com:443', GITLAB_TOKEN: 'gitlab_token', GITLAB_PREFIX: 'prefix'};
+  const generics = {path: 'file2.js'};
+  const gitlab = authenticate(env)
+    .get(`/projects/${owner}%2F${repo}`)
+    .reply(200, {permissions: {project_access: {access_level: 40}}});
+
+  await t.notThrowsAsync(
+    verify(
+      {generics},
+      {env, options: {repositoryUrl: `git@othertesturl.com:${owner}/${repo}.git`}, logger: t.context.logger}
+    )
+  );
+
+  t.true(gitlab.isDone());
+});
+
+test.serial('Verify "generics" is an Array of Object with a path property', async t => {
+  const owner = 'test_user';
+  const repo = 'test_repo';
+  const env = {GITLAB_URL: 'https://othertesturl.com:443', GITLAB_TOKEN: 'gitlab_token', GITLAB_PREFIX: 'prefix'};
+  const generics = [{path: 'file1.js'}, {path: 'file2.js'}];
+  const gitlab = authenticate(env)
+    .get(`/projects/${owner}%2F${repo}`)
+    .reply(200, {permissions: {project_access: {access_level: 40}}});
+
+  await t.notThrowsAsync(
+    verify(
+      {generics},
+      {env, options: {repositoryUrl: `git@othertesturl.com:${owner}/${repo}.git`}, logger: t.context.logger}
+    )
+  );
+
+  t.true(gitlab.isDone());
+});
+
+test.serial('Throw SemanticReleaseError if "generics" option is not a String or an Array of Objects', async t => {
+  const owner = 'test_user';
+  const repo = 'test_repo';
+  const env = {GITLAB_TOKEN: 'gitlab_token'};
+  const generics = 42;
+  const gitlab = authenticate(env)
+    .get(`/projects/${owner}%2F${repo}`)
+    .reply(200, {permissions: {project_access: {access_level: 40}}});
+
+  const [error, ...errors] = await t.throwsAsync(
+    verify(
+      {generics},
+      {env, options: {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`}, logger: t.context.logger}
+    )
+  );
+
+  t.is(errors.length, 0);
+  t.is(error.name, 'SemanticReleaseError');
+  t.is(error.code, 'EINVALIDGENERICS');
+  t.true(gitlab.isDone());
+});
+
+test.serial('Throw SemanticReleaseError if "generics" option is an Array with invalid elements', async t => {
+  const owner = 'test_user';
+  const repo = 'test_repo';
+  const env = {GITLAB_TOKEN: 'gitlab_token'};
+  const generics = ['file.js', 42];
+  const gitlab = authenticate(env)
+    .get(`/projects/${owner}%2F${repo}`)
+    .reply(200, {permissions: {project_access: {access_level: 40}}});
+
+  const [error, ...errors] = await t.throwsAsync(
+    verify(
+      {generics},
+      {env, options: {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`}, logger: t.context.logger}
+    )
+  );
+
+  t.is(errors.length, 0);
+  t.is(error.name, 'SemanticReleaseError');
+  t.is(error.code, 'EINVALIDGENERICS');
+  t.true(gitlab.isDone());
+});
+
+test.serial('Throw SemanticReleaseError if "generics" option is an Object missing the "path" property', async t => {
+  const owner = 'test_user';
+  const repo = 'test_repo';
+  const env = {GITLAB_TOKEN: 'gitlab_token'};
+  const generics = {label: 'file'};
+  const gitlab = authenticate(env)
+    .get(`/projects/${owner}%2F${repo}`)
+    .reply(200, {permissions: {project_access: {access_level: 40}}});
+
+  const [error, ...errors] = await t.throwsAsync(
+    verify(
+      {generics},
+      {env, options: {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`}, logger: t.context.logger}
+    )
+  );
+
+  t.is(errors.length, 0);
+  t.is(error.name, 'SemanticReleaseError');
+  t.is(error.code, 'EINVALIDGENERICS');
+  t.true(gitlab.isDone());
+});
+
+test.serial(
+  'Throw SemanticReleaseError if "generics" option is an Array with objects missing the "path" property',
+  async t => {
+    const owner = 'test_user';
+    const repo = 'test_repo';
+    const env = {GITLAB_TOKEN: 'gitlab_token'};
+    const generics = [{path: 'lib/file.js'}, {label: 'file'}];
+    const gitlab = authenticate(env)
+      .get(`/projects/${owner}%2F${repo}`)
+      .reply(200, {permissions: {project_access: {access_level: 40}}});
+
+    const [error, ...errors] = await t.throwsAsync(
+      verify(
+        {generics},
+        {env, options: {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`}, logger: t.context.logger}
+      )
+    );
+
+    t.is(errors.length, 0);
+    t.is(error.name, 'SemanticReleaseError');
+    t.is(error.code, 'EINVALIDGENERICS');
+    t.true(gitlab.isDone());
+  }
+);
+
 test('Throw SemanticReleaseError for missing GitLab token', async t => {
   const env = {};
   const [error, ...errors] = await t.throwsAsync(

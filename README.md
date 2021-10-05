@@ -31,6 +31,9 @@ The plugin can be configured in the [**semantic-release** configuration file](ht
       "assets": [
         {"path": "dist/asset.min.css", "label": "CSS distribution"},
         {"path": "dist/asset.min.js", "label": "JS distribution"}
+      ],
+      "generics": [
+        {"path": "dist/app.js", "label": "App"}
       ]
     }],
   ]
@@ -63,6 +66,7 @@ Create a [personal access token](https://docs.gitlab.com/ce/user/profile/persona
 | `gitlabUrl`           | The GitLab endpoint.                                                                                                                           | `GL_URL` or `GITLAB_URL` environment variable or CI provided environment variables if running on [GitLab CI/CD](https://docs.gitlab.com/ee/ci) or `https://gitlab.com`. |
 | `gitlabApiPathPrefix` | The GitLab API prefix.                                                                                                                         | `GL_PREFIX` or `GITLAB_PREFIX` environment variable or CI provided environment variables if running on [GitLab CI/CD](https://docs.gitlab.com/ee/ci) or `/api/v4`.      |
 | `assets`              | An array of files to upload to the release. See [assets](#assets).                                                                             | -                                                                                                                                                                       |
+| `generics`              | An array of files to upload as part of a generic package to the release. See [generics](#generics).                                          | -                                                                                                                                                                       |
 | `milestones`          | An array of milestone titles to associate to the release. See [GitLab Release API](https://docs.gitlab.com/ee/api/releases/#create-a-release). | -                                                                                                                                                                       |
 
 #### assets
@@ -99,6 +103,24 @@ distribution` and `MyLibrary CSS distribution` in the GitLab release.
 `[['dist/**/*.{js,css}', '!**/*.min.*'], {path: 'build/MyLibrary.zip', label: 'MyLibrary'}]`: include all the `js` and
 `css` files in the `dist` directory and its sub-directories excluding the minified version, plus the
 `build/MyLibrary.zip` file and label it `MyLibrary` in the GitLab release.
+
+#### generics
+
+Can be a `Array` of `String`s with the direct file path or a list of `Object`s with the following properties:
+
+| Property | Description                                                                                                 | Default                              |
+| -------- | ----------------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| `path`   | **Required.** The complete path to the file to upload.                                                      | -                                    |
+| `label`  | Short description of the file displayed on the GitLab release. Used for the generic package file name.      | File name extracted from the `path`. |
+| `status` | Generic package status. Can be `default` and `hidden` (see official documents on [generic packages](https://docs.gitlab.com/ee/user/packages/generic_packages/)). | `default` |
+
+**Note**: If a file has a match in `generics` it will be included even if it also has a match in `.gitignore`.
+
+##### generics examples
+
+`'dist/app.js'`: include the `app.js` file in the `dist` directory.
+
+`[{path: 'dist/app.js', label: 'App'}]`: include the `dist/app.js` file and label it `App` in the generic package and the GitLab release.
 
 ## Compatibility
 

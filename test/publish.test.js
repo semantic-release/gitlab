@@ -83,6 +83,48 @@ test.serial('Publish a release with assets', async t => {
   t.true(gitlab.isDone());
 });
 
+test.serial('Publish a release with generics', async t => {
+  const cwd = 'test/fixtures/files';
+  const owner = 'test_user';
+  const repo = 'test_repo';
+  const env = {GITLAB_TOKEN: 'gitlab_token'};
+  const nextRelease = {gitHead: '123', gitTag: 'v1.0.0', notes: 'Test release note body'};
+  const options = {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`};
+  const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
+  const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
+  const uploaded = {url: '/uploads/file.css', alt: 'file.css'};
+  const generics = ['file.css'];
+  const gitlab = authenticate(env)
+    .post(`/projects/${encodedRepoId}/releases`, {
+      tag_name: nextRelease.gitTag,
+      description: nextRelease.notes,
+      assets: {
+        links: [
+          {
+            name: uploaded.alt,
+            url: `https://gitlab.com/${owner}/${repo}${uploaded.url}`,
+            link_type: 'package',
+          },
+        ],
+      },
+    })
+    .reply(200);
+  const gitlabUpload = authenticate(env)
+    .put(
+      `/projects/${encodedRepoId}/packages/generic/release/${encodedGitTag}/file.css?status=default`,
+      /filename="file.css"/gm
+    )
+    .reply(200, uploaded);
+
+  const result = await publish({generics}, {env, cwd, options, nextRelease, logger: t.context.logger});
+
+  t.is(result.url, `https://gitlab.com/${encodedRepoId}/-/releases/${encodedGitTag}`);
+  t.deepEqual(t.context.log.args[0], ['Uploaded file: %s', uploaded.url]);
+  t.deepEqual(t.context.log.args[1], ['Published GitLab release: %s', nextRelease.gitTag]);
+  t.true(gitlabUpload.isDone());
+  t.true(gitlab.isDone());
+});
+
 test.serial('Publish a release with asset type and permalink', async t => {
   const cwd = 'test/fixtures/files';
   const owner = 'test_user';
@@ -177,6 +219,33 @@ test.serial('Publish a release with array of missing assets', async t => {
     })
     .reply(200);
   const result = await publish({assets}, {env, cwd, options, nextRelease, logger: t.context.logger});
+
+  t.is(result.url, `https://gitlab.com/${encodedRepoId}/-/releases/${encodedGitTag}`);
+  t.deepEqual(t.context.log.args[0], ['Published GitLab release: %s', nextRelease.gitTag]);
+  t.true(gitlab.isDone());
+});
+
+test.serial('Publish a release with array of missing generics', async t => {
+  const cwd = 'test/fixtures/files';
+  const owner = 'test_user';
+  const repo = 'test_repo';
+  const env = {GITLAB_TOKEN: 'gitlab_token'};
+  const nextRelease = {gitHead: '123', gitTag: 'v1.0.0', notes: 'Test release note body'};
+  const options = {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`};
+  const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
+  const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
+  const emptyDirectory = tempy.directory();
+  const generics = [emptyDirectory, {path: 'missing.txt', label: 'missing.txt'}];
+  const gitlab = authenticate(env)
+    .post(`/projects/${encodedRepoId}/releases`, {
+      tag_name: nextRelease.gitTag,
+      description: nextRelease.notes,
+      assets: {
+        links: [],
+      },
+    })
+    .reply(200);
+  const result = await publish({generics}, {env, cwd, options, nextRelease, logger: t.context.logger});
 
   t.is(result.url, `https://gitlab.com/${encodedRepoId}/-/releases/${encodedGitTag}`);
   t.deepEqual(t.context.log.args[0], ['Published GitLab release: %s', nextRelease.gitTag]);
