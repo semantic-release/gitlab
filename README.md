@@ -56,6 +56,21 @@ Create a [personal access token](https://docs.gitlab.com/ce/user/profile/persona
 | `GL_TOKEN` or `GITLAB_TOKEN`   | **Required.** The token used to authenticate with GitLab. |
 | `GL_URL` or `GITLAB_URL`       | The GitLab endpoint.                                      |
 | `GL_PREFIX` or `GITLAB_PREFIX` | The GitLab API prefix.                                    |
+| `HTTP_PROXY` or `HTTPS_PROXY`  | HTTP or HTTPS proxy to use.                               |
+
+#### Proxy configuration
+The plugin uses [hpagent](https://github.com/delvedor/hpagent#usage) to pass through a proxy. It supports both HTTP and HTTPS proxy.
+
+You can configure proxy with environment variables :
+```shell script
+HTTP_PROXY=http://proxyurl.com:8080
+HTTPS_PROXY=http://proxyurl.com:8080
+```
+
+hpagent package supports basic authentication as well by embedding the username and password in the proxy URL:
+```shell script
+HTTP_PROXY=http://user:pwd@proxyurl.com:8080
+HTTPS_PROXY=http://user:pwd@proxyurl.com:8080
 
 ### Options
 
