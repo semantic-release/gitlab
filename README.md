@@ -71,6 +71,7 @@ hpagent package supports basic authentication as well by embedding the username 
 ```shell script
 HTTP_PROXY=http://user:pwd@proxyurl.com:8080
 HTTPS_PROXY=http://user:pwd@proxyurl.com:8080
+```
 
 ### Options
 
