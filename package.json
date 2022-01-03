@@ -30,7 +30,7 @@
     "url-join": "^4.0.0"
   },
   "devDependencies": {
-    "ava": "3.15.0",
+    "ava": "4.0.0",
     "clear-module": "4.1.2",
     "nock": "13.2.1",
     "nyc": "15.1.0",
