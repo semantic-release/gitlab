@@ -55,6 +55,7 @@ Create a [personal access token](https://docs.gitlab.com/ce/user/profile/persona
 | `GL_TOKEN` or `GITLAB_TOKEN`   | **Required.** The token used to authenticate with GitLab. |
 | `GL_URL` or `GITLAB_URL`       | The GitLab endpoint.                                      |
 | `GL_PREFIX` or `GITLAB_PREFIX` | The GitLab API prefix.                                    |
+| `HTTP_PROXY` or `HTTPS_PROXY`  | HTTP or HTTPS proxy to use.                               |
 
 ### Options
 
@@ -62,8 +63,27 @@ Create a [personal access token](https://docs.gitlab.com/ce/user/profile/persona
 |-----------------------|------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `gitlabUrl`           | The GitLab endpoint.                                                                                                                           | `GL_URL` or `GITLAB_URL` environment variable or CI provided environment variables if running on [GitLab CI/CD](https://docs.gitlab.com/ee/ci) or `https://gitlab.com`. |
 | `gitlabApiPathPrefix` | The GitLab API prefix.                                                                                                                         | `GL_PREFIX` or `GITLAB_PREFIX` environment variable or CI provided environment variables if running on [GitLab CI/CD](https://docs.gitlab.com/ee/ci) or `/api/v4`.      |
+| `proxy`               | The proxy to use to access the GitLab API. Set to `false` to disable usage of proxy. See [proxy](#proxy).                                      | `HTTP_PROXY` environment variable.                                                                                                                                      |
 | `assets`              | An array of files to upload to the release. See [assets](#assets).                                                                             | -                                                                                                                                                                       |
 | `milestones`          | An array of milestone titles to associate to the release. See [GitLab Release API](https://docs.gitlab.com/ee/api/releases/#create-a-release). | -                                                                                                                                                                       |
+#### proxy
+
+Can be `false`, a proxy URL or an `Object` with the following properties:
+
+| Property      | Description                                                    | Default                              |
+|---------------|----------------------------------------------------------------|--------------------------------------|
+| `host`        | **Required.** Proxy host to connect to.                        | -                                    |
+| `port`        | **Required.** Proxy port to connect to.                        | File name extracted from the `path`. |
+| `secureProxy` | If `true`, then use TLS to connect to the proxy.               | `false`                              |
+| `headers`     | Additional HTTP headers to be sent on the HTTP CONNECT method. | -                                    |
+
+See [node-https-proxy-agent](https://github.com/TooTallNate/node-https-proxy-agent#new-httpsproxyagentobject-options) and [node-http-proxy-agent](https://github.com/TooTallNate/node-http-proxy-agent) for additional details.
+
+##### proxy examples
+
+`'http://168.63.76.32:3128'`: use the proxy running on host `168.63.76.32` and port `3128` for each GitHub API request.
+`{host: '168.63.76.32', port: 3128, headers: {Foo: 'bar'}}`: use the proxy running on host `168.63.76.32` and port `3128` for each GitHub API request, setting the `Foo` header value to `bar`.
+
 
 #### assets
 
