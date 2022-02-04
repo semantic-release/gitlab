@@ -64,6 +64,7 @@ Create a [personal access token](https://docs.gitlab.com/ce/user/profile/persona
 | `gitlabApiPathPrefix` | The GitLab API prefix.                                                                                                                         | `GL_PREFIX` or `GITLAB_PREFIX` environment variable or CI provided environment variables if running on [GitLab CI/CD](https://docs.gitlab.com/ee/ci) or `/api/v4`.      |
 | `assets`              | An array of files to upload to the release. See [assets](#assets).                                                                             | -                                                                                                                                                                       |
 | `milestones`          | An array of milestone titles to associate to the release. See [GitLab Release API](https://docs.gitlab.com/ee/api/releases/#create-a-release). | -                                                                                                                                                                       |
+| `postComments`          | Post comments to issues and MRs associated with a release. | `false`                                                                                                                                                                       |
 
 #### assets
 
