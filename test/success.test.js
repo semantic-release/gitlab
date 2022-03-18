@@ -1,0 +1,67 @@
+const test = require('ava');
+const nock = require('nock');
+const {stub} = require('sinon');
+const success = require('../lib/success');
+const authenticate = require('./helpers/mock-gitlab');
+const {RELEASE_NAME} = require('../lib/definitions/constants');
+
+/* eslint camelcase: ["error", {properties: "never"}] */
+
+test.beforeEach(t => {
+  // Mock logger
+  t.context.log = stub();
+  t.context.error = stub();
+  t.context.logger = {log: t.context.log, error: t.context.error};
+});
+
+test.afterEach.always(() => {
+  // Clear nock
+  nock.cleanAll();
+});
+
+test.serial('Post comments to related issues and MRs', async t => {
+  const owner = 'test_user';
+  const repo = 'test_repo';
+  const env = {GITLAB_TOKEN: 'gitlab_token'};
+  const pluginConfig = {postComments: true};
+  const nextRelease = {gitHead: '123', gitTag: 'v1.0.0', notes: 'Test release note body'};
+  const releases = [{name: RELEASE_NAME, url: 'https://gitlab.com/test_user%2Ftest_repo/-/releases/v1.0.0'}];
+  const options = {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`};
+  const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
+  const commits = [{hash: 'abcdef'}, {hash: 'fedcba'}];
+  const gitlab = authenticate(env)
+    .get(`/projects/${encodedRepoId}/repository/commits/abcdef/merge_requests`)
+    .reply(200, [
+      {project_id: 100, iid: 1, state: 'merged'},
+      {project_id: 200, iid: 2, state: 'closed'},
+      {project_id: 300, iid: 3, state: 'merged'},
+    ])
+    .get(`/projects/${encodedRepoId}/repository/commits/fedcba/merge_requests`)
+    .reply(200, [{project_id: 100, iid: 1, state: 'merged'}])
+    .get(`/projects/100/merge_requests/1/closes_issues`)
+    .reply(200, [
+      {project_id: 100, iid: 11, state: 'closed'},
+      {project_id: 100, iid: 12, state: 'open'},
+      {project_id: 100, iid: 13, state: 'closed'},
+    ])
+    .get(`/projects/300/merge_requests/3/closes_issues`)
+    .reply(200, [])
+    .post(`/projects/100/merge_requests/1/notes`, {
+      body:
+        ':tada: This MR is included in version v1.0.0 :tada:\n\nThe release is available on [Gitlab Release](https://gitlab.com/test_user%2Ftest_repo/-/releases/v1.0.0)',
+    })
+    .reply(200)
+    .post(`/projects/300/merge_requests/3/notes`)
+    .reply(200)
+    .post(`/projects/100/issues/11/notes`, {
+      body:
+        ':tada: This issue has been resolved in version v1.0.0 :tada:\n\nThe release is available on [Gitlab Release](https://gitlab.com/test_user%2Ftest_repo/-/releases/v1.0.0)',
+    })
+    .reply(200)
+    .post(`/projects/100/issues/13/notes`)
+    .reply(200);
+
+  await success(pluginConfig, {env, options, nextRelease, logger: t.context.logger, commits, releases});
+
+  t.true(gitlab.isDone());
+});
