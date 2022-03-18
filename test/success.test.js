@@ -23,8 +23,8 @@ test.serial('Post comments to related issues and MRs', async t => {
   const owner = 'test_user';
   const repo = 'test_repo';
   const env = {GITLAB_TOKEN: 'gitlab_token'};
-  const pluginConfig = {postComments: true};
-  const nextRelease = {gitHead: '123', gitTag: 'v1.0.0', notes: 'Test release note body'};
+  const pluginConfig = {};
+  const nextRelease = {version: '1.0.0'};
   const releases = [{name: RELEASE_NAME, url: 'https://gitlab.com/test_user%2Ftest_repo/-/releases/v1.0.0'}];
   const options = {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`};
   const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
@@ -48,18 +48,34 @@ test.serial('Post comments to related issues and MRs', async t => {
     .reply(200, [])
     .post(`/projects/100/merge_requests/1/notes`, {
       body:
-        ':tada: This MR is included in version v1.0.0 :tada:\n\nThe release is available on [Gitlab Release](https://gitlab.com/test_user%2Ftest_repo/-/releases/v1.0.0)',
+        ':tada: This MR is included in version 1.0.0 :tada:\n\nThe release is available on [GitLab release](https://gitlab.com/test_user%2Ftest_repo/-/releases/v1.0.0)\nYour **[semantic-release](https://github.com/semantic-release/semantic-release)** bot :package::rocket:',
     })
     .reply(200)
     .post(`/projects/300/merge_requests/3/notes`)
     .reply(200)
     .post(`/projects/100/issues/11/notes`, {
       body:
-        ':tada: This issue has been resolved in version v1.0.0 :tada:\n\nThe release is available on [Gitlab Release](https://gitlab.com/test_user%2Ftest_repo/-/releases/v1.0.0)',
+        ':tada: This issue has been resolved in version 1.0.0 :tada:\n\nThe release is available on [GitLab release](https://gitlab.com/test_user%2Ftest_repo/-/releases/v1.0.0)\nYour **[semantic-release](https://github.com/semantic-release/semantic-release)** bot :package::rocket:',
     })
     .reply(200)
     .post(`/projects/100/issues/13/notes`)
     .reply(200);
+
+  await success(pluginConfig, {env, options, nextRelease, logger: t.context.logger, commits, releases});
+
+  t.true(gitlab.isDone());
+});
+
+test.serial('Does not post comments when successComment is set to false', async t => {
+  const owner = 'test_user';
+  const repo = 'test_repo';
+  const env = {GITLAB_TOKEN: 'gitlab_token'};
+  const pluginConfig = {successComment: false};
+  const nextRelease = {version: '1.0.0'};
+  const releases = [{name: RELEASE_NAME, url: 'https://gitlab.com/test_user%2Ftest_repo/-/releases/v1.0.0'}];
+  const options = {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`};
+  const commits = [{hash: 'abcdef'}, {hash: 'fedcba'}];
+  const gitlab = authenticate(env);
 
   await success(pluginConfig, {env, options, nextRelease, logger: t.context.logger, commits, releases});
 
