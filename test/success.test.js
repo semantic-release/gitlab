@@ -66,11 +66,42 @@ test.serial('Post comments to related issues and MRs', async t => {
   t.true(gitlab.isDone());
 });
 
-test.serial('Does not post comments when successComment is set to false', async t => {
+test.serial('Post comments with custom template', async t => {
   const owner = 'test_user';
   const repo = 'test_repo';
   const env = {GITLAB_TOKEN: 'gitlab_token'};
+  const pluginConfig = {
+    successComment: `nextRelease: \${nextRelease.version} commits: \${commits.length} releases: \${releases.length} \${issue ? "issue" : "MR"} ID: \${issue ? issue.iid : mergeRequest.iid}`,
+  };
+  const nextRelease = {version: '1.0.0'};
+  const releases = [{name: RELEASE_NAME, url: 'https://gitlab.com/test_user%2Ftest_repo/-/releases/v1.0.0'}];
+  const options = {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`};
+  const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
+  const commits = [{hash: 'abcdef'}];
+  const gitlab = authenticate(env)
+    .get(`/projects/${encodedRepoId}/repository/commits/abcdef/merge_requests`)
+    .reply(200, [{project_id: 100, iid: 1, state: 'merged'}])
+    .get(`/projects/100/merge_requests/1/closes_issues`)
+    .reply(200, [{project_id: 100, iid: 11, state: 'closed'}])
+    .post(`/projects/100/merge_requests/1/notes`, {
+      body: 'nextRelease: 1.0.0 commits: 1 releases: 1 MR ID: 1',
+    })
+    .reply(200)
+    .post(`/projects/100/issues/11/notes`, {
+      body: 'nextRelease: 1.0.0 commits: 1 releases: 1 issue ID: 11',
+    })
+    .reply(200);
+
+  await success(pluginConfig, {env, options, nextRelease, logger: t.context.logger, commits, releases});
+
+  t.true(gitlab.isDone());
+});
+
+test.serial('Does not post comments when successComment is set to false', async t => {
   const pluginConfig = {successComment: false};
+  const owner = 'test_user';
+  const repo = 'test_repo';
+  const env = {GITLAB_TOKEN: 'gitlab_token'};
   const nextRelease = {version: '1.0.0'};
   const releases = [{name: RELEASE_NAME, url: 'https://gitlab.com/test_user%2Ftest_repo/-/releases/v1.0.0'}];
   const options = {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`};
