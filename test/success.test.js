@@ -97,6 +97,35 @@ test.serial('Post comments with custom template', async t => {
   t.true(gitlab.isDone());
 });
 
+test.serial('Post comments for multiple releases', async t => {
+  const owner = 'test_user';
+  const repo = 'test_repo';
+  const env = {GITLAB_TOKEN: 'gitlab_token'};
+  const pluginConfig = {};
+  const nextRelease = {version: '1.0.0'};
+  const releases = [
+    {name: RELEASE_NAME, url: 'https://gitlab.com/test_user%2Ftest_repo/-/releases/v1.0.0'},
+    {name: 'Other release'},
+  ];
+  const options = {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`};
+  const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
+  const commits = [{hash: 'abcdef'}];
+  const gitlab = authenticate(env)
+    .get(`/projects/${encodedRepoId}/repository/commits/abcdef/merge_requests`)
+    .reply(200, [{project_id: 100, iid: 1, state: 'merged'}])
+    .get(`/projects/100/merge_requests/1/closes_issues`)
+    .reply(200, [])
+    .post(`/projects/100/merge_requests/1/notes`, {
+      body:
+        ':tada: This MR is included in version 1.0.0 :tada:\n\nThe release is available on:\n- [GitLab release](https://gitlab.com/test_user%2Ftest_repo/-/releases/v1.0.0)\n- `Other release`\nYour **[semantic-release](https://github.com/semantic-release/semantic-release)** bot :package::rocket:',
+    })
+    .reply(200);
+
+  await success(pluginConfig, {env, options, nextRelease, logger: t.context.logger, commits, releases});
+
+  t.true(gitlab.isDone());
+});
+
 test.serial('Does not post comments when successComment is set to false', async t => {
   const pluginConfig = {successComment: false};
   const owner = 'test_user';
