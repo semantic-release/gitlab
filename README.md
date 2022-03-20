@@ -1,5 +1,4 @@
 # @semantic-release/gitlab
-# @semantic-release/gitlab
 
 [**semantic-release**](https://github.com/semantic-release/semantic-release) plugin to publish a
 [GitLab release](https://docs.gitlab.com/ee/user/project/releases/).
@@ -11,7 +10,6 @@
 |--------------------|-----------------------------------------------------------------------------------------------------------------------|
 | `verifyConditions` | Verify the presence and the validity of the authentication (set via [environment variables](#environment-variables)). |
 | `publish`          | Publish a [GitLab release](https://docs.gitlab.com/ee/user/project/releases/).                                        |
-| `success`          | Add a comment to each GitLab Issue or Merge Request resolved by the release.                                          |
 
 ## Install
 
@@ -60,13 +58,12 @@ Create a [personal access token](https://docs.gitlab.com/ce/user/profile/persona
 
 ### Options
 
-| Option                | Description                                                                                                                                            | Default                                                                                                                                                                 |
-|-----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `gitlabUrl`           | The GitLab endpoint.                                                                                                                                   | `GL_URL` or `GITLAB_URL` environment variable or CI provided environment variables if running on [GitLab CI/CD](https://docs.gitlab.com/ee/ci) or `https://gitlab.com`. |
-| `gitlabApiPathPrefix` | The GitLab API prefix.                                                                                                                                 | `GL_PREFIX` or `GITLAB_PREFIX` environment variable or CI provided environment variables if running on [GitLab CI/CD](https://docs.gitlab.com/ee/ci) or `/api/v4`.      |
-| `assets`              | An array of files to upload to the release. See [assets](#assets).                                                                                     | -                                                                                                                                                                       |
-| `milestones`          | An array of milestone titles to associate to the release. See [GitLab Release API](https://docs.gitlab.com/ee/api/releases/#create-a-release).         | -                                                                                                                                                                       |
-| `successComment`      | The comment to add to each Issue and Merge Request resolved by the release. Set to false to disable commenting. See [successComment](#successComment). | :tada: This issue has been resolved in version ${nextRelease.version} :tada:\n\nThe release is available on [GitLab release](<gitlab_release_url>)      |
+| Option                | Description                                                                                                                                    | Default                                                                                                                                                                 |
+|-----------------------|------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `gitlabUrl`           | The GitLab endpoint.                                                                                                                           | `GL_URL` or `GITLAB_URL` environment variable or CI provided environment variables if running on [GitLab CI/CD](https://docs.gitlab.com/ee/ci) or `https://gitlab.com`. |
+| `gitlabApiPathPrefix` | The GitLab API prefix.                                                                                                                         | `GL_PREFIX` or `GITLAB_PREFIX` environment variable or CI provided environment variables if running on [GitLab CI/CD](https://docs.gitlab.com/ee/ci) or `/api/v4`.      |
+| `assets`              | An array of files to upload to the release. See [assets](#assets).                                                                             | -                                                                                                                                                                       |
+| `milestones`          | An array of milestone titles to associate to the release. See [GitLab Release API](https://docs.gitlab.com/ee/api/releases/#create-a-release). | -                                                                                                                                                                       |
 
 #### assets
 
@@ -102,20 +99,6 @@ distribution` and `MyLibrary CSS distribution` in the GitLab release.
 `[['dist/**/*.{js,css}', '!**/*.min.*'], {path: 'build/MyLibrary.zip', label: 'MyLibrary'}]`: include all the `js` and
 `css` files in the `dist` directory and its sub-directories excluding the minified version, plus the
 `build/MyLibrary.zip` file and label it `MyLibrary` in the GitLab release.
-
-#### successComment
-
-The message for the issue comments is generated with [Lodash template](https://lodash.com/docs#template). The following variables are available:
-
-| Parameter      | Description                                                                                                                                                                                                                                                                   |
-|----------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `branch`       | `Object` with `name`, `type`, `channel`, `range` and `prerelease` properties of the branch from which the release is done.                                                                                                                                                    |
-| `lastRelease`  | `Object` with `version`, `channel`, `gitTag` and `gitHead` of the last release.                                                                                                                                                                                               |
-| `nextRelease`  | `Object` with `version`, `channel`, `gitTag`, `gitHead` and `notes` of the release being done.                                                                                                                                                                                |
-| `commits`      | `Array` of commit `Object`s with `hash`, `subject`, `body` `message` and `author`.                                                                                                                                                                                            |
-| `releases`     | `Array` with a release `Object`s for each release published, with optional release data such as `name` and `url`.                                                                                                                                                             |
-| `mergeRequest` | A [GitLab API Issue object](https://docs.gitlab.com/ee/api/issues.html#single-issue) the comment will be posted to, or `false` when commenting Merge Requests.
-| `issue`        | A [GitHub API Merge Request object](https://docs.gitlab.com/ee/api/merge_requests.html#get-single-mr) the comment will be posted to, or `false` when commenting Issues.
 
 ## Compatibility
 
