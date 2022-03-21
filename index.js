@@ -2,6 +2,7 @@
 
 const verifyGitLab = require('./lib/verify');
 const publishGitLab = require('./lib/publish');
+const successGitLab = require('./lib/success');
 
 let verified;
 
@@ -19,4 +20,13 @@ async function publish(pluginConfig, context) {
   return publishGitLab(pluginConfig, context);
 }
 
-module.exports = {verifyConditions, publish};
+async function success(pluginConfig, context) {
+  if (!verified) {
+    await verifyGitLab(pluginConfig, context);
+    verified = true;
+  }
+
+  return successGitLab(pluginConfig, context);
+}
+
+module.exports = {verifyConditions, publish, success};
