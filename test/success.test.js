@@ -48,14 +48,14 @@ test.serial('Post comments to related issues and MRs', async t => {
     .reply(200, [])
     .post(`/projects/100/merge_requests/1/notes`, {
       body:
-        ':tada: This MR is included in version 1.0.0 :tada:\n\nThe release is available on [GitLab release](https://gitlab.com/test_user%2Ftest_repo/-/releases/v1.0.0)\nYour **[semantic-release](https://github.com/semantic-release/semantic-release)** bot :package::rocket:',
+        ':tada: This MR is included in version 1.0.0 :tada:\n\nThe release is available on [GitLab release](https://gitlab.com/test_user%2Ftest_repo/-/releases/v1.0.0)\nYour **[semantic-release](https://github.com/semantic-release/semantic-release)** bot :package: :rocket:',
     })
     .reply(200)
     .post(`/projects/300/merge_requests/3/notes`)
     .reply(200)
     .post(`/projects/100/issues/11/notes`, {
       body:
-        ':tada: This issue has been resolved in version 1.0.0 :tada:\n\nThe release is available on [GitLab release](https://gitlab.com/test_user%2Ftest_repo/-/releases/v1.0.0)\nYour **[semantic-release](https://github.com/semantic-release/semantic-release)** bot :package::rocket:',
+        ':tada: This issue has been resolved in version 1.0.0 :tada:\n\nThe release is available on [GitLab release](https://gitlab.com/test_user%2Ftest_repo/-/releases/v1.0.0)\nYour **[semantic-release](https://github.com/semantic-release/semantic-release)** bot :package: :rocket:',
     })
     .reply(200)
     .post(`/projects/100/issues/13/notes`)
@@ -117,7 +117,7 @@ test.serial('Post comments for multiple releases', async t => {
     .reply(200, [])
     .post(`/projects/100/merge_requests/1/notes`, {
       body:
-        ':tada: This MR is included in version 1.0.0 :tada:\n\nThe release is available on:\n- [GitLab release](https://gitlab.com/test_user%2Ftest_repo/-/releases/v1.0.0)\n- `Other release`\nYour **[semantic-release](https://github.com/semantic-release/semantic-release)** bot :package::rocket:',
+        ':tada: This MR is included in version 1.0.0 :tada:\n\nThe release is available on:\n- [GitLab release](https://gitlab.com/test_user%2Ftest_repo/-/releases/v1.0.0)\n- `Other release`\nYour **[semantic-release](https://github.com/semantic-release/semantic-release)** bot :package: :rocket:',
     })
     .reply(200);
 
