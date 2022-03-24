@@ -40,7 +40,7 @@ test.serial('Publish a release', async t => {
 
   const result = await publish(pluginConfig, {env, options, nextRelease, logger: t.context.logger});
 
-  t.is(result.url, `https://gitlab.com/${encodedRepoId}/-/releases/${encodedGitTag}`);
+  t.is(result.url, `https://gitlab.com/${owner}/${repo}/-/releases/${encodedGitTag}`);
   t.deepEqual(t.context.log.args[0], ['Published GitLab release: %s', nextRelease.gitTag]);
   t.true(gitlab.isDone());
 });
@@ -76,7 +76,7 @@ test.serial('Publish a release with assets', async t => {
 
   const result = await publish({assets}, {env, cwd, options, nextRelease, logger: t.context.logger});
 
-  t.is(result.url, `https://gitlab.com/${encodedRepoId}/-/releases/${encodedGitTag}`);
+  t.is(result.url, `https://gitlab.com/${owner}/${repo}/-/releases/${encodedGitTag}`);
   t.deepEqual(t.context.log.args[0], ['Uploaded file: %s', uploaded.url]);
   t.deepEqual(t.context.log.args[1], ['Published GitLab release: %s', nextRelease.gitTag]);
   t.true(gitlabUpload.isDone());
@@ -122,7 +122,7 @@ test.serial('Publish a release with asset type and permalink', async t => {
 
   const result = await publish({assets}, {env, cwd, options, nextRelease, logger: t.context.logger});
 
-  t.is(result.url, `https://gitlab.com/${encodedRepoId}/-/releases/${encodedGitTag}`);
+  t.is(result.url, `https://gitlab.com/${owner}/${repo}/-/releases/${encodedGitTag}`);
   t.deepEqual(t.context.log.args[0], ['Uploaded file: %s', uploaded.url]);
   t.deepEqual(t.context.log.args[1], ['Published GitLab release: %s', nextRelease.gitTag]);
   t.true(gitlabUpload.isDone());
@@ -151,7 +151,7 @@ test.serial('Publish a release with a milestone', async t => {
 
   const result = await publish(pluginConfig, {env, options, nextRelease, logger: t.context.logger});
 
-  t.is(result.url, `https://gitlab.com/${encodedRepoId}/-/releases/${encodedGitTag}`);
+  t.is(result.url, `https://gitlab.com/${owner}/${repo}/-/releases/${encodedGitTag}`);
   t.deepEqual(t.context.log.args[0], ['Published GitLab release: %s', nextRelease.gitTag]);
   t.true(gitlab.isDone());
 });
@@ -178,7 +178,7 @@ test.serial('Publish a release with array of missing assets', async t => {
     .reply(200);
   const result = await publish({assets}, {env, cwd, options, nextRelease, logger: t.context.logger});
 
-  t.is(result.url, `https://gitlab.com/${encodedRepoId}/-/releases/${encodedGitTag}`);
+  t.is(result.url, `https://gitlab.com/${owner}/${repo}/-/releases/${encodedGitTag}`);
   t.deepEqual(t.context.log.args[0], ['Published GitLab release: %s', nextRelease.gitTag]);
   t.true(gitlab.isDone());
 });
@@ -215,7 +215,7 @@ test.serial('Publish a release with one asset and custom label', async t => {
 
   const result = await publish({assets}, {env, cwd, options, nextRelease, logger: t.context.logger});
 
-  t.is(result.url, `https://gitlab.com/${encodedRepoId}/-/releases/${encodedGitTag}`);
+  t.is(result.url, `https://gitlab.com/${owner}/${repo}/-/releases/${encodedGitTag}`);
   t.deepEqual(t.context.log.args[0], ['Uploaded file: %s', uploaded.url]);
   t.deepEqual(t.context.log.args[1], ['Published GitLab release: %s', nextRelease.gitTag]);
   t.true(gitlabUpload.isDone());
@@ -243,7 +243,7 @@ test.serial('Publish a release with missing release notes', async t => {
 
   const result = await publish(pluginConfig, {env, options, nextRelease, logger: t.context.logger});
 
-  t.is(result.url, `https://gitlab.com/${encodedRepoId}/-/releases/${encodedGitTag}`);
+  t.is(result.url, `https://gitlab.com/${owner}/${repo}/-/releases/${encodedGitTag}`);
   t.deepEqual(t.context.log.args[0], ['Published GitLab release: %s', nextRelease.gitTag]);
   t.true(gitlab.isDone());
 });
