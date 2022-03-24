@@ -451,7 +451,7 @@ test.serial('Throw AggregateError if multiple verification fails', async t => {
   const gitlabUrl = 'https://gitlab.com/context';
   const assets = 42;
 
-  const [invalidUrlError, invalidAssetsError, noTokenError, ...errors] = await t.throwsAsync(
+  const [invalidAssetsError, invalidUrlError, noTokenError, ...errors] = await t.throwsAsync(
     verify(
       {assets, gitlabUrl},
       {env, options: {repositoryUrl: 'git+ssh://git@gitlab.com/context.git'}, logger: t.context.logger}
@@ -459,10 +459,10 @@ test.serial('Throw AggregateError if multiple verification fails', async t => {
   );
 
   t.is(errors.length, 0);
-  t.is(invalidUrlError.name, 'SemanticReleaseError');
-  t.is(invalidUrlError.code, 'EINVALIDGITLABURL');
   t.is(invalidAssetsError.name, 'SemanticReleaseError');
   t.is(invalidAssetsError.code, 'EINVALIDASSETS');
+  t.is(invalidUrlError.name, 'SemanticReleaseError');
+  t.is(invalidUrlError.code, 'EINVALIDGITLABURL');
   t.is(noTokenError.name, 'SemanticReleaseError');
   t.is(noTokenError.code, 'ENOGLTOKEN');
 });
@@ -517,5 +517,269 @@ test.serial('Throw error if GitLab API return any other errors', async t => {
   );
 
   t.is(error.response.statusCode, 500);
+  t.true(gitlab.isDone());
+});
+
+test.serial('Throw SemanticReleaseError if "failTitle" option is not a String', async t => {
+  const owner = 'test_user';
+  const repo = 'test_repo';
+  const env = {GITLAB_TOKEN: 'gitlab_token'};
+  const failTitle = 42;
+  const gitlab = authenticate(env)
+    .get(`/projects/${owner}%2F${repo}`)
+    .reply(200, {permissions: {project_access: {access_level: 40}}});
+
+  const [error, ...errors] = await t.throwsAsync(
+    verify(
+      {failTitle},
+      {env, options: {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`}, logger: t.context.logger}
+    )
+  );
+
+  t.is(errors.length, 0);
+  t.is(error.name, 'SemanticReleaseError');
+  t.is(error.code, 'EINVALIDFAILTITLE');
+  t.true(gitlab.isDone());
+});
+
+test.serial('Throw SemanticReleaseError if "failTitle" option is an empty String', async t => {
+  const owner = 'test_user';
+  const repo = 'test_repo';
+  const env = {GITLAB_TOKEN: 'gitlab_token'};
+  const failTitle = '';
+  const gitlab = authenticate(env)
+    .get(`/projects/${owner}%2F${repo}`)
+    .reply(200, {permissions: {project_access: {access_level: 40}}});
+
+  const [error, ...errors] = await t.throwsAsync(
+    verify(
+      {failTitle},
+      {env, options: {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`}, logger: t.context.logger}
+    )
+  );
+
+  t.is(errors.length, 0);
+  t.is(error.name, 'SemanticReleaseError');
+  t.is(error.code, 'EINVALIDFAILTITLE');
+  t.true(gitlab.isDone());
+});
+
+test.serial('Throw SemanticReleaseError if "failTitle" option is a whitespace String', async t => {
+  const owner = 'test_user';
+  const repo = 'test_repo';
+  const env = {GITLAB_TOKEN: 'gitlab_token'};
+  const failTitle = '  \n \r ';
+  const gitlab = authenticate(env)
+    .get(`/projects/${owner}%2F${repo}`)
+    .reply(200, {permissions: {project_access: {access_level: 40}}});
+
+  const [error, ...errors] = await t.throwsAsync(
+    verify(
+      {failTitle},
+      {env, options: {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`}, logger: t.context.logger}
+    )
+  );
+
+  t.is(errors.length, 0);
+  t.is(error.name, 'SemanticReleaseError');
+  t.is(error.code, 'EINVALIDFAILTITLE');
+  t.true(gitlab.isDone());
+});
+
+test.serial('Throw SemanticReleaseError if "failComment" option is not a String', async t => {
+  const owner = 'test_user';
+  const repo = 'test_repo';
+  const env = {GITLAB_TOKEN: 'gitlab_token'};
+  const failComment = 42;
+  const gitlab = authenticate(env)
+    .get(`/projects/${owner}%2F${repo}`)
+    .reply(200, {permissions: {project_access: {access_level: 40}}});
+
+  const [error, ...errors] = await t.throwsAsync(
+    verify(
+      {failComment},
+      {env, options: {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`}, logger: t.context.logger}
+    )
+  );
+
+  t.is(errors.length, 0);
+  t.is(error.name, 'SemanticReleaseError');
+  t.is(error.code, 'EINVALIDFAILCOMMENT');
+  t.true(gitlab.isDone());
+});
+
+test.serial('Throw SemanticReleaseError if "failComment" option is an empty String', async t => {
+  const owner = 'test_user';
+  const repo = 'test_repo';
+  const env = {GITLAB_TOKEN: 'gitlab_token'};
+  const failComment = '';
+  const gitlab = authenticate(env)
+    .get(`/projects/${owner}%2F${repo}`)
+    .reply(200, {permissions: {project_access: {access_level: 40}}});
+
+  const [error, ...errors] = await t.throwsAsync(
+    verify(
+      {failComment},
+      {env, options: {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`}, logger: t.context.logger}
+    )
+  );
+
+  t.is(errors.length, 0);
+  t.is(error.name, 'SemanticReleaseError');
+  t.is(error.code, 'EINVALIDFAILCOMMENT');
+  t.true(gitlab.isDone());
+});
+
+test.serial('Throw SemanticReleaseError if "failComment" option is a whitespace String', async t => {
+  const owner = 'test_user';
+  const repo = 'test_repo';
+  const env = {GITLAB_TOKEN: 'gitlab_token'};
+  const failComment = '  \n \r ';
+  const gitlab = authenticate(env)
+    .get(`/projects/${owner}%2F${repo}`)
+    .reply(200, {permissions: {project_access: {access_level: 40}}});
+
+  const [error, ...errors] = await t.throwsAsync(
+    verify(
+      {failComment},
+      {env, options: {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`}, logger: t.context.logger}
+    )
+  );
+
+  t.is(errors.length, 0);
+  t.is(error.name, 'SemanticReleaseError');
+  t.is(error.code, 'EINVALIDFAILCOMMENT');
+  t.true(gitlab.isDone());
+});
+
+test.serial('Throw SemanticReleaseError if "labels" option is not a String', async t => {
+  const owner = 'test_user';
+  const repo = 'test_repo';
+  const env = {GITLAB_TOKEN: 'gitlab_token'};
+  const labels = 42;
+  const gitlab = authenticate(env)
+    .get(`/projects/${owner}%2F${repo}`)
+    .reply(200, {permissions: {project_access: {access_level: 40}}});
+
+  const [error, ...errors] = await t.throwsAsync(
+    verify(
+      {labels},
+      {env, options: {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`}, logger: t.context.logger}
+    )
+  );
+
+  t.is(errors.length, 0);
+  t.is(error.name, 'SemanticReleaseError');
+  t.is(error.code, 'EINVALIDLABELS');
+  t.true(gitlab.isDone());
+});
+
+test.serial('Throw SemanticReleaseError if "labels" option is an empty String', async t => {
+  const owner = 'test_user';
+  const repo = 'test_repo';
+  const env = {GITLAB_TOKEN: 'gitlab_token'};
+  const labels = '';
+  const gitlab = authenticate(env)
+    .get(`/projects/${owner}%2F${repo}`)
+    .reply(200, {permissions: {project_access: {access_level: 40}}});
+
+  const [error, ...errors] = await t.throwsAsync(
+    verify(
+      {labels},
+      {env, options: {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`}, logger: t.context.logger}
+    )
+  );
+
+  t.is(errors.length, 0);
+  t.is(error.name, 'SemanticReleaseError');
+  t.is(error.code, 'EINVALIDLABELS');
+  t.true(gitlab.isDone());
+});
+
+test.serial('Throw SemanticReleaseError if "labels" option is a whitespace String', async t => {
+  const owner = 'test_user';
+  const repo = 'test_repo';
+  const env = {GITLAB_TOKEN: 'gitlab_token'};
+  const labels = '  \n \r ';
+  const gitlab = authenticate(env)
+    .get(`/projects/${owner}%2F${repo}`)
+    .reply(200, {permissions: {project_access: {access_level: 40}}});
+
+  const [error, ...errors] = await t.throwsAsync(
+    verify(
+      {labels},
+      {env, options: {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`}, logger: t.context.logger}
+    )
+  );
+
+  t.is(errors.length, 0);
+  t.is(error.name, 'SemanticReleaseError');
+  t.is(error.code, 'EINVALIDLABELS');
+  t.true(gitlab.isDone());
+});
+
+test.serial('Throw SemanticReleaseError if "assignee" option is not a String', async t => {
+  const owner = 'test_user';
+  const repo = 'test_repo';
+  const env = {GITLAB_TOKEN: 'gitlab_token'};
+  const assignee = 42;
+  const gitlab = authenticate(env)
+    .get(`/projects/${owner}%2F${repo}`)
+    .reply(200, {permissions: {project_access: {access_level: 40}}});
+
+  const [error, ...errors] = await t.throwsAsync(
+    verify(
+      {assignee},
+      {env, options: {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`}, logger: t.context.logger}
+    )
+  );
+
+  t.is(errors.length, 0);
+  t.is(error.name, 'SemanticReleaseError');
+  t.is(error.code, 'EINVALIDASSIGNEE');
+  t.true(gitlab.isDone());
+});
+
+test.serial('Throw SemanticReleaseError if "assignee" option is an empty String', async t => {
+  const owner = 'test_user';
+  const repo = 'test_repo';
+  const env = {GITLAB_TOKEN: 'gitlab_token'};
+  const assignee = '';
+  const gitlab = authenticate(env)
+    .get(`/projects/${owner}%2F${repo}`)
+    .reply(200, {permissions: {project_access: {access_level: 40}}});
+
+  const [error, ...errors] = await t.throwsAsync(
+    verify(
+      {assignee},
+      {env, options: {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`}, logger: t.context.logger}
+    )
+  );
+
+  t.is(errors.length, 0);
+  t.is(error.name, 'SemanticReleaseError');
+  t.is(error.code, 'EINVALIDASSIGNEE');
+  t.true(gitlab.isDone());
+});
+
+test.serial('Throw SemanticReleaseError if "assignee" option is a whitespace String', async t => {
+  const owner = 'test_user';
+  const repo = 'test_repo';
+  const env = {GITLAB_TOKEN: 'gitlab_token'};
+  const assignee = '  \n \r ';
+  const gitlab = authenticate(env)
+    .get(`/projects/${owner}%2F${repo}`)
+    .reply(200, {permissions: {project_access: {access_level: 40}}});
+
+  const [error, ...errors] = await t.throwsAsync(
+    verify(
+      {assignee},
+      {env, options: {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`}, logger: t.context.logger}
+    )
+  );
+
+  t.is(errors.length, 0);
+  t.is(error.name, 'SemanticReleaseError');
+  t.is(error.code, 'EINVALIDASSIGNEE');
   t.true(gitlab.isDone());
 });
