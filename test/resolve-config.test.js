@@ -9,6 +9,7 @@ test('Returns user config', t => {
   const gitlabApiPathPrefix = '/api/prefix';
   const assets = ['file.js'];
   const postComments = true;
+  const proxy = {};
 
   t.deepEqual(
     resolveConfig({gitlabUrl, gitlabApiPathPrefix, assets, postComments}, {env: {GITLAB_TOKEN: gitlabToken}}),
@@ -18,10 +19,10 @@ test('Returns user config', t => {
       gitlabApiUrl: urlJoin(gitlabUrl, gitlabApiPathPrefix),
       assets,
       milestones: undefined,
+      proxy,
       successComment: undefined,
     }
   );
-  const proxy = {};
 
   t.deepEqual(resolveConfig({gitlabUrl, gitlabApiPathPrefix, assets, proxy}, {env: {GITLAB_TOKEN: gitlabToken}}), {
     gitlabToken,
@@ -30,6 +31,7 @@ test('Returns user config', t => {
     assets,
     milestones: undefined,
     proxy,
+    successComment: undefined,
   });
 });
 
@@ -125,6 +127,65 @@ test('Returns user config via alternative environment variables with https proxy
 
   t.assert(result.proxy.agent.https instanceof HttpsProxyAgent);
   t.assert(result.proxy.agent.https.proxy.origin === proxyUrl);
+});
+
+test('Returns user config via alternative environment variables with mismatching http/https values for proxy gitlab url', t => {
+  const gitlabToken = 'TOKEN';
+  const httpGitlabUrl = 'http://host.com';
+  const gitlabUrl = 'https://host.com';
+  const gitlabApiPathPrefix = '/api/prefix';
+  const assets = ['file.js'];
+  // Testing with 8443 port because HttpsProxyAgent ignores 443 port with https protocol
+  const httpProxyUrl = 'http://proxy.test:8443';
+  const proxyUrl = 'https://proxy.test:8443';
+
+  // HTTP GitLab URL and HTTPS_PROXY set
+  t.deepEqual(
+    resolveConfig(
+      {assets},
+      {
+        env: {
+          GL_TOKEN: gitlabToken,
+          GL_URL: httpGitlabUrl,
+          GL_PREFIX: gitlabApiPathPrefix,
+          HTTPS_PROXY: proxyUrl,
+        },
+      }
+    ),
+    {
+      gitlabToken: 'TOKEN',
+      gitlabUrl: 'http://host.com',
+      gitlabApiUrl: 'http://host.com/api/prefix',
+      assets: ['file.js'],
+      milestones: undefined,
+      successComment: undefined,
+      proxy: {},
+    }
+  );
+
+  // HTTPS GitLab URL and HTTP_PROXY set
+  t.deepEqual(
+    resolveConfig(
+      {assets},
+      {
+        env: {
+          GL_TOKEN: gitlabToken,
+          GL_URL: gitlabUrl,
+          GL_PREFIX: gitlabApiPathPrefix,
+          HTTP_PROXY: httpProxyUrl,
+        },
+      }
+    ),
+    {
+      gitlabToken: 'TOKEN',
+      gitlabUrl: 'https://host.com',
+      gitlabApiUrl: 'https://host.com/api/prefix',
+      assets: ['file.js'],
+      milestones: undefined,
+      successComment: undefined,
+      proxy: {},
+    }
+  );
 });
 
 test('Returns default config', t => {
