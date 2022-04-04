@@ -59,7 +59,8 @@ Create a [personal access token](https://docs.gitlab.com/ce/user/profile/persona
 | `HTTP_PROXY` or `HTTPS_PROXY`  | HTTP or HTTPS proxy to use.                               |
 
 #### Proxy configuration
-The plugin uses [hpagent](https://github.com/delvedor/hpagent#usage) to pass through a proxy. It supports both HTTP and HTTPS proxy.
+
+The plugin uses [hpagent](https://github.com/delvedor/hpagent#usage) to pass requests through a proxy server. 
 
 You can configure proxy with environment variables :
 ```shell script
