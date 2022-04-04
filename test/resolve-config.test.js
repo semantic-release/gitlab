@@ -3,6 +3,20 @@ const urlJoin = require('url-join');
 const {HttpProxyAgent, HttpsProxyAgent} = require('hpagent');
 const resolveConfig = require('../lib/resolve-config');
 
+const defaultOptions = {
+  gitlabToken: undefined,
+  gitlabUrl: 'https://gitlab.com',
+  gitlabApiUrl: urlJoin('https://gitlab.com', '/api/v4'),
+  assets: undefined,
+  milestones: undefined,
+  successComment: undefined,
+  failTitle: 'The automated release is failing 🚨',
+  failComment: undefined,
+  labels: 'semantic-release',
+  assignee: undefined,
+  proxy: {},
+};
+
 test('Returns user config', t => {
   const gitlabToken = 'TOKEN';
   const gitlabUrl = 'https://host.com';
@@ -15,28 +29,22 @@ test('Returns user config', t => {
   t.deepEqual(
     resolveConfig({gitlabUrl, gitlabApiPathPrefix, assets, postComments, labels}, {env: {GITLAB_TOKEN: gitlabToken}}),
     {
+      ...defaultOptions,
       gitlabToken,
       gitlabUrl,
       gitlabApiUrl: urlJoin(gitlabUrl, gitlabApiPathPrefix),
       assets,
-      milestones: undefined,
-      proxy,
-      successComment: undefined,
-      failTitle: 'The automated release is failing 🚨',
-      failComment: undefined,
       labels: false,
-      assignee: undefined,
     }
   );
 
   t.deepEqual(resolveConfig({gitlabUrl, gitlabApiPathPrefix, assets, proxy}, {env: {GITLAB_TOKEN: gitlabToken}}), {
+    ...defaultOptions,
     gitlabToken,
     gitlabUrl,
     gitlabApiUrl: urlJoin(gitlabUrl, gitlabApiPathPrefix),
     assets,
-    milestones: undefined,
     proxy,
-    successComment: undefined,
   });
 });
 
@@ -46,7 +54,6 @@ test('Returns user config via environment variables', t => {
   const gitlabApiPathPrefix = '/api/prefix';
   const assets = ['file.js'];
   const milestones = ['1.2.3'];
-  const proxy = {};
 
   t.deepEqual(
     resolveConfig(
@@ -54,17 +61,12 @@ test('Returns user config via environment variables', t => {
       {env: {GITLAB_TOKEN: gitlabToken, GITLAB_URL: gitlabUrl, GITLAB_PREFIX: gitlabApiPathPrefix}}
     ),
     {
+      ...defaultOptions,
       gitlabToken,
       gitlabUrl,
       gitlabApiUrl: urlJoin(gitlabUrl, gitlabApiPathPrefix),
       assets,
       milestones,
-      successComment: undefined,
-      proxy,
-      failTitle: 'The automated release is failing 🚨',
-      failComment: undefined,
-      labels: 'semantic-release',
-      assignee: undefined,
     }
   );
 });
@@ -74,22 +76,17 @@ test('Returns user config via alternative environment variables', t => {
   const gitlabUrl = 'https://host.com';
   const gitlabApiPathPrefix = '/api/prefix';
   const assets = ['file.js'];
-  const proxy = {};
 
   t.deepEqual(
     resolveConfig({assets}, {env: {GL_TOKEN: gitlabToken, GL_URL: gitlabUrl, GL_PREFIX: gitlabApiPathPrefix}}),
     {
+      ...defaultOptions,
       gitlabToken,
       gitlabUrl,
       gitlabApiUrl: urlJoin(gitlabUrl, gitlabApiPathPrefix),
       assets,
       milestones: undefined,
       successComment: undefined,
-      proxy,
-      failTitle: 'The automated release is failing 🚨',
-      failComment: undefined,
-      labels: 'semantic-release',
-      assignee: undefined,
     }
   );
 });
@@ -166,17 +163,11 @@ test('Returns user config via alternative environment variables with mismatching
       }
     ),
     {
+      ...defaultOptions,
       gitlabToken: 'TOKEN',
       gitlabUrl: 'http://host.com',
       gitlabApiUrl: 'http://host.com/api/prefix',
       assets: ['file.js'],
-      milestones: undefined,
-      successComment: undefined,
-      proxy: {},
-      failTitle: 'The automated release is failing 🚨',
-      failComment: undefined,
-      labels: 'semantic-release',
-      assignee: undefined,
     }
   );
 
@@ -194,17 +185,11 @@ test('Returns user config via alternative environment variables with mismatching
       }
     ),
     {
+      ...defaultOptions,
       gitlabToken: 'TOKEN',
       gitlabUrl: 'https://host.com',
       gitlabApiUrl: 'https://host.com/api/prefix',
       assets: ['file.js'],
-      milestones: undefined,
-      successComment: undefined,
-      proxy: {},
-      failTitle: 'The automated release is failing 🚨',
-      failComment: undefined,
-      labels: 'semantic-release',
-      assignee: undefined,
     }
   );
 });
@@ -215,45 +200,21 @@ test('Returns default config', t => {
   const gitlabUrl = 'https://gitlab.com';
 
   t.deepEqual(resolveConfig({}, {env: {GL_TOKEN: gitlabToken}}), {
+    ...defaultOptions,
     gitlabToken,
-    gitlabUrl: 'https://gitlab.com',
-    gitlabApiUrl: urlJoin('https://gitlab.com', '/api/v4'),
-    assets: undefined,
-    milestones: undefined,
-    successComment: undefined,
-    proxy: {},
-    failTitle: 'The automated release is failing 🚨',
-    failComment: undefined,
-    labels: 'semantic-release',
-    assignee: undefined,
   });
 
   t.deepEqual(resolveConfig({gitlabApiPathPrefix}, {env: {GL_TOKEN: gitlabToken}}), {
+    ...defaultOptions,
     gitlabToken,
-    gitlabUrl: 'https://gitlab.com',
     gitlabApiUrl: urlJoin('https://gitlab.com', gitlabApiPathPrefix),
-    assets: undefined,
-    milestones: undefined,
-    successComment: undefined,
-    proxy: {},
-    failTitle: 'The automated release is failing 🚨',
-    failComment: undefined,
-    labels: 'semantic-release',
-    assignee: undefined,
   });
 
   t.deepEqual(resolveConfig({gitlabUrl}, {env: {GL_TOKEN: gitlabToken}}), {
+    ...defaultOptions,
     gitlabToken,
     gitlabUrl: 'https://gitlab.com',
     gitlabApiUrl: urlJoin(gitlabUrl, '/api/v4'),
-    assets: undefined,
-    milestones: undefined,
-    successComment: undefined,
-    proxy: {},
-    failTitle: 'The automated release is failing 🚨',
-    failComment: undefined,
-    labels: 'semantic-release',
-    assignee: undefined,
   });
 });
 
@@ -272,17 +233,10 @@ test('Returns default config via GitLab CI/CD environment variables', t => {
       }
     ),
     {
+      ...defaultOptions,
       gitlabToken,
       gitlabUrl: 'http://ci-host.com',
       gitlabApiUrl: CI_API_V4_URL,
-      assets: undefined,
-      milestones: undefined,
-      successComment: undefined,
-      proxy: {},
-      failTitle: 'The automated release is failing 🚨',
-      failComment: undefined,
-      labels: 'semantic-release',
-      assignee: undefined,
     }
   );
 });
@@ -307,17 +261,13 @@ test('Returns user config over GitLab CI/CD environment variables', t => {
       }
     ),
     {
+      ...defaultOptions,
       gitlabToken,
       gitlabUrl,
       gitlabApiUrl: urlJoin(gitlabUrl, gitlabApiPathPrefix),
       assets,
-      milestones: undefined,
-      successComment: undefined,
-      proxy: {},
       failTitle: 'The automated release unfortunately failed!',
-      failComment: undefined,
       labels: 'bot,release-failed',
-      assignee: undefined,
     }
   );
 });
@@ -346,17 +296,10 @@ test('Returns user config via environment variables over GitLab CI/CD environmen
       }
     ),
     {
+      ...defaultOptions,
       gitlabToken,
       gitlabUrl,
       gitlabApiUrl: urlJoin(gitlabUrl, gitlabApiPathPrefix),
-      assets: undefined,
-      milestones: undefined,
-      successComment: undefined,
-      proxy: {},
-      failTitle: 'The automated release is failing 🚨',
-      failComment: undefined,
-      labels: 'semantic-release',
-      assignee: undefined,
     }
   );
 });
@@ -385,17 +328,10 @@ test('Returns user config via alternative environment variables over GitLab CI/C
       }
     ),
     {
+      ...defaultOptions,
       gitlabToken,
       gitlabUrl,
       gitlabApiUrl: urlJoin(gitlabUrl, gitlabApiPathPrefix),
-      assets: undefined,
-      milestones: undefined,
-      successComment: undefined,
-      proxy: {},
-      failTitle: 'The automated release is failing 🚨',
-      failComment: undefined,
-      labels: 'semantic-release',
-      assignee: undefined,
     }
   );
 });
@@ -415,17 +351,10 @@ test('Ignore GitLab CI/CD environment variables if not running on GitLab CI/CD',
       }
     ),
     {
+      ...defaultOptions,
       gitlabToken,
       gitlabUrl: 'https://gitlab.com',
       gitlabApiUrl: urlJoin('https://gitlab.com', '/api/v4'),
-      assets: undefined,
-      milestones: undefined,
-      successComment: undefined,
-      proxy: {},
-      failTitle: 'The automated release is failing 🚨',
-      failComment: undefined,
-      labels: 'semantic-release',
-      assignee: undefined,
     }
   );
 });
