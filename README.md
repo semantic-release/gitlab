@@ -62,17 +62,11 @@ Create a [personal access token](https://docs.gitlab.com/ce/user/profile/persona
 
 The plugin uses [hpagent](https://github.com/delvedor/hpagent#usage) to pass requests through a proxy server. 
 
-You can configure proxy with environment variables :
-```shell script
-HTTP_PROXY=http://proxyurl.com:8080
-HTTPS_PROXY=http://proxyurl.com:8080
-```
+You can configure a proxy server via the `HTTPS_PROXY` environment variable: `HTTPS_PROXY=http://proxyurl.com:8080`
 
-hpagent package supports basic authentication as well by embedding the username and password in the proxy URL:
-```shell script
-HTTP_PROXY=http://user:pwd@proxyurl.com:8080
-HTTPS_PROXY=http://user:pwd@proxyurl.com:8080
-```
+If your proxy server requires authentication embed the username and password in the URL: `HTTPS_PROXY=http://user:pwd@proxyurl.com:8080`
+
+If your GitLab instance is exposed via plain HTTP (not recommended!) use `HTTP_PROXY` instead.
 
 ### Options
 
