@@ -1,5 +1,6 @@
 const test = require('ava');
 const urlJoin = require('url-join');
+const {HttpProxyAgent, HttpsProxyAgent} = require('hpagent');
 const resolveConfig = require('../lib/resolve-config');
 
 test('Returns user config', t => {
@@ -8,6 +9,7 @@ test('Returns user config', t => {
   const gitlabApiPathPrefix = '/api/prefix';
   const assets = ['file.js'];
   const postComments = true;
+  const proxy = {};
 
   t.deepEqual(
     resolveConfig({gitlabUrl, gitlabApiPathPrefix, assets, postComments}, {env: {GITLAB_TOKEN: gitlabToken}}),
@@ -17,9 +19,20 @@ test('Returns user config', t => {
       gitlabApiUrl: urlJoin(gitlabUrl, gitlabApiPathPrefix),
       assets,
       milestones: undefined,
+      proxy,
       successComment: undefined,
     }
   );
+
+  t.deepEqual(resolveConfig({gitlabUrl, gitlabApiPathPrefix, assets, proxy}, {env: {GITLAB_TOKEN: gitlabToken}}), {
+    gitlabToken,
+    gitlabUrl,
+    gitlabApiUrl: urlJoin(gitlabUrl, gitlabApiPathPrefix),
+    assets,
+    milestones: undefined,
+    proxy,
+    successComment: undefined,
+  });
 });
 
 test('Returns user config via environment variables', t => {
@@ -28,6 +41,7 @@ test('Returns user config via environment variables', t => {
   const gitlabApiPathPrefix = '/api/prefix';
   const assets = ['file.js'];
   const milestones = ['1.2.3'];
+  const proxy = {};
 
   t.deepEqual(
     resolveConfig(
@@ -41,6 +55,7 @@ test('Returns user config via environment variables', t => {
       assets,
       milestones,
       successComment: undefined,
+      proxy,
     }
   );
 });
@@ -50,6 +65,7 @@ test('Returns user config via alternative environment variables', t => {
   const gitlabUrl = 'https://host.com';
   const gitlabApiPathPrefix = '/api/prefix';
   const assets = ['file.js'];
+  const proxy = {};
 
   t.deepEqual(
     resolveConfig({assets}, {env: {GL_TOKEN: gitlabToken, GL_URL: gitlabUrl, GL_PREFIX: gitlabApiPathPrefix}}),
@@ -60,6 +76,114 @@ test('Returns user config via alternative environment variables', t => {
       assets,
       milestones: undefined,
       successComment: undefined,
+      proxy,
+    }
+  );
+});
+
+test('Returns user config via alternative environment variables with http proxy', t => {
+  const gitlabToken = 'TOKEN';
+  const gitlabUrl = 'http://host.com';
+  const gitlabApiPathPrefix = '/api/prefix';
+  const assets = ['file.js'];
+  // Testing with 8080 port because HttpsProxyAgent ignores 80 port with http protocol
+  const proxyUrl = 'http://proxy.test:8080';
+
+  const result = resolveConfig(
+    {assets},
+    {
+      env: {
+        GL_TOKEN: gitlabToken,
+        GL_URL: gitlabUrl,
+        GL_PREFIX: gitlabApiPathPrefix,
+        HTTP_PROXY: proxyUrl,
+      },
+    }
+  );
+
+  t.assert(result.proxy.agent.http instanceof HttpProxyAgent);
+  t.assert(result.proxy.agent.http.proxy.origin === proxyUrl);
+});
+
+test('Returns user config via alternative environment variables with https proxy', t => {
+  const gitlabToken = 'TOKEN';
+  const gitlabUrl = 'https://host.com';
+  const gitlabApiPathPrefix = '/api/prefix';
+  const assets = ['file.js'];
+  // Testing with 8443 port because HttpsProxyAgent ignores 443 port with https protocol
+  const proxyUrl = 'https://proxy.test:8443';
+
+  const result = resolveConfig(
+    {assets},
+    {
+      env: {
+        GL_TOKEN: gitlabToken,
+        GL_URL: gitlabUrl,
+        GL_PREFIX: gitlabApiPathPrefix,
+        HTTPS_PROXY: proxyUrl,
+      },
+    }
+  );
+
+  t.assert(result.proxy.agent.https instanceof HttpsProxyAgent);
+  t.assert(result.proxy.agent.https.proxy.origin === proxyUrl);
+});
+
+test('Returns user config via alternative environment variables with mismatching http/https values for proxy gitlab url', t => {
+  const gitlabToken = 'TOKEN';
+  const httpGitlabUrl = 'http://host.com';
+  const gitlabUrl = 'https://host.com';
+  const gitlabApiPathPrefix = '/api/prefix';
+  const assets = ['file.js'];
+  // Testing with 8443 port because HttpsProxyAgent ignores 443 port with https protocol
+  const httpProxyUrl = 'http://proxy.test:8443';
+  const proxyUrl = 'https://proxy.test:8443';
+
+  // HTTP GitLab URL and HTTPS_PROXY set
+  t.deepEqual(
+    resolveConfig(
+      {assets},
+      {
+        env: {
+          GL_TOKEN: gitlabToken,
+          GL_URL: httpGitlabUrl,
+          GL_PREFIX: gitlabApiPathPrefix,
+          HTTPS_PROXY: proxyUrl,
+        },
+      }
+    ),
+    {
+      gitlabToken: 'TOKEN',
+      gitlabUrl: 'http://host.com',
+      gitlabApiUrl: 'http://host.com/api/prefix',
+      assets: ['file.js'],
+      milestones: undefined,
+      successComment: undefined,
+      proxy: {},
+    }
+  );
+
+  // HTTPS GitLab URL and HTTP_PROXY set
+  t.deepEqual(
+    resolveConfig(
+      {assets},
+      {
+        env: {
+          GL_TOKEN: gitlabToken,
+          GL_URL: gitlabUrl,
+          GL_PREFIX: gitlabApiPathPrefix,
+          HTTP_PROXY: httpProxyUrl,
+        },
+      }
+    ),
+    {
+      gitlabToken: 'TOKEN',
+      gitlabUrl: 'https://host.com',
+      gitlabApiUrl: 'https://host.com/api/prefix',
+      assets: ['file.js'],
+      milestones: undefined,
+      successComment: undefined,
+      proxy: {},
     }
   );
 });
@@ -76,6 +200,7 @@ test('Returns default config', t => {
     assets: undefined,
     milestones: undefined,
     successComment: undefined,
+    proxy: {},
   });
 
   t.deepEqual(resolveConfig({gitlabApiPathPrefix}, {env: {GL_TOKEN: gitlabToken}}), {
@@ -85,6 +210,7 @@ test('Returns default config', t => {
     assets: undefined,
     milestones: undefined,
     successComment: undefined,
+    proxy: {},
   });
 
   t.deepEqual(resolveConfig({gitlabUrl}, {env: {GL_TOKEN: gitlabToken}}), {
@@ -94,6 +220,7 @@ test('Returns default config', t => {
     assets: undefined,
     milestones: undefined,
     successComment: undefined,
+    proxy: {},
   });
 });
 
@@ -118,6 +245,7 @@ test('Returns default config via GitLab CI/CD environment variables', t => {
       assets: undefined,
       milestones: undefined,
       successComment: undefined,
+      proxy: {},
     }
   );
 });
@@ -146,6 +274,7 @@ test('Returns user config over GitLab CI/CD environment variables', t => {
       assets,
       milestones: undefined,
       successComment: undefined,
+      proxy: {},
     }
   );
 });
@@ -180,6 +309,7 @@ test('Returns user config via environment variables over GitLab CI/CD environmen
       assets: undefined,
       milestones: undefined,
       successComment: undefined,
+      proxy: {},
     }
   );
 });
@@ -214,6 +344,7 @@ test('Returns user config via alternative environment variables over GitLab CI/C
       assets: undefined,
       milestones: undefined,
       successComment: undefined,
+      proxy: {},
     }
   );
 });
@@ -239,6 +370,7 @@ test('Ignore GitLab CI/CD environment variables if not running on GitLab CI/CD',
       assets: undefined,
       milestones: undefined,
       successComment: undefined,
+      proxy: {},
     }
   );
 });
