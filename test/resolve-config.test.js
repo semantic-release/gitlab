@@ -255,7 +255,6 @@ test('Returns user config over GitLab CI/CD environment variables', t => {
   const gitlabUrl = 'https://host.com';
   const gitlabApiPathPrefix = '/api/prefix';
   const assets = ['file.js'];
-  // Const proxy = {};
   const CI_PROJECT_URL = 'http://ci-host.com/ci-owner/ci-repo';
   const CI_PROJECT_PATH = 'ci-owner/ci-repo';
   const CI_API_V4_URL = 'http://ci-host-api.com/prefix';
@@ -284,7 +283,6 @@ test('Returns user config via environment variables over GitLab CI/CD environmen
   const gitlabToken = 'TOKEN';
   const gitlabUrl = 'https://host.com';
   const gitlabApiPathPrefix = '/api/prefix';
-  // Const proxy = {};
   const CI_PROJECT_URL = 'http://ci-host.com/ci-owner/ci-repo';
   const CI_PROJECT_PATH = 'ci-owner/ci-repo';
   const CI_API_V4_URL = 'http://ci-host-api.com/prefix';
@@ -320,7 +318,6 @@ test('Returns user config via alternative environment variables over GitLab CI/C
   const gitlabToken = 'TOKEN';
   const gitlabUrl = 'https://host.com';
   const gitlabApiPathPrefix = '/api/prefix';
-  // Const proxy = {};
   const CI_PROJECT_URL = 'http://ci-host.com/ci-owner/ci-repo';
   const CI_PROJECT_PATH = 'ci-owner/ci-repo';
   const CI_API_V4_URL = 'http://ci-host-api.com/prefix';
@@ -354,7 +351,6 @@ test('Returns user config via alternative environment variables over GitLab CI/C
 
 test('Ignore GitLab CI/CD environment variables if not running on GitLab CI/CD', t => {
   const gitlabToken = 'TOKEN';
-  // Const proxy = {};
   const CI_PROJECT_URL = 'http://ci-host.com/owner/repo';
   const CI_PROJECT_PATH = 'ci-owner/ci-repo';
   const CI_API_V4_URL = 'http://ci-host-api.com/prefix';
