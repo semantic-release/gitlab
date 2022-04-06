@@ -26,8 +26,9 @@ test.serial('Post new issue if none exists yet', async t => {
   const branch = {name: 'main'};
   const options = {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`};
   const errors = [{message: 'An error occured'}];
+  const encodedFailTitle = encodeURIComponent('The automated release is failing 🚨');
   const gitlab = authenticate(env)
-    .get(`/projects/${owner}/${repo}/issues?state=opened&per_page=100`)
+    .get(`/projects/${owner}/${repo}/issues?state=opened&&search=${encodedFailTitle}`)
     .reply(200, [
       {
         id: 2,
@@ -85,8 +86,9 @@ test.serial('Post comments to existing issue', async t => {
   const branch = {name: 'main'};
   const options = {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`};
   const errors = [{message: 'An error occured'}];
+  const encodedFailTitle = encodeURIComponent('The automated release is failing 🚨');
   const gitlab = authenticate(env)
-    .get(`/projects/${owner}/${repo}/issues?state=opened&per_page=100`)
+    .get(`/projects/${owner}/${repo}/issues?state=opened&search=${encodedFailTitle}`)
     .reply(200, [
       {
         id: 1,
@@ -151,8 +153,9 @@ test.serial('Post comments to existing issue with custom template', async t => {
   const branch = {name: 'main'};
   const options = {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`};
   const errors = [{message: 'An error occured'}];
+  const encodedFailTitle = encodeURIComponent('Semantic Release Failure');
   const gitlab = authenticate(env)
-    .get(`/projects/${owner}/${repo}/issues?state=opened&per_page=100`)
+    .get(`/projects/${owner}/${repo}/issues?state=opened&search=${encodedFailTitle}`)
     .reply(200, [
       {
         id: 1,
