@@ -28,10 +28,11 @@
     "hpagent": "^0.1.2",
     "lodash": "^4.17.11",
     "parse-path": "^4.0.0",
+    "proxy-from-env": "^1.1.0",
     "url-join": "^4.0.0"
   },
   "devDependencies": {
-    "ava": "4.1.0",
+    "ava": "^4.1.0",
     "clear-module": "4.1.2",
     "nock": "13.2.4",
     "nyc": "15.1.0",

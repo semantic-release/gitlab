@@ -57,7 +57,7 @@ Create a [personal access token](https://docs.gitlab.com/ce/user/profile/persona
 | `GL_URL` or `GITLAB_URL`       | The GitLab endpoint.                                      |
 | `GL_PREFIX` or `GITLAB_PREFIX` | The GitLab API prefix.                                    |
 | `HTTP_PROXY` or `HTTPS_PROXY`  | HTTP or HTTPS proxy to use.                               |
-| `NO_PROXY`                     | NO_PROXY bypass proxy hosts                               |
+| `NO_PROXY`                     | Patterns for which the proxy should be ignored. See [details below](#proxy-configuration). |
 
 #### Proxy configuration
 
@@ -69,11 +69,7 @@ If your proxy server requires authentication embed the username and password in 
 
 If your GitLab instance is exposed via plain HTTP (not recommended!) use `HTTP_PROXY` instead.
 
-#### Proxy bypass configuration
-
-You can configure a bypass option by setting `NO_PROXY` environment variable: `NO_PROXY=*.host.com, host.com`
-
-Depending on your gitlabUrl and a matching `NO_PROXY`it is bypassing your proxy configuration of the `HTTP_PROXY` or `HTTPS_PROXY` environment variable.
+If you need to bypass the proxy for some hosts, configure the `NO_PROXY` environment variable: NO_PROXY=*.host.com, host.com`
 
 ### Options
 
