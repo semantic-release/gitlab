@@ -69,7 +69,7 @@ If your proxy server requires authentication embed the username and password in 
 
 If your GitLab instance is exposed via plain HTTP (not recommended!) use `HTTP_PROXY` instead.
 
-If you need to bypass the proxy for some hosts, configure the `NO_PROXY` environment variable: NO_PROXY=*.host.com, host.com`
+If you need to bypass the proxy for some hosts, configure the `NO_PROXY` environment variable: `NO_PROXY=*.host.com, host.com`
 
 ### Options
 
