@@ -75,7 +75,9 @@
   },
   "prettier": {
     "printWidth": 120,
-    "trailingComma": "es5"
+    "trailingComma": "es5",
+    "singleQuote": true,
+    "bracketSpacing": false
   },
   "publishConfig": {
     "access": "public"

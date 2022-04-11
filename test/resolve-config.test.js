@@ -121,7 +121,7 @@ test('Returns user config via alternative environment variables with https proxy
   const gitlabApiPathPrefix = '/api/prefix';
   const assets = ['file.js'];
   // Testing with 8443 port because HttpsProxyAgent ignores 443 port with https protocol
-  const proxyUrl = 'https://proxy.test:8443';
+  const proxyUrl = 'http://proxy.test:8443';
 
   const result = resolveConfig(
     {assets},
@@ -146,8 +146,6 @@ test('Returns user config via alternative environment variables with mismatching
   const gitlabApiPathPrefix = '/api/prefix';
   const assets = ['file.js'];
   // Testing with 8443 port because HttpsProxyAgent ignores 443 port with https protocol
-  const httpProxyUrl = 'http://proxy.test:8443';
-  const proxyUrl = 'https://proxy.test:8443';
 
   // HTTP GitLab URL and HTTPS_PROXY set
   t.deepEqual(
@@ -158,7 +156,7 @@ test('Returns user config via alternative environment variables with mismatching
           GL_TOKEN: gitlabToken,
           GL_URL: httpGitlabUrl,
           GL_PREFIX: gitlabApiPathPrefix,
-          HTTPS_PROXY: proxyUrl,
+          HTTPS_PROXY: 'https://proxy.test:8443',
         },
       }
     ),
@@ -180,7 +178,7 @@ test('Returns user config via alternative environment variables with mismatching
           GL_TOKEN: gitlabToken,
           GL_URL: gitlabUrl,
           GL_PREFIX: gitlabApiPathPrefix,
-          HTTP_PROXY: httpProxyUrl,
+          HTTP_PROXY: 'http://proxy.test:8443',
         },
       }
     ),
@@ -192,6 +190,100 @@ test('Returns user config via alternative environment variables with mismatching
       assets: ['file.js'],
     }
   );
+});
+test('Returns user config via environment variables with HTTP_PROXY and NO_PROXY set', t => {
+  const gitlabToken = 'TOKEN';
+  const gitlabUrl = 'http://host.com';
+  const gitlabApiPathPrefix = '/api/prefix';
+  const assets = ['file.js'];
+  // Testing with 8080 port because HttpsProxyAgent ignores 80 port with http protocol
+  const proxyUrl = 'http://proxy.test:8080';
+
+  const result = resolveConfig(
+    {assets},
+    {
+      env: {
+        GL_TOKEN: gitlabToken,
+        GL_URL: gitlabUrl,
+        GL_PREFIX: gitlabApiPathPrefix,
+        HTTP_PROXY: proxyUrl,
+        NO_PROXY: '*.host.com, host.com',
+      },
+    }
+  );
+
+  t.deepEqual(result.proxy, {});
+});
+
+test('Returns user config via environment variables with HTTPS_PROXY and NO_PROXY set', t => {
+  const gitlabToken = 'TOKEN';
+  const gitlabUrl = 'https://host.com';
+  const gitlabApiPathPrefix = '/api/prefix';
+  const assets = ['file.js'];
+  // Testing with 8080 port because HttpsProxyAgent ignores 80 port with http protocol
+  const proxyUrl = 'http://proxy.test:8080';
+
+  const result = resolveConfig(
+    {assets},
+    {
+      env: {
+        GL_TOKEN: gitlabToken,
+        GL_URL: gitlabUrl,
+        GL_PREFIX: gitlabApiPathPrefix,
+        HTTPS_PROXY: proxyUrl,
+        NO_PROXY: '*.host.com, host.com',
+      },
+    }
+  );
+  t.deepEqual(result.proxy, {});
+});
+
+test('Returns user config via environment variables with HTTPS_PROXY and non-matching NO_PROXY set', t => {
+  const gitlabToken = 'TOKEN';
+  const gitlabUrl = 'https://host.com';
+  const gitlabApiPathPrefix = '/api/prefix';
+  const assets = ['file.js'];
+  // Testing with 8443 port because HttpsProxyAgent ignores 443 port with http protocol
+  const proxyUrl = 'https://proxy.test:8443';
+  process.env.HTTPS_PROXY = proxyUrl;
+  process.env.NO_PROXY = '*.differenthost.com, differenthost.com';
+
+  const result = resolveConfig(
+    {assets},
+    {
+      env: {
+        GL_TOKEN: gitlabToken,
+        GL_URL: gitlabUrl,
+        GL_PREFIX: gitlabApiPathPrefix,
+        HTTPS_PROXY: proxyUrl,
+        NO_PROXY: '*.differenthost.com, differenthost.com',
+      },
+    }
+  );
+  t.assert(result.proxy.agent.https instanceof HttpsProxyAgent);
+});
+
+test('Returns user config via environment variables with HTTP_PROXY and non-matching NO_PROXY set', t => {
+  const gitlabToken = 'TOKEN';
+  const gitlabUrl = 'http://host.com';
+  const gitlabApiPathPrefix = '/api/prefix';
+  const assets = ['file.js'];
+  // Testing with 8080 port because HttpsProxyAgent ignores 80 port with http protocol
+  const proxyUrl = 'http://proxy.test:8080';
+
+  const result = resolveConfig(
+    {assets},
+    {
+      env: {
+        GL_TOKEN: gitlabToken,
+        GL_URL: gitlabUrl,
+        GL_PREFIX: gitlabApiPathPrefix,
+        HTTP_PROXY: proxyUrl,
+        NO_PROXY: '*.differenthost.com, differenthost.com',
+      },
+    }
+  );
+  t.assert(result.proxy.agent.http instanceof HttpProxyAgent);
 });
 
 test('Returns default config', t => {
