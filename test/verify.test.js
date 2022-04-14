@@ -783,3 +783,22 @@ test.serial('Throw SemanticReleaseError if "assignee" option is a whitespace Str
   t.is(error.code, 'EINVALIDASSIGNEE');
   t.true(gitlab.isDone());
 });
+
+test.serial('Does not throw an error for option without validator', async t => {
+  const owner = 'test_user';
+  const repo = 'test_repo';
+  const env = {GL_TOKEN: 'gitlab_token'};
+  const gitlab = authenticate(env)
+    .get(`/projects/${owner}%2F${repo}`)
+    .reply(200, {permissions: {project_access: {access_level: 30}}});
+
+  await t.notThrowsAsync(
+    verify(
+      {
+        someOption: 42,
+      },
+      {env, options: {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`}, logger: t.context.logger}
+    )
+  );
+  t.true(gitlab.isDone());
+});
