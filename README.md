@@ -25,6 +25,7 @@ The plugin can be configured in the [**semantic-release** configuration file](ht
 
 ```json
 {
+  "branches": ["main"],
   "plugins": [
     "@semantic-release/commit-analyzer",
     "@semantic-release/release-notes-generator",
