@@ -129,6 +129,53 @@ test.serial('Publish a release with asset type and permalink', async t => {
   t.true(gitlab.isDone());
 });
 
+test.serial('Publish a release with an asset with a template label', async t => {
+  const cwd = 'test/fixtures/files';
+  const owner = 'test_user';
+  const repo = 'test_repo';
+  const env = {GITLAB_TOKEN: 'gitlab_token'};
+  const nextRelease = {gitHead: '123', gitTag: 'v1.0.0', notes: 'Test release note body', version: '1.0.0'};
+  const options = {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`};
+  const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
+  const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
+  const uploaded = {url: '/uploads/file.css', alt: 'file.css'};
+  const assets = [
+    {
+      label: `file-v\${nextRelease.version}.css`,
+      path: 'file.css',
+      type: 'other',
+      filepath: '/dist/file.css',
+    },
+  ];
+  const gitlab = authenticate(env)
+    .post(`/projects/${encodedRepoId}/releases`, {
+      tag_name: nextRelease.gitTag,
+      description: nextRelease.notes,
+      assets: {
+        links: [
+          {
+            name: 'file-v1.0.0.css',
+            url: `https://gitlab.com/${owner}/${repo}${uploaded.url}`,
+            link_type: 'other',
+            filepath: '/dist/file.css',
+          },
+        ],
+      },
+    })
+    .reply(200);
+  const gitlabUpload = authenticate(env)
+    .post(`/projects/${encodedRepoId}/uploads`, /filename="file.css"/gm)
+    .reply(200, uploaded);
+
+  const result = await publish({assets}, {env, cwd, options, nextRelease, logger: t.context.logger});
+
+  t.is(result.url, `https://gitlab.com/${owner}/${repo}/-/releases/${encodedGitTag}`);
+  t.deepEqual(t.context.log.args[0], ['Uploaded file: %s', uploaded.url]);
+  t.deepEqual(t.context.log.args[1], ['Published GitLab release: %s', nextRelease.gitTag]);
+  t.true(gitlabUpload.isDone());
+  t.true(gitlab.isDone());
+});
+
 test.serial('Publish a release with a milestone', async t => {
   const owner = 'test_user';
   const repo = 'test_repo';
