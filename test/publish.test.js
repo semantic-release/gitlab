@@ -305,7 +305,6 @@ test.serial('Publish a release with an asset link', async t => {
   const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
   const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
   const link = {
-    path: 'file.css',
     label: 'README.md',
     type: 'other',
     url: 'https://gitlab.com/gitlab-org/gitlab/-/blob/master/README.md',
