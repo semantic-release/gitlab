@@ -318,7 +318,7 @@ test.serial('Publish a release with an asset link', async t => {
         links: [
           {
             name: 'README.md',
-            url: `https://gitlab.com/${owner}/${repo}/https://gitlab.com/gitlab-org/gitlab/-/blob/master/README.md`,
+            url: `https://gitlab.com/gitlab-org/gitlab/-/blob/master/README.md`,
             link_type: 'other',
           },
         ],
