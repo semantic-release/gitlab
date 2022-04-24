@@ -31,12 +31,12 @@
     "url-join": "^4.0.0"
   },
   "devDependencies": {
-    "ava": "4.1.0",
+    "ava": "4.2.0",
     "clear-module": "4.1.2",
     "nock": "13.2.4",
     "nyc": "15.1.0",
     "semantic-release": "19.0.2",
-    "sinon": "13.0.1",
+    "sinon": "13.0.2",
     "tempy": "1.0.1",
     "xo": "0.28.3"
   },
