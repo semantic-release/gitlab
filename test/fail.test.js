@@ -26,9 +26,10 @@ test.serial('Post new issue if none exists yet', async t => {
   const branch = {name: 'main'};
   const options = {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`};
   const errors = [{message: 'An error occured'}];
+  const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
   const encodedFailTitle = encodeURIComponent('The automated release is failing 🚨');
   const gitlab = authenticate(env)
-    .get(`/projects/${owner}/${repo}/issues?state=opened&&search=${encodedFailTitle}`)
+    .get(`/projects/${encodedRepoId}/issues?state=opened&&search=${encodedFailTitle}`)
     .reply(200, [
       {
         id: 2,
@@ -38,7 +39,7 @@ test.serial('Post new issue if none exists yet', async t => {
         title: 'API should implemented authentication',
       },
     ])
-    .post(`/projects/${owner}/${repo}/issues`, {
+    .post(`/projects/${encodedRepoId}/issues`, {
       id: 'test_user%2Ftest_repo',
       description: `## :rotating_light: The automated release from the \`main\` branch failed. :rotating_light:
 
@@ -86,9 +87,10 @@ test.serial('Post comments to existing issue', async t => {
   const branch = {name: 'main'};
   const options = {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`};
   const errors = [{message: 'An error occured'}];
+  const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
   const encodedFailTitle = encodeURIComponent('The automated release is failing 🚨');
   const gitlab = authenticate(env)
-    .get(`/projects/${owner}/${repo}/issues?state=opened&search=${encodedFailTitle}`)
+    .get(`/projects/${encodedRepoId}/issues?state=opened&search=${encodedFailTitle}`)
     .reply(200, [
       {
         id: 1,
@@ -153,9 +155,10 @@ test.serial('Post comments to existing issue with custom template', async t => {
   const branch = {name: 'main'};
   const options = {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`};
   const errors = [{message: 'An error occured'}];
+  const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
   const encodedFailTitle = encodeURIComponent('Semantic Release Failure');
   const gitlab = authenticate(env)
-    .get(`/projects/${owner}/${repo}/issues?state=opened&search=${encodedFailTitle}`)
+    .get(`/projects/${encodedRepoId}/issues?state=opened&search=${encodedFailTitle}`)
     .reply(200, [
       {
         id: 1,
