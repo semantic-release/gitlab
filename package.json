@@ -23,7 +23,7 @@
     "escape-string-regexp": "^3.0.0",
     "form-data": "^4.0.0",
     "fs-extra": "^10.0.0",
-    "globby": "^11.0.0",
+    "globby": "^13.0.0",
     "got": "^11.0.0",
     "hpagent": "^0.1.2",
     "lodash": "^4.17.11",
