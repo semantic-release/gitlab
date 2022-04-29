@@ -346,7 +346,7 @@ test.serial('Publish a release with an asset link with variable', async t => {
   const link = {
     label: 'README.md',
     type: 'other',
-    url: 'https://gitlab.com/gitlab-org/${repo}/-/blob/master/README.md', // eslint-disable-line no-template-curly-in-string
+    url: `https://gitlab.com/gitlab-org/\${repo}/-/blob/master/README.md`,
   };
   const assets = [link];
   const gitlab = authenticate(env)
@@ -385,7 +385,7 @@ test.serial('Publish a release with an asset link with same variable multiple ti
   const link = {
     label: 'README.md',
     type: 'other',
-    url: 'https://gitlab.com/${repo}-org/${repo}/-/blob/master/README.md', // eslint-disable-line no-template-curly-in-string
+    url: `https://gitlab.com/\${repo}-org/\${repo}/-/blob/master/README.md`,
   };
   const assets = [link];
   const gitlab = authenticate(env)
@@ -425,7 +425,7 @@ test.serial('Publish a release with an asset link with multiple variable', async
   const link = {
     label: 'README.md',
     type: 'other',
-    url: 'https://gitlab.com/${group}/${repo}/-/blob/master/README.md', // eslint-disable-line no-template-curly-in-string
+    url: `https://gitlab.com/\${group}/\${repo}/-/blob/master/README.md`,
   };
   const assets = [link];
   const gitlab = authenticate(env)
