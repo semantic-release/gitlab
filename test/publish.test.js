@@ -7,7 +7,7 @@ const authenticate = require('./helpers/mock-gitlab');
 
 /* eslint camelcase: ["error", {properties: "never"}] */
 
-test.beforeEach(t => {
+test.beforeEach((t) => {
   // Mock logger
   t.context.log = stub();
   t.context.error = stub();
@@ -19,7 +19,7 @@ test.afterEach.always(() => {
   nock.cleanAll();
 });
 
-test.serial('Publish a release', async t => {
+test.serial('Publish a release', async (t) => {
   const owner = 'test_user';
   const repo = 'test_repo';
   const env = {GITLAB_TOKEN: 'gitlab_token'};
@@ -45,7 +45,7 @@ test.serial('Publish a release', async t => {
   t.true(gitlab.isDone());
 });
 
-test.serial('Publish a release with assets', async t => {
+test.serial('Publish a release with assets', async (t) => {
   const cwd = 'test/fixtures/files';
   const owner = 'test_user';
   const repo = 'test_repo';
@@ -83,7 +83,7 @@ test.serial('Publish a release with assets', async t => {
   t.true(gitlab.isDone());
 });
 
-test.serial('Publish a release with asset type and permalink', async t => {
+test.serial('Publish a release with asset type and permalink', async (t) => {
   const cwd = 'test/fixtures/files';
   const owner = 'test_user';
   const repo = 'test_repo';
@@ -129,7 +129,7 @@ test.serial('Publish a release with asset type and permalink', async t => {
   t.true(gitlab.isDone());
 });
 
-test.serial('Publish a release with an asset with a template label', async t => {
+test.serial('Publish a release with an asset with a template label', async (t) => {
   const cwd = 'test/fixtures/files';
   const owner = 'test_user';
   const repo = 'test_repo';
@@ -176,7 +176,7 @@ test.serial('Publish a release with an asset with a template label', async t => 
   t.true(gitlab.isDone());
 });
 
-test.serial('Publish a release with a milestone', async t => {
+test.serial('Publish a release with a milestone', async (t) => {
   const owner = 'test_user';
   const repo = 'test_repo';
   const env = {GITLAB_TOKEN: 'gitlab_token'};
@@ -203,7 +203,7 @@ test.serial('Publish a release with a milestone', async t => {
   t.true(gitlab.isDone());
 });
 
-test.serial('Publish a release with array of missing assets', async t => {
+test.serial('Publish a release with array of missing assets', async (t) => {
   const cwd = 'test/fixtures/files';
   const owner = 'test_user';
   const repo = 'test_repo';
@@ -230,7 +230,7 @@ test.serial('Publish a release with array of missing assets', async t => {
   t.true(gitlab.isDone());
 });
 
-test.serial('Publish a release with one asset and custom label', async t => {
+test.serial('Publish a release with one asset and custom label', async (t) => {
   const cwd = 'test/fixtures/files';
   const owner = 'test_user';
   const repo = 'test_repo';
@@ -269,7 +269,7 @@ test.serial('Publish a release with one asset and custom label', async t => {
   t.true(gitlab.isDone());
 });
 
-test.serial('Publish a release with missing release notes', async t => {
+test.serial('Publish a release with missing release notes', async (t) => {
   const owner = 'test_user';
   const repo = 'test_repo';
   const env = {GITLAB_TOKEN: 'gitlab_token'};

@@ -6,7 +6,7 @@ const authenticate = require('./helpers/mock-gitlab');
 
 /* eslint camelcase: ["error", {properties: "never"}] */
 
-test.beforeEach(t => {
+test.beforeEach((t) => {
   // Mock logger
   t.context.log = stub();
   t.context.error = stub();
@@ -18,7 +18,7 @@ test.afterEach.always(() => {
   nock.cleanAll();
 });
 
-test.serial('Post new issue if none exists yet', async t => {
+test.serial('Post new issue if none exists yet', async (t) => {
   const owner = 'test_user';
   const repo = 'test_repo';
   const env = {GITLAB_TOKEN: 'gitlab_token'};
@@ -79,7 +79,7 @@ Your **[semantic-release](https://github.com/semantic-release/semantic-release)*
   t.true(gitlab.isDone());
 });
 
-test.serial('Post comments to existing issue', async t => {
+test.serial('Post comments to existing issue', async (t) => {
   const owner = 'test_user';
   const repo = 'test_repo';
   const env = {GITLAB_TOKEN: 'gitlab_token'};
@@ -144,7 +144,7 @@ Your **[semantic-release](https://github.com/semantic-release/semantic-release)*
   t.true(gitlab.isDone());
 });
 
-test.serial('Post comments to existing issue with custom template', async t => {
+test.serial('Post comments to existing issue with custom template', async (t) => {
   const owner = 'test_user';
   const repo = 'test_repo';
   const env = {GITLAB_TOKEN: 'gitlab_token'};

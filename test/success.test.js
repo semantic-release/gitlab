@@ -7,7 +7,7 @@ const {RELEASE_NAME} = require('../lib/definitions/constants');
 
 /* eslint camelcase: ["error", {properties: "never"}] */
 
-test.beforeEach(t => {
+test.beforeEach((t) => {
   // Mock logger
   t.context.log = stub();
   t.context.error = stub();
@@ -19,7 +19,7 @@ test.afterEach.always(() => {
   nock.cleanAll();
 });
 
-test.serial('Post comments to related issues and MRs', async t => {
+test.serial('Post comments to related issues and MRs', async (t) => {
   const owner = 'test_user';
   const repo = 'test_repo';
   const env = {GITLAB_TOKEN: 'gitlab_token'};
@@ -47,15 +47,13 @@ test.serial('Post comments to related issues and MRs', async t => {
     .get(`/projects/300/merge_requests/3/closes_issues`)
     .reply(200, [])
     .post(`/projects/100/merge_requests/1/notes`, {
-      body:
-        ':tada: This MR is included in version 1.0.0 :tada:\n\nThe release is available on [GitLab release](https://gitlab.com/test_user/test_repo/-/releases/v1.0.0).\n\nYour **[semantic-release](https://github.com/semantic-release/semantic-release)** bot :package: :rocket:',
+      body: ':tada: This MR is included in version 1.0.0 :tada:\n\nThe release is available on [GitLab release](https://gitlab.com/test_user/test_repo/-/releases/v1.0.0).\n\nYour **[semantic-release](https://github.com/semantic-release/semantic-release)** bot :package: :rocket:',
     })
     .reply(200)
     .post(`/projects/300/merge_requests/3/notes`)
     .reply(200)
     .post(`/projects/100/issues/11/notes`, {
-      body:
-        ':tada: This issue has been resolved in version 1.0.0 :tada:\n\nThe release is available on [GitLab release](https://gitlab.com/test_user/test_repo/-/releases/v1.0.0).\n\nYour **[semantic-release](https://github.com/semantic-release/semantic-release)** bot :package: :rocket:',
+      body: ':tada: This issue has been resolved in version 1.0.0 :tada:\n\nThe release is available on [GitLab release](https://gitlab.com/test_user/test_repo/-/releases/v1.0.0).\n\nYour **[semantic-release](https://github.com/semantic-release/semantic-release)** bot :package: :rocket:',
     })
     .reply(200)
     .post(`/projects/100/issues/13/notes`)
@@ -66,7 +64,7 @@ test.serial('Post comments to related issues and MRs', async t => {
   t.true(gitlab.isDone());
 });
 
-test.serial('Post comments with custom template', async t => {
+test.serial('Post comments with custom template', async (t) => {
   const owner = 'test_user';
   const repo = 'test_repo';
   const env = {GITLAB_TOKEN: 'gitlab_token'};
@@ -97,7 +95,7 @@ test.serial('Post comments with custom template', async t => {
   t.true(gitlab.isDone());
 });
 
-test.serial('Post comments for multiple releases', async t => {
+test.serial('Post comments for multiple releases', async (t) => {
   const owner = 'test_user';
   const repo = 'test_repo';
   const env = {GITLAB_TOKEN: 'gitlab_token'};
@@ -116,8 +114,7 @@ test.serial('Post comments for multiple releases', async t => {
     .get(`/projects/100/merge_requests/1/closes_issues`)
     .reply(200, [])
     .post(`/projects/100/merge_requests/1/notes`, {
-      body:
-        ':tada: This MR is included in version 1.0.0 :tada:\n\nThe release is available on:\n- [GitLab release](https://gitlab.com/test_user/test_repo/-/releases/v1.0.0)\n- `Other release`\n\nYour **[semantic-release](https://github.com/semantic-release/semantic-release)** bot :package: :rocket:',
+      body: ':tada: This MR is included in version 1.0.0 :tada:\n\nThe release is available on:\n- [GitLab release](https://gitlab.com/test_user/test_repo/-/releases/v1.0.0)\n- `Other release`\n\nYour **[semantic-release](https://github.com/semantic-release/semantic-release)** bot :package: :rocket:',
     })
     .reply(200);
 
@@ -126,7 +123,7 @@ test.serial('Post comments for multiple releases', async t => {
   t.true(gitlab.isDone());
 });
 
-test.serial('Does not post comments when successComment is set to false', async t => {
+test.serial('Does not post comments when successComment is set to false', async (t) => {
   const pluginConfig = {successComment: false};
   const owner = 'test_user';
   const repo = 'test_repo';
