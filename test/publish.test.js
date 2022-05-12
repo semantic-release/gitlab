@@ -328,7 +328,7 @@ test.serial('Publish a release with an asset link', async t => {
 
   const result = await publish({assets}, {env, cwd, options, nextRelease, logger: t.context.logger});
 
-  t.is(result.url, `https://gitlab.com/${encodedRepoId}/-/releases/${encodedGitTag}`);
+  t.is(result.url, `https://gitlab.com/${owner}/${repo}/-/releases/${encodedGitTag}`);
   t.deepEqual(t.context.log.args[0], ['Published GitLab release: %s', nextRelease.gitTag]);
   t.true(gitlab.isDone());
 });
@@ -367,7 +367,7 @@ test.serial('Publish a release with an asset link with variable', async t => {
 
   const result = await publish({assets}, {env, cwd, options, nextRelease, logger: t.context.logger});
 
-  t.is(result.url, `https://gitlab.com/${encodedRepoId}/-/releases/${encodedGitTag}`);
+  t.is(result.url, `https://gitlab.com/${owner}/${repo}/-/releases/${encodedGitTag}`);
   t.deepEqual(t.context.log.args[0], ['Published GitLab release: %s', nextRelease.gitTag]);
   t.true(gitlab.isDone());
 });
@@ -406,7 +406,7 @@ test.serial('Publish a release with an asset link with same variable multiple ti
 
   const result = await publish({assets}, {env, cwd, options, nextRelease, logger: t.context.logger});
 
-  t.is(result.url, `https://gitlab.com/${encodedRepoId}/-/releases/${encodedGitTag}`);
+  t.is(result.url, `https://gitlab.com/${owner}/${repo}/-/releases/${encodedGitTag}`);
   t.deepEqual(t.context.log.args[0], ['Published GitLab release: %s', nextRelease.gitTag]);
   t.true(gitlab.isDone());
 });
@@ -446,7 +446,7 @@ test.serial('Publish a release with an asset link with multiple variable', async
 
   const result = await publish({assets}, {env, cwd, options, nextRelease, logger: t.context.logger});
 
-  t.is(result.url, `https://gitlab.com/${encodedRepoId}/-/releases/${encodedGitTag}`);
+  t.is(result.url, `https://gitlab.com/${owner}/${repo}/-/releases/${encodedGitTag}`);
   t.deepEqual(t.context.log.args[0], ['Published GitLab release: %s', nextRelease.gitTag]);
   t.true(gitlab.isDone());
 });
