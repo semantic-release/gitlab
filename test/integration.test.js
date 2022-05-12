@@ -6,7 +6,7 @@ const authenticate = require('./helpers/mock-gitlab');
 
 /* eslint camelcase: ["error", {properties: "never"}] */
 
-test.beforeEach(t => {
+test.beforeEach((t) => {
   // Clear npm cache to refresh the module state
   clearModule('..');
   t.context.m = require('..');
@@ -21,7 +21,7 @@ test.afterEach.always(() => {
   nock.cleanAll();
 });
 
-test.serial('Verify GitLab auth', async t => {
+test.serial('Verify GitLab auth', async (t) => {
   const env = {GITLAB_TOKEN: 'gitlab_token'};
   const owner = 'test_user';
   const repo = 'test_repo';
@@ -35,7 +35,7 @@ test.serial('Verify GitLab auth', async t => {
   t.true(github.isDone());
 });
 
-test.serial('Throw SemanticReleaseError if invalid config', async t => {
+test.serial('Throw SemanticReleaseError if invalid config', async (t) => {
   const env = {};
   const options = {
     publish: [{path: '@semantic-release/npm'}, {path: '@semantic-release/gitlab'}],
@@ -54,7 +54,7 @@ test.serial('Throw SemanticReleaseError if invalid config', async t => {
   t.is(errors[1].code, 'ENOGLTOKEN');
 });
 
-test.serial('Publish a release', async t => {
+test.serial('Publish a release', async (t) => {
   const owner = 'test_user';
   const repo = 'test_repo';
   const env = {GL_TOKEN: 'gitlab_token'};
@@ -82,7 +82,7 @@ test.serial('Publish a release', async t => {
   t.true(gitlab.isDone());
 });
 
-test.serial('Verify Github auth and release', async t => {
+test.serial('Verify Github auth and release', async (t) => {
   const env = {GL_TOKEN: 'gitlab_token'};
   const owner = 'test_user';
   const repo = 'test_repo';

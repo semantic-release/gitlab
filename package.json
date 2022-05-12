@@ -38,7 +38,7 @@
     "semantic-release": "19.0.2",
     "sinon": "14.0.0",
     "tempy": "1.0.1",
-    "xo": "0.28.3"
+    "xo": "0.39.1"
   },
   "engines": {
     "node": ">=14.17"
@@ -88,7 +88,6 @@
   },
   "scripts": {
     "lint": "xo",
-    "pretest": "npm run lint",
     "semantic-release": "semantic-release",
     "test": "nyc ava -v",
     "test:ci": "nyc ava -v"
@@ -97,7 +96,8 @@
     "prettier": true,
     "space": true,
     "rules": {
-      "unicorn/string-content": "off"
+      "unicorn/string-content": "off",
+      "import/extensions": "off"
     }
   },
   "renovate": {

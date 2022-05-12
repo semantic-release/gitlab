@@ -17,7 +17,7 @@ const defaultOptions = {
   proxy: {},
 };
 
-test('Returns user config', t => {
+test('Returns user config', (t) => {
   const gitlabToken = 'TOKEN';
   const gitlabUrl = 'https://host.com';
   const gitlabApiPathPrefix = '/api/prefix';
@@ -48,7 +48,7 @@ test('Returns user config', t => {
   });
 });
 
-test('Returns user config via environment variables', t => {
+test('Returns user config via environment variables', (t) => {
   const gitlabToken = 'TOKEN';
   const gitlabUrl = 'https://host.com';
   const gitlabApiPathPrefix = '/api/prefix';
@@ -71,7 +71,7 @@ test('Returns user config via environment variables', t => {
   );
 });
 
-test('Returns user config via alternative environment variables', t => {
+test('Returns user config via alternative environment variables', (t) => {
   const gitlabToken = 'TOKEN';
   const gitlabUrl = 'https://host.com';
   const gitlabApiPathPrefix = '/api/prefix';
@@ -91,7 +91,7 @@ test('Returns user config via alternative environment variables', t => {
   );
 });
 
-test('Returns user config via alternative environment variables with https proxy and no proto scheme set', t => {
+test('Returns user config via alternative environment variables with https proxy and no proto scheme set', (t) => {
   const gitlabToken = 'TOKEN';
   const gitlabUrl = 'host.com';
   const gitlabApiPathPrefix = '/api/prefix';
@@ -114,7 +114,7 @@ test('Returns user config via alternative environment variables with https proxy
   t.deepEqual(result.proxy, {});
 });
 
-test('Returns user config via alternative environment variables with http proxy and no proto scheme set', t => {
+test('Returns user config via alternative environment variables with http proxy and no proto scheme set', (t) => {
   const gitlabToken = 'TOKEN';
   const gitlabUrl = 'host.com';
   const gitlabApiPathPrefix = '/api/prefix';
@@ -137,7 +137,7 @@ test('Returns user config via alternative environment variables with http proxy 
   t.deepEqual(result.proxy, {});
 });
 
-test('Returns user config via alternative environment variables with http proxy', t => {
+test('Returns user config via alternative environment variables with http proxy', (t) => {
   const gitlabToken = 'TOKEN';
   const gitlabUrl = 'http://host.com';
   const gitlabApiPathPrefix = '/api/prefix';
@@ -161,7 +161,7 @@ test('Returns user config via alternative environment variables with http proxy'
   t.assert(result.proxy.agent.http.proxy.origin === proxyUrl);
 });
 
-test('Returns user config via alternative environment variables with https proxy', t => {
+test('Returns user config via alternative environment variables with https proxy', (t) => {
   const gitlabToken = 'TOKEN';
   const gitlabUrl = 'https://host.com';
   const gitlabApiPathPrefix = '/api/prefix';
@@ -185,7 +185,7 @@ test('Returns user config via alternative environment variables with https proxy
   t.assert(result.proxy.agent.https.proxy.origin === proxyUrl);
 });
 
-test('Returns user config via alternative environment variables with mismatching http/https values for proxy gitlab url', t => {
+test('Returns user config via alternative environment variables with mismatching http/https values for proxy gitlab url', (t) => {
   const gitlabToken = 'TOKEN';
   const httpGitlabUrl = 'http://host.com';
   const gitlabUrl = 'https://host.com';
@@ -237,7 +237,7 @@ test('Returns user config via alternative environment variables with mismatching
     }
   );
 });
-test('Returns user config via environment variables with HTTP_PROXY and NO_PROXY set', t => {
+test('Returns user config via environment variables with HTTP_PROXY and NO_PROXY set', (t) => {
   const gitlabToken = 'TOKEN';
   const gitlabUrl = 'http://host.com';
   const gitlabApiPathPrefix = '/api/prefix';
@@ -261,7 +261,7 @@ test('Returns user config via environment variables with HTTP_PROXY and NO_PROXY
   t.deepEqual(result.proxy, {});
 });
 
-test('Returns user config via environment variables with HTTPS_PROXY and NO_PROXY set', t => {
+test('Returns user config via environment variables with HTTPS_PROXY and NO_PROXY set', (t) => {
   const gitlabToken = 'TOKEN';
   const gitlabUrl = 'https://host.com';
   const gitlabApiPathPrefix = '/api/prefix';
@@ -284,7 +284,7 @@ test('Returns user config via environment variables with HTTPS_PROXY and NO_PROX
   t.deepEqual(result.proxy, {});
 });
 
-test('Returns user config via environment variables with HTTPS_PROXY and non-matching NO_PROXY set', t => {
+test('Returns user config via environment variables with HTTPS_PROXY and non-matching NO_PROXY set', (t) => {
   const gitlabToken = 'TOKEN';
   const gitlabUrl = 'https://host.com';
   const gitlabApiPathPrefix = '/api/prefix';
@@ -309,7 +309,7 @@ test('Returns user config via environment variables with HTTPS_PROXY and non-mat
   t.assert(result.proxy.agent.https instanceof HttpsProxyAgent);
 });
 
-test('Returns user config via environment variables with HTTP_PROXY and non-matching NO_PROXY set', t => {
+test('Returns user config via environment variables with HTTP_PROXY and non-matching NO_PROXY set', (t) => {
   const gitlabToken = 'TOKEN';
   const gitlabUrl = 'http://host.com';
   const gitlabApiPathPrefix = '/api/prefix';
@@ -332,7 +332,7 @@ test('Returns user config via environment variables with HTTP_PROXY and non-matc
   t.assert(result.proxy.agent.http instanceof HttpProxyAgent);
 });
 
-test('Returns default config', t => {
+test('Returns default config', (t) => {
   const gitlabToken = 'TOKEN';
   const gitlabApiPathPrefix = '/api/prefix';
   const gitlabUrl = 'https://gitlab.com';
@@ -356,7 +356,7 @@ test('Returns default config', t => {
   });
 });
 
-test('Returns default config via GitLab CI/CD environment variables', t => {
+test('Returns default config via GitLab CI/CD environment variables', (t) => {
   const gitlabToken = 'TOKEN';
   const CI_PROJECT_URL = 'http://ci-host.com/ci-owner/ci-repo';
   const CI_PROJECT_PATH = 'ci-owner/ci-repo';
@@ -379,7 +379,7 @@ test('Returns default config via GitLab CI/CD environment variables', t => {
   );
 });
 
-test('Returns user config over GitLab CI/CD environment variables', t => {
+test('Returns user config over GitLab CI/CD environment variables', (t) => {
   const gitlabToken = 'TOKEN';
   const gitlabUrl = 'https://host.com';
   const gitlabApiPathPrefix = '/api/prefix';
@@ -410,7 +410,7 @@ test('Returns user config over GitLab CI/CD environment variables', t => {
   );
 });
 
-test('Returns user config via environment variables over GitLab CI/CD environment variables', t => {
+test('Returns user config via environment variables over GitLab CI/CD environment variables', (t) => {
   const gitlabToken = 'TOKEN';
   const gitlabUrl = 'https://host.com';
   const gitlabApiPathPrefix = '/api/prefix';
@@ -442,7 +442,7 @@ test('Returns user config via environment variables over GitLab CI/CD environmen
   );
 });
 
-test('Returns user config via alternative environment variables over GitLab CI/CD environment variables', t => {
+test('Returns user config via alternative environment variables over GitLab CI/CD environment variables', (t) => {
   const gitlabToken = 'TOKEN';
   const gitlabUrl = 'https://host.com';
   const gitlabApiPathPrefix = '/api/prefix';
@@ -474,7 +474,7 @@ test('Returns user config via alternative environment variables over GitLab CI/C
   );
 });
 
-test('Ignore GitLab CI/CD environment variables if not running on GitLab CI/CD', t => {
+test('Ignore GitLab CI/CD environment variables if not running on GitLab CI/CD', (t) => {
   const gitlabToken = 'TOKEN';
   const CI_PROJECT_URL = 'http://ci-host.com/owner/repo';
   const CI_PROJECT_PATH = 'ci-owner/ci-repo';
