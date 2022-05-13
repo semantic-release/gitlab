@@ -295,7 +295,7 @@ test.serial('Publish a release with missing release notes', async (t) => {
   t.true(gitlab.isDone());
 });
 
-test.serial('Publish a release with an asset link', async t => {
+test.serial('Publish a release with an asset link', async (t) => {
   const cwd = 'test/fixtures/files';
   const owner = 'test_user';
   const repo = 'test_repo';
