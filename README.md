@@ -35,6 +35,7 @@ The plugin can be configured in the [**semantic-release** configuration file](ht
         {"path": "dist/asset.min.css", "label": "CSS distribution"},
         {"path": "dist/asset.min.js", "label": "JS distribution"},
         {"path": "dist/asset.min.js", "label": "v${nextRelease.version}.js"}
+        {"url": "https://gitlab.com/gitlab-org/gitlab/-/blob/master/README.md"}
       ]
     }],
   ]
@@ -95,7 +96,8 @@ Can be a [glob](https://github.com/isaacs/node-glob#glob-primer) or and `Array` 
 
 | Property | Description                                                                                                 | Default                              |
 | -------- | ----------------------------------------------------------------------------------------------------------- | ------------------------------------ |
-| `path`   | **Required.** A [glob](https://github.com/isaacs/node-glob#glob-primer) to identify the files to upload.    | -                                    |
+| `path`   | **Required**, unless `url` is set. A [glob](https://github.com/isaacs/node-glob#glob-primer) to identify the files to upload.    | -                                    |
+| `url`    | Alternative to setting `path` this provides the ability to add links to releases, e.g. URLs to container images.                           | -                                    |
 | `label`  | Short description of the file displayed on the GitLab release. Can be dynamically adjusted with [Lodash template](https://lodash.com/docs#template). Allows same variables as [`successComment`](#successComment). Ignored if `path` matches more than one file. | File name extracted from the `path`. |
 | `type` | Asset type displayed on the GitLab release. Can be `runbook`, `package`, `image` and `other` (see official documents on [release assets](https://docs.gitlab.com/ee/user/project/releases/#release-assets)). | `other` |
 | `filepath` | A filepath for creating a permalink pointing to the asset (requires GitLab 12.9+, see official documents on [permanent links](https://docs.gitlab.com/ee/user/project/releases/#permanent-links-to-release-assets)). Ignored if `path` matches more than one file. | - |

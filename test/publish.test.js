@@ -294,3 +294,41 @@ test.serial('Publish a release with missing release notes', async (t) => {
   t.deepEqual(t.context.log.args[0], ['Published GitLab release: %s', nextRelease.gitTag]);
   t.true(gitlab.isDone());
 });
+
+test.serial('Publish a release with an asset link', async (t) => {
+  const cwd = 'test/fixtures/files';
+  const owner = 'test_user';
+  const repo = 'test_repo';
+  const env = {GITLAB_TOKEN: 'gitlab_token'};
+  const nextRelease = {gitHead: '123', gitTag: 'v1.0.0', notes: 'Test release note body'};
+  const options = {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`};
+  const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
+  const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
+  const link = {
+    label: 'README.md',
+    type: 'other',
+    url: 'https://gitlab.com/gitlab-org/gitlab/-/blob/master/README.md',
+  };
+  const assets = [link];
+  const gitlab = authenticate(env)
+    .post(`/projects/${encodedRepoId}/releases`, {
+      tag_name: nextRelease.gitTag,
+      description: nextRelease.notes,
+      assets: {
+        links: [
+          {
+            name: 'README.md',
+            url: `https://gitlab.com/gitlab-org/gitlab/-/blob/master/README.md`,
+            link_type: 'other',
+          },
+        ],
+      },
+    })
+    .reply(200);
+
+  const result = await publish({assets}, {env, cwd, options, nextRelease, logger: t.context.logger});
+
+  t.is(result.url, `https://gitlab.com/${owner}/${repo}/-/releases/${encodedGitTag}`);
+  t.deepEqual(t.context.log.args[0], ['Published GitLab release: %s', nextRelease.gitTag]);
+  t.true(gitlab.isDone());
+});
