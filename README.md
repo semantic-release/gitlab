@@ -35,7 +35,7 @@ The plugin can be configured in the [**semantic-release** configuration file](ht
         "gitlabUrl": "https://custom.gitlab.com",
         "assets": [
           { "path": "dist/asset.min.css", "label": "CSS distribution" },
-          { "path": "dist/asset.min.js", "label": "JS distribution" },
+          { "path": "dist/asset.min.js", "label": "JS distribution", "type": "generic_package" },
           { "path": "dist/asset.min.js", "label": "v${nextRelease.version}.js" },
           { "url": "https://gitlab.com/gitlab-org/gitlab/-/blob/master/README.md" }
         ]
@@ -106,6 +106,8 @@ Can be a [glob](https://github.com/isaacs/node-glob#glob-primer) or and `Array` 
 | `label`    | Short description of the file displayed on the GitLab release. Ignored if `path` matches more than one file. Supports [Lodash templating](https://lodash.com/docs#template).                                                                                                                                                       | File name extracted from the `path`. |
 | `type`     | Asset type displayed on the GitLab release. Can be `runbook`, `package`, `image` and `other` (see official documents on [release assets](https://docs.gitlab.com/ee/user/project/releases/#release-assets)). Supports [Lodash templating](https://lodash.com/docs#template).                                                       | `other`                              |
 | `filepath` | A filepath for creating a permalink pointing to the asset (requires GitLab 12.9+, see official documents on [permanent links](https://docs.gitlab.com/ee/user/project/releases/#permanent-links-to-release-assets)). Ignored if `path` matches more than one file. Supports [Lodash templating](https://lodash.com/docs#template). | -                                    |
+| `target`   | Controls where the file is uploaded to. Can be set to `project_upload` for storing the file as [project upload](https://docs.gitlab.com/ee/api/projects.html#upload-a-file) or `generic_package` for storing the file as [generic package](https://docs.gitlab.com/ee/user/packages/generic_packages/).                            | `project_upload`                     |
+| `status`   | This is only applied, if `target` is set to `generic_package`. The generic package status. Can be `default` and `hidden` (see official documents on [generic packages](https://docs.gitlab.com/ee/user/packages/generic_packages/)).                                                                                               | `default`                            |
 
 Each entry in the `assets` `Array` is globbed individually. A [glob](https://github.com/isaacs/node-glob#glob-primer)
 can be a `String` (`"dist/**/*.js"` or `"dist/mylib.js"`) or an `Array` of `String`s that will be globbed together
