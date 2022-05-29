@@ -818,6 +818,27 @@ test.serial(
 );
 
 test.serial(
+  'Won\'t throw SemanticReleaseError if "assets" option is an Array of objects with path field but missing the "url" property',
+  async (t) => {
+    const owner = 'test_user';
+    const repo = 'test_repo';
+    const env = {GITLAB_TOKEN: 'gitlab_token'};
+    const assets = [{path: 'README.md'}];
+    const gitlab = authenticate(env)
+      .get(`/projects/${owner}%2F${repo}`)
+      .reply(200, {permissions: {project_access: {access_level: 40}}});
+
+    await t.notThrowsAsync(
+      verify(
+        {assets},
+        {env, options: {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`}, logger: t.context.logger}
+      )
+    );
+    t.true(gitlab.isDone());
+  }
+);
+
+test.serial(
   'Throw SemanticReleaseError if "assets" option is an Array of objects without url nor path property',
   async (t) => {
     const owner = 'test_user';
