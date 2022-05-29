@@ -795,3 +795,47 @@ test.serial('Does not throw an error for option without validator', async (t) =>
   );
   t.true(gitlab.isDone());
 });
+
+test.serial(
+  'Won\'t throw SemanticReleaseError if "assets" option is an Array of objects with url field but missing the "path" property',
+  async (t) => {
+    const owner = 'test_user';
+    const repo = 'test_repo';
+    const env = {GITLAB_TOKEN: 'gitlab_token'};
+    const assets = [{url: 'https://gitlab.com/gitlab-org/gitlab/-/blob/master/README.md'}];
+    const gitlab = authenticate(env)
+      .get(`/projects/${owner}%2F${repo}`)
+      .reply(200, {permissions: {project_access: {access_level: 40}}});
+
+    await t.notThrowsAsync(
+      verify(
+        {assets},
+        {env, options: {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`}, logger: t.context.logger}
+      )
+    );
+    t.true(gitlab.isDone());
+  }
+);
+
+test.serial(
+  'Throw SemanticReleaseError if "assets" option is an Array of objects without url nor path property',
+  async (t) => {
+    const owner = 'test_user';
+    const repo = 'test_repo';
+    const env = {GITLAB_TOKEN: 'gitlab_token'};
+    const assets = [{name: 'README.md'}];
+    const gitlab = authenticate(env)
+      .get(`/projects/${owner}%2F${repo}`)
+      .reply(200, {permissions: {project_access: {access_level: 40}}});
+
+    const [error, ...errors] = await t.throwsAsync(
+      verify(
+        {assets},
+        {env, options: {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`}, logger: t.context.logger}
+      )
+    );
+    t.is(error.name, 'SemanticReleaseError');
+    t.is(error.code, 'EINVALIDASSETS');
+    t.true(gitlab.isDone());
+  }
+);
