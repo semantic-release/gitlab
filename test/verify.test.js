@@ -645,6 +645,44 @@ test.serial('Throw SemanticReleaseError if "failComment" option is a whitespace 
   t.true(gitlab.isDone());
 });
 
+test.serial('Does not throw SemanticReleaseError if "labels" option is a valid String', async (t) => {
+  const owner = 'test_user';
+  const repo = 'test_repo';
+  const env = {GITLAB_TOKEN: 'gitlab_token'};
+  const labels = 'semantic-release';
+  const gitlab = authenticate(env)
+    .get(`/projects/${owner}%2F${repo}`)
+    .reply(200, {permissions: {project_access: {access_level: 40}}});
+
+  await t.notThrowsAsync(
+    verify(
+      {labels},
+      {env, options: {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`}, logger: t.context.logger}
+    )
+  );
+
+  t.true(gitlab.isDone());
+});
+
+test.serial('Does not throw SemanticReleaseError if "labels" option is "false"', async (t) => {
+  const owner = 'test_user';
+  const repo = 'test_repo';
+  const env = {GITLAB_TOKEN: 'gitlab_token'};
+  const labels = false;
+  const gitlab = authenticate(env)
+    .get(`/projects/${owner}%2F${repo}`)
+    .reply(200, {permissions: {project_access: {access_level: 40}}});
+
+  await t.notThrowsAsync(
+    verify(
+      {labels},
+      {env, options: {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`}, logger: t.context.logger}
+    )
+  );
+
+  t.true(gitlab.isDone());
+});
+
 test.serial('Throw SemanticReleaseError if "labels" option is not a String', async (t) => {
   const owner = 'test_user';
   const repo = 'test_repo';
