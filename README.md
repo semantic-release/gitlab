@@ -34,10 +34,10 @@ The plugin can be configured in the [**semantic-release** configuration file](ht
       "assets": [
         {"path": "dist/asset.min.css", "label": "CSS distribution"},
         {"path": "dist/asset.min.js", "label": "JS distribution"},
-        {"path": "dist/asset.min.js", "label": "v${nextRelease.version}.js"}
+        {"path": "dist/asset.min.js", "label": "v${nextRelease.version}.js"},
         {"url": "https://gitlab.com/gitlab-org/gitlab/-/blob/master/README.md"}
       ]
-    }],
+    }]
   ]
 }
 ```
