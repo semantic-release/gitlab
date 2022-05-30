@@ -849,7 +849,7 @@ test.serial(
       .get(`/projects/${owner}%2F${repo}`)
       .reply(200, {permissions: {project_access: {access_level: 40}}});
 
-    const [error, ...errors] = await t.throwsAsync(
+    const [error] = await t.throwsAsync(
       verify(
         {assets},
         {env, options: {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`}, logger: t.context.logger}
