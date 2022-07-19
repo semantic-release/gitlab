@@ -33,7 +33,7 @@
   "devDependencies": {
     "ava": "4.3.1",
     "clear-module": "4.1.2",
-    "nock": "13.2.8",
+    "nock": "13.2.9",
     "nyc": "15.1.0",
     "semantic-release": "19.0.3",
     "sinon": "14.0.0",
