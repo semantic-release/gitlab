@@ -88,6 +88,7 @@ If you need to bypass the proxy for some hosts, configure the `NO_PROXY` environ
 | `failTitle`           | The title of the issue created when a release fails. Set to `false` to disable opening an issue when a release fails.                                           | `The automated release is failing 🚨`                                                                                                                                    |
 | `labels`              | The [labels](https://docs.gitlab.com/ee/user/project/labels.html#labels) to add to the issue created when a release fails. Set to `false` to not add any label. Labels should be comma-separated as described in the [official docs](https://docs.gitlab.com/ee/api/issues.html#new-issue), e.g. `"semantic-release,bot"`. | `semantic-release`                                                                                                                                                      |
 | `assignee`            | The [assignee](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#assignee) to add to the issue created when a release fails.                  | -                                                                                                                                                                       |
+| `skipPublish` | Skips the publish step so a GitLab release will not be created. This is useful if you only want to add comments for example. | `false` |
 
 #### assets
 

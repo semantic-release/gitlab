@@ -15,6 +15,7 @@ const defaultOptions = {
   labels: 'semantic-release',
   assignee: undefined,
   proxy: {},
+  skipPublish: undefined,
 };
 
 test('Returns user config', (t) => {
