@@ -479,7 +479,28 @@ test.serial("Throw SemanticReleaseError if token doesn't have the push permissio
 
   t.is(errors.length, 0);
   t.is(error.name, 'SemanticReleaseError');
-  t.is(error.code, 'EGLNOPERMISSION');
+  t.is(error.code, 'EGLNOPUSHPERMISSION');
+  t.true(gitlab.isDone());
+});
+
+test.serial("Throw SemanticReleaseError if token doesn't have the pull permission on the repository", async (t) => {
+  const owner = 'test_user';
+  const repo = 'test_repo';
+  const env = {GITLAB_TOKEN: 'gitlab_token'};
+  const gitlab = authenticate(env)
+    .get(`/projects/${owner}%2F${repo}`)
+    .reply(200, {permissions: {project_access: {access_level: 5}, group_access: {access_level: 5}}});
+
+  const [error, ...errors] = await t.throwsAsync(
+    verify(
+      {},
+      {env, options: {repositoryUrl: `https://gitlab.com:${owner}/${repo}.git`, dryRun: true}, logger: t.context.logger}
+    )
+  );
+
+  t.is(errors.length, 0);
+  t.is(error.name, 'SemanticReleaseError');
+  t.is(error.code, 'EGLNOPULLPERMISSION');
   t.true(gitlab.isDone());
 });
 
