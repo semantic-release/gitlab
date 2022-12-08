@@ -1,8 +1,8 @@
-const test = require('ava');
-const nock = require('nock');
-const {stub} = require('sinon');
-const fail = require('../lib/fail');
-const authenticate = require('./helpers/mock-gitlab');
+import test from "ava";
+import nock from "nock";
+import { stub } from "sinon";
+import fail from "../lib/fail.js";
+import authenticate from "./helpers/mock-gitlab.js";
 
 /* eslint camelcase: ["error", {properties: "never"}] */
 
@@ -10,7 +10,7 @@ test.beforeEach((t) => {
   // Mock logger
   t.context.log = stub();
   t.context.error = stub();
-  t.context.logger = {log: t.context.log, error: t.context.error};
+  t.context.logger = { log: t.context.log, error: t.context.error };
 });
 
 test.afterEach.always(() => {
@@ -18,16 +18,16 @@ test.afterEach.always(() => {
   nock.cleanAll();
 });
 
-test.serial('Post new issue if none exists yet', async (t) => {
-  const owner = 'test_user';
-  const repo = 'test_repo';
-  const env = {GITLAB_TOKEN: 'gitlab_token'};
+test.serial("Post new issue if none exists yet", async (t) => {
+  const owner = "test_user";
+  const repo = "test_repo";
+  const env = { GITLAB_TOKEN: "gitlab_token" };
   const pluginConfig = {};
-  const branch = {name: 'main'};
-  const options = {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`};
-  const errors = [{message: 'An error occured'}];
+  const branch = { name: "main" };
+  const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
+  const errors = [{ message: "An error occured" }];
   const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
-  const encodedFailTitle = encodeURIComponent('The automated release is failing 🚨');
+  const encodedFailTitle = encodeURIComponent("The automated release is failing 🚨");
   const gitlab = authenticate(env)
     .get(`/projects/${encodedRepoId}/issues?state=opened&&search=${encodedFailTitle}`)
     .reply(200, [
@@ -35,12 +35,12 @@ test.serial('Post new issue if none exists yet', async (t) => {
         id: 2,
         iid: 2,
         project_id: 1,
-        web_url: 'https://gitlab.com/test_user/test_repo/issues/2',
-        title: 'API should implemented authentication',
+        web_url: "https://gitlab.com/test_user/test_repo/issues/2",
+        title: "API should implemented authentication",
       },
     ])
     .post(`/projects/${encodedRepoId}/issues`, {
-      id: 'test_user%2Ftest_repo',
+      id: "test_user%2Ftest_repo",
       description: `## :rotating_light: The automated release from the \`main\` branch failed. :rotating_light:
 
 I recommend you give this issue a high priority, so other packages depending on you can benefit from your bug fixes and new features again.
@@ -69,26 +69,26 @@ Unfortunately this error doesn't have any additional information.
 Good luck with your project ✨
 
 Your **[semantic-release](https://github.com/semantic-release/semantic-release)** bot :package: :rocket:`,
-      labels: 'semantic-release',
-      title: 'The automated release is failing 🚨',
+      labels: "semantic-release",
+      title: "The automated release is failing 🚨",
     })
     .reply(200);
 
-  await fail(pluginConfig, {env, options, branch, errors, logger: t.context.logger});
+  await fail(pluginConfig, { env, options, branch, errors, logger: t.context.logger });
 
   t.true(gitlab.isDone());
 });
 
-test.serial('Post comments to existing issue', async (t) => {
-  const owner = 'test_user';
-  const repo = 'test_repo';
-  const env = {GITLAB_TOKEN: 'gitlab_token'};
+test.serial("Post comments to existing issue", async (t) => {
+  const owner = "test_user";
+  const repo = "test_repo";
+  const env = { GITLAB_TOKEN: "gitlab_token" };
   const pluginConfig = {};
-  const branch = {name: 'main'};
-  const options = {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`};
-  const errors = [{message: 'An error occured'}];
+  const branch = { name: "main" };
+  const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
+  const errors = [{ message: "An error occured" }];
   const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
-  const encodedFailTitle = encodeURIComponent('The automated release is failing 🚨');
+  const encodedFailTitle = encodeURIComponent("The automated release is failing 🚨");
   const gitlab = authenticate(env)
     .get(`/projects/${encodedRepoId}/issues?state=opened&search=${encodedFailTitle}`)
     .reply(200, [
@@ -96,15 +96,15 @@ test.serial('Post comments to existing issue', async (t) => {
         id: 1,
         iid: 1,
         project_id: 1,
-        web_url: 'https://gitlab.com/test_user%2Ftest_repo/issues/1',
-        title: 'The automated release is failing 🚨',
+        web_url: "https://gitlab.com/test_user%2Ftest_repo/issues/1",
+        title: "The automated release is failing 🚨",
       },
       {
         id: 2,
         iid: 2,
         project_id: 1,
-        web_url: 'https://gitlab.com/test_user%2Ftest_repo/issues/2',
-        title: 'API should implemented authentication',
+        web_url: "https://gitlab.com/test_user%2Ftest_repo/issues/2",
+        title: "API should implemented authentication",
       },
     ])
     .post(`/projects/1/issues/1/notes`, {
@@ -139,24 +139,24 @@ Your **[semantic-release](https://github.com/semantic-release/semantic-release)*
     })
     .reply(200);
 
-  await fail(pluginConfig, {env, options, branch, errors, logger: t.context.logger});
+  await fail(pluginConfig, { env, options, branch, errors, logger: t.context.logger });
 
   t.true(gitlab.isDone());
 });
 
-test.serial('Post comments to existing issue with custom template', async (t) => {
-  const owner = 'test_user';
-  const repo = 'test_repo';
-  const env = {GITLAB_TOKEN: 'gitlab_token'};
+test.serial("Post comments to existing issue with custom template", async (t) => {
+  const owner = "test_user";
+  const repo = "test_repo";
+  const env = { GITLAB_TOKEN: "gitlab_token" };
   const pluginConfig = {
     failComment: `Error: Release for branch \${branch.name} failed with error: \${errors.map(error => error.message).join(';')}`,
-    failTitle: 'Semantic Release Failure',
+    failTitle: "Semantic Release Failure",
   };
-  const branch = {name: 'main'};
-  const options = {repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`};
-  const errors = [{message: 'An error occured'}];
+  const branch = { name: "main" };
+  const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
+  const errors = [{ message: "An error occured" }];
   const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
-  const encodedFailTitle = encodeURIComponent('Semantic Release Failure');
+  const encodedFailTitle = encodeURIComponent("Semantic Release Failure");
   const gitlab = authenticate(env)
     .get(`/projects/${encodedRepoId}/issues?state=opened&search=${encodedFailTitle}`)
     .reply(200, [
@@ -164,15 +164,15 @@ test.serial('Post comments to existing issue with custom template', async (t) =>
         id: 1,
         iid: 1,
         project_id: 1,
-        web_url: 'https://gitlab.com/test_user%2Ftest_repo/issues/1',
-        title: 'Semantic Release Failure',
+        web_url: "https://gitlab.com/test_user%2Ftest_repo/issues/1",
+        title: "Semantic Release Failure",
       },
       {
         id: 2,
         iid: 2,
         project_id: 1,
-        web_url: 'https://gitlab.com/test_user%2Ftest_repo/issues/2',
-        title: 'API should implemented authentication',
+        web_url: "https://gitlab.com/test_user%2Ftest_repo/issues/2",
+        title: "API should implemented authentication",
       },
     ])
     .post(`/projects/1/issues/1/notes`, {
@@ -180,7 +180,7 @@ test.serial('Post comments to existing issue with custom template', async (t) =>
     })
     .reply(200);
 
-  await fail(pluginConfig, {env, options, branch, errors, logger: t.context.logger});
+  await fail(pluginConfig, { env, options, branch, errors, logger: t.context.logger });
 
   t.true(gitlab.isDone());
 });
