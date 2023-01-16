@@ -3,6 +3,7 @@
   "description": "semantic-release plugin to publish a GitLab release",
   "version": "0.0.0-development",
   "author": "Pierre Vanduynslager (https://twitter.com/@pvdlg_)",
+  "type": "module",
   "ava": {
     "files": [
       "test/**/*.test.js"
@@ -26,22 +27,21 @@
     "globby": "^11.0.0",
     "got": "^11.0.0",
     "hpagent": "^1.0.0",
-    "lodash": "^4.17.11",
+    "lodash-es": "^4.17.21",
     "parse-url": "^8.0.0",
+    "prettier": "^2.8.2",
     "url-join": "^4.0.0"
   },
   "devDependencies": {
     "ava": "5.1.0",
-    "clear-module": "4.1.2",
+    "c8": "^7.12.0",
     "nock": "13.3.0",
-    "nyc": "15.1.0",
     "semantic-release": "20.0.2",
     "sinon": "15.0.1",
-    "tempy": "1.0.1",
-    "xo": "0.39.1"
+    "tempy": "1.0.1"
   },
   "engines": {
-    "node": ">=14.17"
+    "node": ">=18"
   },
   "files": [
     "lib",
@@ -58,10 +58,11 @@
   ],
   "license": "MIT",
   "main": "index.js",
-  "nyc": {
+  "c8": {
     "include": [
       "lib/**/*.js",
-      "index.js"
+      "index.js",
+      "cli.js"
     ],
     "reporter": [
       "json",
@@ -70,14 +71,12 @@
     ],
     "all": true
   },
-  "peerDependencies": {
-    "semantic-release": ">=18.0.0"
-  },
   "prettier": {
     "printWidth": 120,
-    "trailingComma": "es5",
-    "singleQuote": true,
-    "bracketSpacing": false
+    "trailingComma": "es5"
+  },
+  "peerDependencies": {
+    "semantic-release": ">=18.0.0"
   },
   "publishConfig": {
     "access": "public"
@@ -87,18 +86,10 @@
     "url": "https://github.com/semantic-release/gitlab.git"
   },
   "scripts": {
-    "lint": "xo",
+    "lint": "prettier --check \"*.{js,json,md}\" \".github/**/*.{md,yml}\" \"{bin,lib,test}/*.js\"",
+    "lint:fix": "prettier --write \"*.{js,json,md}\" \".github/**/*.{md,yml}\" \"{bin,lib,test}/*.js\"",
     "semantic-release": "semantic-release",
-    "test": "nyc ava -v",
-    "test:ci": "nyc ava -v"
-  },
-  "xo": {
-    "prettier": true,
-    "space": true,
-    "rules": {
-      "unicorn/string-content": "off",
-      "import/extensions": "off"
-    }
+    "test": "c8 ava --verbose"
   },
   "renovate": {
     "extends": [

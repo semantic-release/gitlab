@@ -13,8 +13,8 @@ jobs:
     strategy:
       matrix:
         node-version:
-          - '14.17'
-          - 16
+          - 18.0.0
+          - 19
         os:
           - ubuntu-latest
           - macos-latest
@@ -30,7 +30,7 @@ jobs:
       - run: npm ci
       - name: Ensure dependencies are compatible with the version of node
         run: npx ls-engines
-      - run: "npm run test:ci"
+      - run: npm run test
   test:
     runs-on: ubuntu-latest
     needs: test_matrix

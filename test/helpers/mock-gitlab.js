@@ -1,5 +1,5 @@
-const nock = require('nock');
-const urlJoin = require('url-join');
+import nock from 'nock';
+import urlJoin from 'url-join';
 
 /**
  * Retun a `nock` object setup to respond to a GitLab authentication request. Other expectation and responses can be chained.
@@ -10,7 +10,7 @@ const urlJoin = require('url-join');
  * @param {String} [gitlabApiPathPrefix=env.GL_PREFIX || env.GITLAB_PREFIX || ''] The GitHub Enterprise API prefix.
  * @return {Object} A `nock` object ready to respond to a github authentication request.
  */
-module.exports = function (
+export default function (
   env = {},
   {
     gitlabToken = env.GL_TOKEN || env.GITLAB_TOKEN || 'GL_TOKEN',
