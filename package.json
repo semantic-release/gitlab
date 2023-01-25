@@ -76,7 +76,7 @@
     "trailingComma": "es5"
   },
   "peerDependencies": {
-    "semantic-release": ">=18.0.0"
+    "semantic-release": ">=20.1.0"
   },
   "publishConfig": {
     "access": "public"
