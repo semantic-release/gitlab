@@ -1,18 +1,18 @@
 /* eslint require-atomic-updates: off */
 
-const verifyGitLab = require('./lib/verify');
-const publishGitLab = require('./lib/publish');
-const successGitLab = require('./lib/success');
-const failGitLab = require('./lib/fail');
+import verifyGitLab from "./lib/verify.js";
+import publishGitLab from "./lib/publish.js";
+import successGitLab from "./lib/success.js";
+import failGitLab from "./lib/fail.js";
 
 let verified;
 
-async function verifyConditions(pluginConfig, context) {
+export async function verifyConditions(pluginConfig, context) {
   await verifyGitLab(pluginConfig, context);
   verified = true;
 }
 
-async function publish(pluginConfig, context) {
+export async function publish(pluginConfig, context) {
   if (!verified) {
     await verifyGitLab(pluginConfig, context);
     verified = true;
@@ -21,7 +21,7 @@ async function publish(pluginConfig, context) {
   return publishGitLab(pluginConfig, context);
 }
 
-async function success(pluginConfig, context) {
+export async function success(pluginConfig, context) {
   if (!verified) {
     await verifyGitLab(pluginConfig, context);
     verified = true;
@@ -30,7 +30,7 @@ async function success(pluginConfig, context) {
   return successGitLab(pluginConfig, context);
 }
 
-async function fail(pluginConfig, context) {
+export async function fail(pluginConfig, context) {
   if (!verified) {
     await verifyGitLab(pluginConfig, context);
     verified = true;
@@ -38,5 +38,3 @@ async function fail(pluginConfig, context) {
 
   return failGitLab(pluginConfig, context);
 }
-
-module.exports = {verifyConditions, publish, success, fail};
