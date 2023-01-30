@@ -29,13 +29,13 @@
     "hpagent": "^1.0.0",
     "lodash-es": "^4.17.21",
     "parse-url": "^8.0.0",
-    "prettier": "^2.8.2",
     "url-join": "^4.0.0"
   },
   "devDependencies": {
     "ava": "5.1.1",
     "c8": "^7.12.0",
     "nock": "13.3.0",
+    "prettier": "^2.8.2",
     "semantic-release": "20.1.0",
     "sinon": "15.0.1",
     "tempy": "1.0.1"
