@@ -40,12 +40,14 @@ test.serial("Throw SemanticReleaseError if invalid config", async (t) => {
   };
 
   const errors = [
-    ...(await t.throwsAsync(
-      t.context.m.verifyConditions(
-        { gitlabUrl: "https://gitlab.com/context" },
-        { env, options, logger: t.context.logger }
+    ...(
+      await t.throwsAsync(
+        t.context.m.verifyConditions(
+          { gitlabUrl: "https://gitlab.com/context" },
+          { env, options, logger: t.context.logger }
+        )
       )
-    )),
+    ).errors,
   ];
 
   t.is(errors[0].name, "SemanticReleaseError");
