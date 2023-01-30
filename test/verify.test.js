@@ -334,7 +334,9 @@ test.serial('Throw SemanticReleaseError if "assets" option is not a String or an
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, { permissions: { project_access: { access_level: 40 } } });
 
-  const [error, ...errors] = await t.throwsAsync(
+  const {
+    errors: [error, ...errors],
+  } = await t.throwsAsync(
     verify(
       { assets },
       { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
@@ -356,7 +358,9 @@ test.serial('Throw SemanticReleaseError if "assets" option is an Array with inva
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, { permissions: { project_access: { access_level: 40 } } });
 
-  const [error, ...errors] = await t.throwsAsync(
+  const {
+    errors: [error, ...errors],
+  } = await t.throwsAsync(
     verify(
       { assets },
       { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
@@ -378,7 +382,9 @@ test.serial('Throw SemanticReleaseError if "assets" option is an Object missing 
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, { permissions: { project_access: { access_level: 40 } } });
 
-  const [error, ...errors] = await t.throwsAsync(
+  const {
+    errors: [error, ...errors],
+  } = await t.throwsAsync(
     verify(
       { assets },
       { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
@@ -402,7 +408,9 @@ test.serial(
       .get(`/projects/${owner}%2F${repo}`)
       .reply(200, { permissions: { project_access: { access_level: 40 } } });
 
-    const [error, ...errors] = await t.throwsAsync(
+    const {
+      errors: [error, ...errors],
+    } = await t.throwsAsync(
       verify(
         { assets },
         { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
@@ -418,7 +426,9 @@ test.serial(
 
 test("Throw SemanticReleaseError for missing GitLab token", async (t) => {
   const env = {};
-  const [error, ...errors] = await t.throwsAsync(
+  const {
+    errors: [error, ...errors],
+  } = await t.throwsAsync(
     verify(
       {},
       { env, options: { repositoryUrl: "https://gitlab.com/semantic-release/gitlab.git" }, logger: t.context.logger }
@@ -436,7 +446,9 @@ test.serial("Throw SemanticReleaseError for invalid token", async (t) => {
   const env = { GL_TOKEN: "gitlab_token" };
   const gitlab = authenticate(env).get(`/projects/${owner}%2F${repo}`).reply(401);
 
-  const [error, ...errors] = await t.throwsAsync(
+  const {
+    errors: [error, ...errors],
+  } = await t.throwsAsync(
     verify({}, { env, options: { repositoryUrl: `https://gitlab.com:${owner}/${repo}.git` }, logger: t.context.logger })
   );
 
@@ -450,7 +462,9 @@ test.serial("Throw SemanticReleaseError for invalid repositoryUrl", async (t) =>
   const env = { GITLAB_TOKEN: "gitlab_token" };
   const gitlabUrl = "https://gitlab.com/context";
 
-  const [error, ...errors] = await t.throwsAsync(
+  const {
+    errors: [error, ...errors],
+  } = await t.throwsAsync(
     verify(
       { gitlabUrl },
       { env, options: { repositoryUrl: "git+ssh://git@gitlab.com/context.git" }, logger: t.context.logger }
@@ -466,8 +480,9 @@ test.serial("Throw AggregateError if multiple verification fails", async (t) => 
   const env = {};
   const gitlabUrl = "https://gitlab.com/context";
   const assets = 42;
-
-  const [invalidAssetsError, invalidUrlError, noTokenError, ...errors] = await t.throwsAsync(
+  const {
+    errors: [invalidAssetsError, invalidUrlError, noTokenError, ...errors],
+  } = await t.throwsAsync(
     verify(
       { assets, gitlabUrl },
       { env, options: { repositoryUrl: "git+ssh://git@gitlab.com/context.git" }, logger: t.context.logger }
@@ -491,7 +506,9 @@ test.serial("Throw SemanticReleaseError if token doesn't have the push permissio
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, { permissions: { project_access: { access_level: 10 }, group_access: { access_level: 20 } } });
 
-  const [error, ...errors] = await t.throwsAsync(
+  const {
+    errors: [error, ...errors],
+  } = await t.throwsAsync(
     verify({}, { env, options: { repositoryUrl: `https://gitlab.com:${owner}/${repo}.git` }, logger: t.context.logger })
   );
 
@@ -509,7 +526,9 @@ test.serial("Throw SemanticReleaseError if token doesn't have the pull permissio
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, { permissions: { project_access: { access_level: 5 }, group_access: { access_level: 5 } } });
 
-  const [error, ...errors] = await t.throwsAsync(
+  const {
+    errors: [error, ...errors],
+  } = await t.throwsAsync(
     verify(
       {},
       {
@@ -532,7 +551,9 @@ test.serial("Throw SemanticReleaseError if the repository doesn't exist", async 
   const env = { GITLAB_TOKEN: "gitlab_token" };
   const gitlab = authenticate(env).get(`/projects/${owner}%2F${repo}`).reply(404);
 
-  const [error, ...errors] = await t.throwsAsync(
+  const {
+    errors: [error, ...errors],
+  } = await t.throwsAsync(
     verify({}, { env, options: { repositoryUrl: `https://gitlab.com:${owner}/${repo}.git` }, logger: t.context.logger })
   );
 
@@ -565,7 +586,9 @@ test.serial('Throw SemanticReleaseError if "failTitle" option is not a String', 
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, { permissions: { project_access: { access_level: 40 } } });
 
-  const [error, ...errors] = await t.throwsAsync(
+  const {
+    errors: [error, ...errors],
+  } = await t.throwsAsync(
     verify(
       { failTitle },
       { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
@@ -587,7 +610,9 @@ test.serial('Throw SemanticReleaseError if "failTitle" option is an empty String
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, { permissions: { project_access: { access_level: 40 } } });
 
-  const [error, ...errors] = await t.throwsAsync(
+  const {
+    errors: [error, ...errors],
+  } = await t.throwsAsync(
     verify(
       { failTitle },
       { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
@@ -609,7 +634,9 @@ test.serial('Throw SemanticReleaseError if "failTitle" option is a whitespace St
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, { permissions: { project_access: { access_level: 40 } } });
 
-  const [error, ...errors] = await t.throwsAsync(
+  const {
+    errors: [error, ...errors],
+  } = await t.throwsAsync(
     verify(
       { failTitle },
       { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
@@ -631,7 +658,9 @@ test.serial('Throw SemanticReleaseError if "failComment" option is not a String'
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, { permissions: { project_access: { access_level: 40 } } });
 
-  const [error, ...errors] = await t.throwsAsync(
+  const {
+    errors: [error, ...errors],
+  } = await t.throwsAsync(
     verify(
       { failComment },
       { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
@@ -653,7 +682,9 @@ test.serial('Throw SemanticReleaseError if "failComment" option is an empty Stri
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, { permissions: { project_access: { access_level: 40 } } });
 
-  const [error, ...errors] = await t.throwsAsync(
+  const {
+    errors: [error, ...errors],
+  } = await t.throwsAsync(
     verify(
       { failComment },
       { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
@@ -675,7 +706,9 @@ test.serial('Throw SemanticReleaseError if "failComment" option is a whitespace 
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, { permissions: { project_access: { access_level: 40 } } });
 
-  const [error, ...errors] = await t.throwsAsync(
+  const {
+    errors: [error, ...errors],
+  } = await t.throwsAsync(
     verify(
       { failComment },
       { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
@@ -735,7 +768,9 @@ test.serial('Throw SemanticReleaseError if "labels" option is not a String', asy
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, { permissions: { project_access: { access_level: 40 } } });
 
-  const [error, ...errors] = await t.throwsAsync(
+  const {
+    errors: [error, ...errors],
+  } = await t.throwsAsync(
     verify(
       { labels },
       { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
@@ -757,7 +792,9 @@ test.serial('Throw SemanticReleaseError if "labels" option is an empty String', 
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, { permissions: { project_access: { access_level: 40 } } });
 
-  const [error, ...errors] = await t.throwsAsync(
+  const {
+    errors: [error, ...errors],
+  } = await t.throwsAsync(
     verify(
       { labels },
       { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
@@ -779,7 +816,9 @@ test.serial('Throw SemanticReleaseError if "labels" option is a whitespace Strin
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, { permissions: { project_access: { access_level: 40 } } });
 
-  const [error, ...errors] = await t.throwsAsync(
+  const {
+    errors: [error, ...errors],
+  } = await t.throwsAsync(
     verify(
       { labels },
       { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
@@ -801,7 +840,9 @@ test.serial('Throw SemanticReleaseError if "assignee" option is not a String', a
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, { permissions: { project_access: { access_level: 40 } } });
 
-  const [error, ...errors] = await t.throwsAsync(
+  const {
+    errors: [error, ...errors],
+  } = await t.throwsAsync(
     verify(
       { assignee },
       { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
@@ -823,7 +864,9 @@ test.serial('Throw SemanticReleaseError if "assignee" option is an empty String'
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, { permissions: { project_access: { access_level: 40 } } });
 
-  const [error, ...errors] = await t.throwsAsync(
+  const {
+    errors: [error, ...errors],
+  } = await t.throwsAsync(
     verify(
       { assignee },
       { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
@@ -845,7 +888,9 @@ test.serial('Throw SemanticReleaseError if "assignee" option is a whitespace Str
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, { permissions: { project_access: { access_level: 40 } } });
 
-  const [error, ...errors] = await t.throwsAsync(
+  const {
+    errors: [error, ...errors],
+  } = await t.throwsAsync(
     verify(
       { assignee },
       { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
@@ -930,7 +975,9 @@ test.serial(
       .get(`/projects/${owner}%2F${repo}`)
       .reply(200, { permissions: { project_access: { access_level: 40 } } });
 
-    const [error] = await t.throwsAsync(
+    const {
+      errors: [error],
+    } = await t.throwsAsync(
       verify(
         { assets },
         { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
