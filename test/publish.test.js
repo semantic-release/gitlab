@@ -104,7 +104,7 @@ test.serial("Publish a release with generics", async (t) => {
         links: [
           {
             name: "Style package",
-            url: `https://gitlab.com/${owner}/${repo}${uploaded.file.url}`,
+            url: uploaded.file.url,
             link_type: "package",
           },
         ],
