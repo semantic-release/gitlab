@@ -104,7 +104,7 @@ test.serial("Publish a release with generics", async (t) => {
         links: [
           {
             name: "Style package",
-            url: `https://gitlab.com/${owner}/${repo}${uploaded.file.url}`,
+            url: uploaded.file.url,
             link_type: "package",
           },
         ],
@@ -114,7 +114,7 @@ test.serial("Publish a release with generics", async (t) => {
   const gitlabUpload = authenticate(env)
     .put(
       `/projects/${encodedRepoId}/packages/generic/release/${encodedGitTag}/${encodedLabel}?status=${generic.status}&select=package_file`,
-      /filename="file.css"/gm
+      /\.test\s\{\}/gm
     )
     .reply(200, uploaded);
 
