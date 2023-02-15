@@ -83,7 +83,7 @@ test.serial("Publish a release with assets", async (t) => {
   t.true(gitlab.isDone());
 });
 
-test.serial("Publish a release with generics and relative URL", async (t) => {
+test.serial("Publish a release with generics", async (t) => {
   const cwd = "test/fixtures/files";
   const owner = "test_user";
   const repo = "test_repo";
@@ -97,6 +97,7 @@ test.serial("Publish a release with generics and relative URL", async (t) => {
   const generic = { path: "file.css", label: "Style package", target: "generic_package", status: "hidden" };
   const assets = [generic];
   const encodedLabel = encodeURIComponent(generic.label);
+  const expectedUrl = `https://gitlab.com/api/v4/projects/${encodedRepoId}/packages/generic/release/${encodedVersion}/${encodedLabel}`;
   const gitlab = authenticate(env)
     .post(`/projects/${encodedRepoId}/releases`, {
       tag_name: nextRelease.gitTag,
@@ -105,7 +106,7 @@ test.serial("Publish a release with generics and relative URL", async (t) => {
         links: [
           {
             name: "Style package",
-            url: `https://gitlab.com/${owner}/${repo}${uploaded.file.url}`,
+            url: expectedUrl,
             link_type: "package",
           },
         ],
@@ -122,7 +123,7 @@ test.serial("Publish a release with generics and relative URL", async (t) => {
   const result = await publish({ assets }, { env, cwd, options, nextRelease, logger: t.context.logger });
 
   t.is(result.url, `https://gitlab.com/${owner}/${repo}/-/releases/${encodedGitTag}`);
-  t.deepEqual(t.context.log.args[0], ["Uploaded file: %s", uploaded.file.url]);
+  t.deepEqual(t.context.log.args[0], ["Uploaded file: %s (%s)", expectedUrl, uploaded.file.url]);
   t.deepEqual(t.context.log.args[1], ["Published GitLab release: %s", nextRelease.gitTag]);
   t.true(gitlabUpload.isDone());
   t.true(gitlab.isDone());
@@ -142,6 +143,7 @@ test.serial("Publish a release with generics and external storage provider (http
   const generic = { path: "file.css", label: "Style package", target: "generic_package", status: "hidden" };
   const assets = [generic];
   const encodedLabel = encodeURIComponent(generic.label);
+  const expectedUrl = `https://gitlab.com/api/v4/projects/${encodedRepoId}/packages/generic/release/${encodedVersion}/${encodedLabel}`;
   const gitlab = authenticate(env)
     .post(`/projects/${encodedRepoId}/releases`, {
       tag_name: nextRelease.gitTag,
@@ -150,7 +152,7 @@ test.serial("Publish a release with generics and external storage provider (http
         links: [
           {
             name: "Style package",
-            url: uploaded.file.url,
+            url: expectedUrl,
             link_type: "package",
           },
         ],
@@ -167,7 +169,7 @@ test.serial("Publish a release with generics and external storage provider (http
   const result = await publish({ assets }, { env, cwd, options, nextRelease, logger: t.context.logger });
 
   t.is(result.url, `https://gitlab.com/${owner}/${repo}/-/releases/${encodedGitTag}`);
-  t.deepEqual(t.context.log.args[0], ["Uploaded file: %s", uploaded.file.url]);
+  t.deepEqual(t.context.log.args[0], ["Uploaded file: %s (%s)", expectedUrl, uploaded.file.url]);
   t.deepEqual(t.context.log.args[1], ["Published GitLab release: %s", nextRelease.gitTag]);
   t.true(gitlabUpload.isDone());
   t.true(gitlab.isDone());
@@ -187,6 +189,7 @@ test.serial("Publish a release with generics and external storage provider (http
   const generic = { path: "file.css", label: "Style package", target: "generic_package", status: "hidden" };
   const assets = [generic];
   const encodedLabel = encodeURIComponent(generic.label);
+  const expectedUrl = `https://gitlab.com/api/v4/projects/${encodedRepoId}/packages/generic/release/${encodedVersion}/${encodedLabel}`;
   const gitlab = authenticate(env)
     .post(`/projects/${encodedRepoId}/releases`, {
       tag_name: nextRelease.gitTag,
@@ -195,7 +198,7 @@ test.serial("Publish a release with generics and external storage provider (http
         links: [
           {
             name: "Style package",
-            url: uploaded.file.url,
+            url: expectedUrl,
             link_type: "package",
           },
         ],
@@ -212,7 +215,7 @@ test.serial("Publish a release with generics and external storage provider (http
   const result = await publish({ assets }, { env, cwd, options, nextRelease, logger: t.context.logger });
 
   t.is(result.url, `https://gitlab.com/${owner}/${repo}/-/releases/${encodedGitTag}`);
-  t.deepEqual(t.context.log.args[0], ["Uploaded file: %s", uploaded.file.url]);
+  t.deepEqual(t.context.log.args[0], ["Uploaded file: %s (%s)", expectedUrl, uploaded.file.url]);
   t.deepEqual(t.context.log.args[1], ["Published GitLab release: %s", nextRelease.gitTag]);
   t.true(gitlabUpload.isDone());
   t.true(gitlab.isDone());
@@ -232,6 +235,7 @@ test.serial("Publish a release with generics and external storage provider (ftp)
   const generic = { path: "file.css", label: "Style package", target: "generic_package", status: "hidden" };
   const assets = [generic];
   const encodedLabel = encodeURIComponent(generic.label);
+  const expectedUrl = `https://gitlab.com/api/v4/projects/${encodedRepoId}/packages/generic/release/${encodedVersion}/${encodedLabel}`;
   const gitlab = authenticate(env)
     .post(`/projects/${encodedRepoId}/releases`, {
       tag_name: nextRelease.gitTag,
@@ -240,7 +244,7 @@ test.serial("Publish a release with generics and external storage provider (ftp)
         links: [
           {
             name: "Style package",
-            url: uploaded.file.url,
+            url: expectedUrl,
             link_type: "package",
           },
         ],
@@ -257,7 +261,7 @@ test.serial("Publish a release with generics and external storage provider (ftp)
   const result = await publish({ assets }, { env, cwd, options, nextRelease, logger: t.context.logger });
 
   t.is(result.url, `https://gitlab.com/${owner}/${repo}/-/releases/${encodedGitTag}`);
-  t.deepEqual(t.context.log.args[0], ["Uploaded file: %s", uploaded.file.url]);
+  t.deepEqual(t.context.log.args[0], ["Uploaded file: %s (%s)", expectedUrl, uploaded.file.url]);
   t.deepEqual(t.context.log.args[1], ["Published GitLab release: %s", nextRelease.gitTag]);
   t.true(gitlabUpload.isDone());
   t.true(gitlab.isDone());
