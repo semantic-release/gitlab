@@ -79,7 +79,8 @@
     "semantic-release": ">=20.1.0"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "provenance": true
   },
   "repository": {
     "type": "git",
