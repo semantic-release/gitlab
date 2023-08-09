@@ -41,18 +41,18 @@ test("Parse repo id with organization and subgroup", (t) => {
 test("Get repo id from GitLab CI", (t) => {
   t.is(
     getRepoId(
-      { envCi: { service: "gitlab" }, env: { CI_PROJECT_ID: "123" } },
+      { envCi: { service: "gitlab" }, env: { CI_PROJECT_PATH: "other-owner/other-repo" } },
       "https://gitlbab.com",
       "https://gitlab.com/owner/repo.git"
     ),
-    "123"
+    "other-owner/other-repo"
   );
 });
 
-test("Ignore CI_PROJECT_ID if not on GitLab CI", (t) => {
+test("Ignore CI_PROJECT_PATH if not on GitLab CI", (t) => {
   t.is(
     getRepoId(
-      { envCi: { service: "travis" }, env: { CI_PROJECT_ID: "123" } },
+      { envCi: { service: "travis" }, env: { CI_PROJECT_PATH: "other-owner/other-repo" } },
       "https://gitlbab.com",
       "https://gitlab.com/owner/repo.git"
     ),
