@@ -36,7 +36,7 @@
     "c8": "8.0.1",
     "nock": "13.3.8",
     "prettier": "3.0.3",
-    "semantic-release": "22.0.6",
+    "semantic-release": "22.0.7",
     "sinon": "17.0.1",
     "tempy": "1.0.1"
   },
