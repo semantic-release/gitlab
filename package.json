@@ -22,7 +22,7 @@
     "debug": "^4.0.0",
     "dir-glob": "^3.0.0",
     "escape-string-regexp": "^5.0.0",
-    "form-data": "^4.0.0",
+    "formdata-node": "^6.0.3",
     "fs-extra": "^11.0.0",
     "globby": "^14.0.0",
     "got": "^13.0.0",
@@ -32,16 +32,16 @@
     "url-join": "^4.0.0"
   },
   "devDependencies": {
-    "ava": "5.3.1",
+    "ava": "6.0.1",
     "c8": "8.0.1",
-    "nock": "13.3.8",
-    "prettier": "3.1.0",
-    "semantic-release": "22.0.8",
+    "nock": "13.4.0",
+    "prettier": "3.1.1",
+    "semantic-release": "22.0.12",
     "sinon": "17.0.1",
     "tempy": "1.0.1"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20.8.1"
   },
   "files": [
     "lib",
