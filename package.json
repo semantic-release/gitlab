@@ -28,7 +28,7 @@
     "got": "^13.0.0",
     "hpagent": "^1.0.0",
     "lodash-es": "^4.17.21",
-    "parse-url": "^8.0.0",
+    "parse-url": "^9.0.0",
     "url-join": "^4.0.0"
   },
   "devDependencies": {
