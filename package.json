@@ -35,7 +35,7 @@
     "ava": "6.1.1",
     "c8": "9.1.0",
     "nock": "13.5.1",
-    "prettier": "3.2.4",
+    "prettier": "3.2.5",
     "semantic-release": "23.0.0",
     "sinon": "17.0.1",
     "tempy": "1.0.1"
