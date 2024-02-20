@@ -72,11 +72,16 @@ Your **[semantic-release](https://github.com/semantic-release/semantic-release)*
       labels: "semantic-release",
       title: "The automated release is failing 🚨",
     })
-    .reply(200);
+    .reply(200, { id: 3, web_url: "https://gitlab.com/test_user/test_repo/-/issues/3" });
 
   await fail(pluginConfig, { env, options, branch, errors, logger: t.context.logger });
 
   t.true(gitlab.isDone());
+  t.deepEqual(t.context.log.args[0], [
+    "Created issue #%d: %s.",
+    3,
+    "https://gitlab.com/test_user/test_repo/-/issues/3",
+  ]);
 });
 
 test.serial("Post comments to existing issue", async (t) => {
