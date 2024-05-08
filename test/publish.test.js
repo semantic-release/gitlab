@@ -617,3 +617,27 @@ test.serial("Publish a release with an asset link", async (t) => {
   t.deepEqual(t.context.log.args[0], ["Published GitLab release: %s", nextRelease.gitTag]);
   t.true(gitlab.isDone());
 });
+
+test.serial("Publish a release with error response", async (t) => {
+  const owner = "test_user";
+  const repo = "test_repo";
+  const env = { GITLAB_TOKEN: "gitlab_token" };
+  const pluginConfig = {};
+  const nextRelease = { gitHead: "123", gitTag: "v1.0.0", notes: "Test release note body" };
+  const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
+  const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
+  const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
+  const gitlab = authenticate(env)
+    .post(`/projects/${encodedRepoId}/releases`, {
+      tag_name: nextRelease.gitTag,
+      description: nextRelease.notes,
+      assets: {
+        links: [],
+      },
+    })
+    .reply(499, { message: "Something went wrong" });
+
+  const error = await t.throwsAsync(publish(pluginConfig, { env, options, nextRelease, logger: t.context.logger }));
+  t.is(error.message, `Response code 499 (Something went wrong)`);
+  t.true(gitlab.isDone());
+});
