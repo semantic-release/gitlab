@@ -54,7 +54,7 @@ With this example [GitLab releases](https://docs.gitlab.com/ee/user/project/rele
 The GitLab authentication configuration is **required** and can be set via
 [environment variables](#environment-variables).
 
-Create a [personal access token](https://docs.gitlab.com/ce/user/profile/personal_access_tokens.html) with role _Developer_ (or higher) and the `api` scope and make it available in your CI environment via the `GL_TOKEN` environment variable. If you are using `GL_TOKEN` as the [remote Git repository authentication](https://github.com/semantic-release/semantic-release/blob/master/docs/usage/ci-configuration.md#authentication) it must also have the `write_repository` scope.
+Create a [project access token](https://docs.gitlab.com/ee/user/project/settings/project_access_tokens.html), [group access token](https://docs.gitlab.com/ee/user/group/settings/group_access_tokens.html), or [personal access token](https://docs.gitlab.com/ce/user/profile/personal_access_tokens.html) with role _Developer_ (or higher) and the `api` scope and make it available in your CI environment via the `GL_TOKEN` environment variable. If you are using `GL_TOKEN` as the [remote Git repository authentication](https://github.com/semantic-release/semantic-release/blob/master/docs/usage/ci-configuration.md#authentication) it must also have the `write_repository` scope.
 
 **Note**: When running with [`dryRun`](https://semantic-release.gitbook.io/semantic-release/usage/configuration#dryrun) only `read_repository` scope is required.
 
