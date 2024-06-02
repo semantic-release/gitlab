@@ -567,7 +567,7 @@ test.serial("Throw error if GitLab API return any other errors", async (t) => {
   const owner = "test_user";
   const repo = "test_repo";
   const env = { GITLAB_TOKEN: "gitlab_token" };
-  const gitlab = authenticate(env).get(`/projects/${owner}%2F${repo}`).times(3).reply(500);
+  const gitlab = authenticate(env).get(`/projects/${owner}%2F${repo}`).times(3).reply(500).persist();
 
   const error = await t.throwsAsync(
     verify({}, { env, options: { repositoryUrl: `https://gitlab.com:${owner}/${repo}.git` }, logger: t.context.logger })
