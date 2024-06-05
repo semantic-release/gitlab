@@ -189,3 +189,57 @@ test.serial("Post comments to existing issue with custom template", async (t) =>
 
   t.true(gitlab.isDone());
 });
+
+test.serial("Does not post comments when failTitle and failComment are both set to false", async (t) => {
+  const owner = "test_user";
+  const repo = "test_repo";
+  const env = { GITLAB_TOKEN: "gitlab_token" };
+  const pluginConfig = {
+    failComment: false,
+    failTitle: false,
+  };
+  const branch = { name: "main" };
+  const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
+  const errors = [{ message: "An error occured" }];
+  const gitlab = authenticate(env);
+
+  await fail(pluginConfig, { env, options, branch, errors, logger: t.context.logger });
+
+  t.true(gitlab.isDone());
+});
+
+test.serial("Does not post comments when failTitle is set to false", async (t) => {
+  const owner = "test_user";
+  const repo = "test_repo";
+  const env = { GITLAB_TOKEN: "gitlab_token" };
+  const pluginConfig = {
+    failComment: `Error: Release for branch \${branch.name} failed with error: \${errors.map(error => error.message).join(';')}`,
+    failTitle: false,
+  };
+  const branch = { name: "main" };
+  const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
+  const errors = [{ message: "An error occured" }];
+  const gitlab = authenticate(env);
+
+  await fail(pluginConfig, { env, options, branch, errors, logger: t.context.logger });
+
+  t.true(gitlab.isDone());
+});
+
+test.serial("Does not post comments when failComment is set to false", async (t) => {
+  const owner = "test_user";
+  const repo = "test_repo";
+  const env = { GITLAB_TOKEN: "gitlab_token" };
+  const pluginConfig = {
+    failComment: false,
+    failTitle: "Semantic Release Failure",
+  };
+  const branch = { name: "main" };
+  const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
+  const errors = [{ message: "An error occured" }];
+  const gitlab = authenticate(env);
+
+  await fail(pluginConfig, { env, options, branch, errors, logger: t.context.logger });
+
+  t.true(gitlab.isDone());
+});
