@@ -92,6 +92,7 @@ If you need to bypass the proxy for some hosts, configure the `NO_PROXY` environ
 | `successCommentCondition` | Use this as condition, when to comment on issues or merge requests. See [successCommentCondition](#successCommentCondition).                                                                                                                                                                                               | -                                                                                                                                                                       |
 | `failComment`             | The content of the issue created when a release fails. See [failComment](#failcomment).                                                                                                                                                                                                                                    | Friendly message with links to **semantic-release** documentation and support, with the list of errors that caused the release to fail.                                 |
 | `failTitle`               | The title of the issue created when a release fails.                                                                                                                                                                                                                                                                       | `The automated release is failing 🚨`                                                                                                                                   |
+| `failCommentCondition`    | Use this as condition, when to comment on or create an issues in case of failures. See [failCommentCondition](#failCommentCondition).                                                                                                                                                                                      | -                                                                                                                                                                       |
 | `labels`                  | The [labels](https://docs.gitlab.com/ee/user/project/labels.html#labels) to add to the issue created when a release fails. Set to `false` to not add any label. Labels should be comma-separated as described in the [official docs](https://docs.gitlab.com/ee/api/issues.html#new-issue), e.g. `"semantic-release,bot"`. | `semantic-release`                                                                                                                                                      |
 | `assignee`                | The [assignee](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#assignee) to add to the issue created when a release fails.                                                                                                                                                                             | -                                                                                                                                                                       |
 
@@ -187,6 +188,27 @@ The `failComment` `This release from branch ${branch.name} had failed due to the
 >
 > - Error message 1
 > - Error message 2
+
+#### failCommentCondition
+
+The fail comment condition is generated with [Lodash template](https://lodash.com/docs#template). The following variables are available:
+
+| Parameter     | Description                                                                                                                                                  |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `branch`      | `Object` with `name`, `type`, `channel`, `range` and `prerelease` properties of the branch from which the release is done.                                   |
+| `lastRelease` | `Object` with `version`, `channel`, `gitTag` and `gitHead` of the last release.                                                                              |
+| `nextRelease` | `Object` with `version`, `channel`, `gitTag`, `gitHead` and `notes` of the release being done.                                                               |
+| `commits`     | `Array` of commit `Object`s with `hash`, `subject`, `body` `message` and `author`.                                                                           |
+| `releases`    | `Array` with a release `Object`s for each release published, with optional release data such as `name` and `url`.                                            |
+| `issue`       | A [GitLab API Issue object](https://docs.gitlab.com/ee/api/issues.html#single-issue) the comment will be posted to - only available if an open issue exists. |
+
+##### failCommentCondition example
+
+- do no create any comments at all: `"<% return false; %>"`
+- to only comment on main branch: `"<% return branch.name === 'main' %>"`
+- you can use labels to filter issues, i.e. to not comment if the issue is labeled with `wip`: `"<% return !issue.labels?.includes('wip') %>"`
+
+> check the [GitLab API Issue object](https://docs.gitlab.com/ee/api/issues.html#single-issue) for properties which can be used for the filter
 
 ## Compatibility
 

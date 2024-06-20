@@ -13,6 +13,7 @@ const defaultOptions = {
   successCommentCondition: undefined,
   failTitle: "The automated release is failing 🚨",
   failComment: undefined,
+  failCommentCondition: undefined,
   labels: "semantic-release",
   assignee: undefined,
   proxy: {},
