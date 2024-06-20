@@ -10,6 +10,7 @@ const defaultOptions = {
   assets: undefined,
   milestones: undefined,
   successComment: undefined,
+  successCommentCondition: undefined,
   failTitle: "The automated release is failing 🚨",
   failComment: undefined,
   labels: "semantic-release",
