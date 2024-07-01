@@ -346,3 +346,18 @@ test.serial("Post new issue if none exists yet with disabled comment on existing
     "https://gitlab.com/test_user/test_repo/-/issues/3",
   ]);
 });
+
+test.serial("Does not post comments when failCommentCondition is set to false", async (t) => {
+  const owner = "test_user";
+  const repo = "test_repo";
+  const env = { GITLAB_TOKEN: "gitlab_token" };
+  const pluginConfig = { failCommentCondition: false };
+  const branch = { name: "main" };
+  const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
+  const errors = [{ message: "An error occured" }];
+  const gitlab = authenticate(env);
+
+  await fail(pluginConfig, { env, options, branch, errors, logger: t.context.logger });
+
+  t.true(gitlab.isDone());
+});

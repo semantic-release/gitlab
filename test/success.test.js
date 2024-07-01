@@ -289,3 +289,19 @@ test.serial(
     t.true(gitlab.isDone());
   }
 );
+
+test.serial("Does not post comments when successCommentCondition is set to false", async (t) => {
+  const owner = "test_user";
+  const repo = "test_repo";
+  const env = { GITLAB_TOKEN: "gitlab_token" };
+  const pluginConfig = { successCommentCondition: false };
+  const nextRelease = { version: "1.0.0" };
+  const releases = [{ name: RELEASE_NAME, url: "https://gitlab.com/test_user/test_repo/-/releases/v1.0.0" }];
+  const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
+  const commits = [{ hash: "abcdef" }, { hash: "fedcba" }];
+  const gitlab = authenticate(env);
+
+  await success(pluginConfig, { env, options, nextRelease, logger: t.context.logger, commits, releases });
+
+  t.true(gitlab.isDone());
+});
