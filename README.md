@@ -164,7 +164,7 @@ The success comment condition is generated with [Lodash template](https://lodash
 
 ##### successCommentCondition example
 
-- do no create any comments at all: set to `false` or templating: `"<% return false; %>"`
+- do not create any comments at all: set to `false` or templating: `"<% return false; %>"`
 - to only comment on issues: `"<% return issue %>"`
 - to only comment on merge requests: `"<% return mergeRequest %>"`
 - you can use labels to filter issues: `"<% return issue.labels?.includes('semantic-release-relevant') %>"`
