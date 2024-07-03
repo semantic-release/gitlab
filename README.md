@@ -204,7 +204,7 @@ The fail comment condition is generated with [Lodash template](https://lodash.co
 
 ##### failCommentCondition example
 
-- do no create any comments at all: set to `false` or templating: `"<% return false; %>"`
+- do not create any comments at all: set to `false` or templating: `"<% return false; %>"`
 - to only comment on main branch: `"<% return branch.name === 'main' %>"`
 - you can use labels to filter issues, i.e. to not comment if the issue is labeled with `wip`: `"<% return !issue.labels?.includes('wip') %>"`
 
