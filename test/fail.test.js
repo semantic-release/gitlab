@@ -243,3 +243,121 @@ test.serial("Does not post comments when failComment is set to false", async (t)
 
   t.true(gitlab.isDone());
 });
+
+test.serial("Does not post comments when failCommentCondition disables it", async (t) => {
+  const owner = "test_user";
+  const repo = "test_repo";
+  const env = { GITLAB_TOKEN: "gitlab_token" };
+  const pluginConfig = { failCommentCondition: "<% return false; %>" };
+  const branch = { name: "main" };
+  const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
+  const errors = [{ message: "An error occured" }];
+  const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
+  const encodedFailTitle = encodeURIComponent("The automated release is failing 🚨");
+  const gitlab = authenticate(env)
+    .get(`/projects/${encodedRepoId}/issues?state=opened&&search=${encodedFailTitle}`)
+    .reply(200, [
+      {
+        id: 2,
+        iid: 2,
+        project_id: 1,
+        web_url: "https://gitlab.com/test_user/test_repo/issues/2",
+        title: "API should implemented authentication",
+      },
+    ]);
+
+  await fail(pluginConfig, { env, options, branch, errors, logger: t.context.logger });
+
+  t.true(gitlab.isDone());
+});
+
+test.serial("Does not post comments on existing issues when failCommentCondition disables this", async (t) => {
+  const owner = "test_user";
+  const repo = "test_repo";
+  const env = { GITLAB_TOKEN: "gitlab_token" };
+  const pluginConfig = { failCommentCondition: "<% return !issue; %>" };
+  const branch = { name: "main" };
+  const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
+  const errors = [{ message: "An error occured" }];
+  const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
+  const encodedFailTitle = encodeURIComponent("The automated release is failing 🚨");
+  const gitlab = authenticate(env)
+    .get(`/projects/${encodedRepoId}/issues?state=opened&&search=${encodedFailTitle}`)
+    .reply(200, [
+      {
+        id: 1,
+        iid: 1,
+        project_id: 1,
+        web_url: "https://gitlab.com/test_user%2Ftest_repo/issues/1",
+        title: "The automated release is failing 🚨",
+      },
+      {
+        id: 2,
+        iid: 2,
+        project_id: 1,
+        web_url: "https://gitlab.com/test_user%2Ftest_repo/issues/2",
+        title: "API should implemented authentication",
+      },
+    ]);
+
+  await fail(pluginConfig, { env, options, branch, errors, logger: t.context.logger });
+
+  t.true(gitlab.isDone());
+});
+
+test.serial("Post new issue if none exists yet with disabled comment on existing issues", async (t) => {
+  const owner = "test_user";
+  const repo = "test_repo";
+  const env = { GITLAB_TOKEN: "gitlab_token" };
+  const pluginConfig = {
+    failComment: `Error: Release for branch \${branch.name} failed with error: \${errors.map(error => error.message).join(';')}`,
+    failCommentCondition: "<% return !issue; %>",
+  };
+  const branch = { name: "main" };
+  const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
+  const errors = [{ message: "An error occured" }];
+  const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
+  const encodedFailTitle = encodeURIComponent("The automated release is failing 🚨");
+  const gitlab = authenticate(env)
+    .get(`/projects/${encodedRepoId}/issues?state=opened&&search=${encodedFailTitle}`)
+    .reply(200, [
+      {
+        id: 2,
+        iid: 2,
+        project_id: 1,
+        web_url: "https://gitlab.com/test_user/test_repo/issues/2",
+        title: "API should implemented authentication",
+      },
+    ])
+    .post(`/projects/${encodedRepoId}/issues`, {
+      id: "test_user%2Ftest_repo",
+      description: `Error: Release for branch main failed with error: An error occured`,
+      labels: "semantic-release",
+      title: "The automated release is failing 🚨",
+    })
+    .reply(200, { id: 3, web_url: "https://gitlab.com/test_user/test_repo/-/issues/3" });
+
+  await fail(pluginConfig, { env, options, branch, errors, logger: t.context.logger });
+
+  t.true(gitlab.isDone());
+  t.deepEqual(t.context.log.args[0], [
+    "Created issue #%d: %s.",
+    3,
+    "https://gitlab.com/test_user/test_repo/-/issues/3",
+  ]);
+});
+
+test.serial("Does not post comments when failCommentCondition is set to false", async (t) => {
+  const owner = "test_user";
+  const repo = "test_repo";
+  const env = { GITLAB_TOKEN: "gitlab_token" };
+  const pluginConfig = { failCommentCondition: false };
+  const branch = { name: "main" };
+  const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
+  const errors = [{ message: "An error occured" }];
+  const gitlab = authenticate(env);
+
+  await fail(pluginConfig, { env, options, branch, errors, logger: t.context.logger });
+
+  t.true(gitlab.isDone());
+});

@@ -82,17 +82,19 @@ If you need to bypass the proxy for some hosts, configure the `NO_PROXY` environ
 
 ### Options
 
-| Option                | Description                                                                                                                                                                                                                                                                                                                | Default                                                                                                                                                                 |
-| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `gitlabUrl`           | The GitLab endpoint.                                                                                                                                                                                                                                                                                                       | `GL_URL` or `GITLAB_URL` environment variable or CI provided environment variables if running on [GitLab CI/CD](https://docs.gitlab.com/ee/ci) or `https://gitlab.com`. |
-| `gitlabApiPathPrefix` | The GitLab API prefix.                                                                                                                                                                                                                                                                                                     | `GL_PREFIX` or `GITLAB_PREFIX` environment variable or CI provided environment variables if running on [GitLab CI/CD](https://docs.gitlab.com/ee/ci) or `/api/v4`.      |
-| `assets`              | An array of files to upload to the release. See [assets](#assets).                                                                                                                                                                                                                                                         | -                                                                                                                                                                       |
-| `milestones`          | An array of milestone titles to associate to the release. See [GitLab Release API](https://docs.gitlab.com/ee/api/releases/#create-a-release).                                                                                                                                                                             | -                                                                                                                                                                       |
-| `successComment`      | The comment to add to each Issue and Merge Request resolved by the release. Set to false to disable commenting. See [successComment](#successComment).                                                                                                                                                                     | :tada: This issue has been resolved in version ${nextRelease.version} :tada:\n\nThe release is available on [GitLab release](gitlab_release_url)                        |
-| `failComment`         | The content of the issue created when a release fails. Set to `false` to disable opening an issue when a release fails. See [failComment](#failcomment).                                                                                                                                                                   | Friendly message with links to **semantic-release** documentation and support, with the list of errors that caused the release to fail.                                 |
-| `failTitle`           | The title of the issue created when a release fails. Set to `false` to disable opening an issue when a release fails.                                                                                                                                                                                                      | `The automated release is failing 🚨`                                                                                                                                   |
-| `labels`              | The [labels](https://docs.gitlab.com/ee/user/project/labels.html#labels) to add to the issue created when a release fails. Set to `false` to not add any label. Labels should be comma-separated as described in the [official docs](https://docs.gitlab.com/ee/api/issues.html#new-issue), e.g. `"semantic-release,bot"`. | `semantic-release`                                                                                                                                                      |
-| `assignee`            | The [assignee](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#assignee) to add to the issue created when a release fails.                                                                                                                                                                             | -                                                                                                                                                                       |
+| Option                    | Description                                                                                                                                                                                                                                                                                                                | Default                                                                                                                                                                 |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `gitlabUrl`               | The GitLab endpoint.                                                                                                                                                                                                                                                                                                       | `GL_URL` or `GITLAB_URL` environment variable or CI provided environment variables if running on [GitLab CI/CD](https://docs.gitlab.com/ee/ci) or `https://gitlab.com`. |
+| `gitlabApiPathPrefix`     | The GitLab API prefix.                                                                                                                                                                                                                                                                                                     | `GL_PREFIX` or `GITLAB_PREFIX` environment variable or CI provided environment variables if running on [GitLab CI/CD](https://docs.gitlab.com/ee/ci) or `/api/v4`.      |
+| `assets`                  | An array of files to upload to the release. See [assets](#assets).                                                                                                                                                                                                                                                         | -                                                                                                                                                                       |
+| `milestones`              | An array of milestone titles to associate to the release. See [GitLab Release API](https://docs.gitlab.com/ee/api/releases/#create-a-release).                                                                                                                                                                             | -                                                                                                                                                                       |
+| `successComment`          | The comment to add to each Issue and Merge Request resolved by the release. See [successComment](#successComment).                                                                                                                                                                                                         | :tada: This issue has been resolved in version ${nextRelease.version} :tada:\n\nThe release is available on [GitLab release](gitlab_release_url)                        |
+| `successCommentCondition` | Use this as condition, when to comment on issues or merge requests. See [successCommentCondition](#successCommentCondition).                                                                                                                                                                                               | -                                                                                                                                                                       |
+| `failComment`             | The content of the issue created when a release fails. See [failComment](#failcomment).                                                                                                                                                                                                                                    | Friendly message with links to **semantic-release** documentation and support, with the list of errors that caused the release to fail.                                 |
+| `failTitle`               | The title of the issue created when a release fails.                                                                                                                                                                                                                                                                       | `The automated release is failing 🚨`                                                                                                                                   |
+| `failCommentCondition`    | Use this as condition, when to comment on or create an issues in case of failures. See [failCommentCondition](#failCommentCondition).                                                                                                                                                                                      | -                                                                                                                                                                       |
+| `labels`                  | The [labels](https://docs.gitlab.com/ee/user/project/labels.html#labels) to add to the issue created when a release fails. Set to `false` to not add any label. Labels should be comma-separated as described in the [official docs](https://docs.gitlab.com/ee/api/issues.html#new-issue), e.g. `"semantic-release,bot"`. | `semantic-release`                                                                                                                                                      |
+| `assignee`                | The [assignee](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#assignee) to add to the issue created when a release fails.                                                                                                                                                                             | -                                                                                                                                                                       |
 
 #### assets
 
@@ -146,6 +148,29 @@ The message for the issue comments is generated with [Lodash template](https://l
 | `issue`        | A [GitLab API Issue object](https://docs.gitlab.com/ee/api/issues.html#single-issue) the comment will be posted to, or `false` when commenting Merge Requests.          |
 | `mergeRequest` | A [GitLab API Merge Request object](https://docs.gitlab.com/ee/api/merge_requests.html#get-single-mr) the comment will be posted to, or `false` when commenting Issues. |
 
+#### successCommentCondition
+
+The success comment condition is generated with [Lodash template](https://lodash.com/docs#template). The following variables are available:
+
+| Parameter      | Description                                                                                                                          |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `branch`       | `Object` with `name`, `type`, `channel`, `range` and `prerelease` properties of the branch from which the release is done.           |
+| `lastRelease`  | `Object` with `version`, `channel`, `gitTag` and `gitHead` of the last release.                                                      |
+| `nextRelease`  | `Object` with `version`, `channel`, `gitTag`, `gitHead` and `notes` of the release being done.                                       |
+| `commits`      | `Array` of commit `Object`s with `hash`, `subject`, `body` `message` and `author`.                                                   |
+| `releases`     | `Array` with a release `Object`s for each release published, with optional release data such as `name` and `url`.                    |
+| `issue`        | A [GitLab API Issue object](https://docs.gitlab.com/ee/api/issues.html#single-issue) the comment will be posted to.                  |
+| `mergeRequest` | A [GitLab API Merge Request object](https://docs.gitlab.com/ee/api/merge_requests.html#get-single-mr) the comment will be posted to. |
+
+##### successCommentCondition example
+
+- do not create any comments at all: set to `false` or templating: `"<% return false; %>"`
+- to only comment on issues: `"<% return issue %>"`
+- to only comment on merge requests: `"<% return mergeRequest %>"`
+- you can use labels to filter issues: `"<% return issue.labels?.includes('semantic-release-relevant') %>"`
+
+> check the [GitLab API Merge Request object](https://docs.gitlab.com/ee/api/merge_requests.html#get-single-mr) or the [GitLab API Issue object](https://docs.gitlab.com/ee/api/issues.html#single-issue) for properties which can be used for the filter
+
 #### failComment
 
 The message for the issue content is generated with [Lodash template](https://lodash.com/docs#template). The following variables are available:
@@ -163,6 +188,27 @@ The `failComment` `This release from branch ${branch.name} had failed due to the
 >
 > - Error message 1
 > - Error message 2
+
+#### failCommentCondition
+
+The fail comment condition is generated with [Lodash template](https://lodash.com/docs#template). The following variables are available:
+
+| Parameter     | Description                                                                                                                                                  |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `branch`      | `Object` with `name`, `type`, `channel`, `range` and `prerelease` properties of the branch from which the release is done.                                   |
+| `lastRelease` | `Object` with `version`, `channel`, `gitTag` and `gitHead` of the last release.                                                                              |
+| `nextRelease` | `Object` with `version`, `channel`, `gitTag`, `gitHead` and `notes` of the release being done.                                                               |
+| `commits`     | `Array` of commit `Object`s with `hash`, `subject`, `body` `message` and `author`.                                                                           |
+| `releases`    | `Array` with a release `Object`s for each release published, with optional release data such as `name` and `url`.                                            |
+| `issue`       | A [GitLab API Issue object](https://docs.gitlab.com/ee/api/issues.html#single-issue) the comment will be posted to - only available if an open issue exists. |
+
+##### failCommentCondition example
+
+- do not create any comments at all: set to `false` or templating: `"<% return false; %>"`
+- to only comment on main branch: `"<% return branch.name === 'main' %>"`
+- you can use labels to filter issues, i.e. to not comment if the issue is labeled with `wip`: `"<% return !issue.labels?.includes('wip') %>"`
+
+> check the [GitLab API Issue object](https://docs.gitlab.com/ee/api/issues.html#single-issue) for properties which can be used for the filter
 
 ## Compatibility
 
