@@ -56,7 +56,11 @@ test.serial("Publish a release with templated path", async (t) => {
   const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
   const generic = { path: "${env.FIXTURE}.txt", filepath: "/upload.txt" };
   const assets = [generic];
-  const uploaded = { url: "/uploads/upload.txt", alt: "upload.txt" };
+  const uploaded = {
+    url: "/uploads/upload.txt",
+    alt: "upload.txt",
+    full_path: "/-/project/4/66dbcd21ec5d24ed6ea225176098d52b/upload.txt",
+  };
   const gitlab = authenticate(env)
     .post(`/projects/${encodedRepoId}/releases`, {
       tag_name: nextRelease.gitTag,
@@ -65,7 +69,7 @@ test.serial("Publish a release with templated path", async (t) => {
         links: [
           {
             name: "upload.txt",
-            url: `https://gitlab.com/${owner}/${repo}${uploaded.url}`,
+            url: `https://gitlab.com${uploaded.full_path}`,
             filepath: "/upload.txt",
           },
         ],
@@ -79,7 +83,7 @@ test.serial("Publish a release with templated path", async (t) => {
   const result = await publish({ assets }, { env, cwd, options, nextRelease, logger: t.context.logger });
 
   t.is(result.url, `https://gitlab.com/${owner}/${repo}/-/releases/${encodedGitTag}`);
-  t.deepEqual(t.context.log.args[0], ["Uploaded file: %s", uploaded.url]);
+  t.deepEqual(t.context.log.args[0], ["Uploaded file: %s", `https://gitlab.com${uploaded.full_path}`]);
   t.deepEqual(t.context.log.args[1], ["Published GitLab release: %s", nextRelease.gitTag]);
   t.true(gitlab.isDone());
 });
@@ -93,7 +97,11 @@ test.serial("Publish a release with assets", async (t) => {
   const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
   const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
   const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
-  const uploaded = { url: "/uploads/file.css", alt: "file.css" };
+  const uploaded = {
+    url: "/uploads/file.css",
+    alt: "file.css",
+    full_path: "/-/project/4/66dbcd21ec5d24ed6ea225176098d52b/file.css",
+  };
   const assets = [["**", "!**/*.txt", "!.dotfile"]];
   const gitlab = authenticate(env)
     .post(`/projects/${encodedRepoId}/releases`, {
@@ -103,7 +111,7 @@ test.serial("Publish a release with assets", async (t) => {
         links: [
           {
             name: uploaded.alt,
-            url: `https://gitlab.com/${owner}/${repo}${uploaded.url}`,
+            url: `https://gitlab.com${uploaded.full_path}`,
           },
         ],
       },
@@ -116,7 +124,7 @@ test.serial("Publish a release with assets", async (t) => {
   const result = await publish({ assets }, { env, cwd, options, nextRelease, logger: t.context.logger });
 
   t.is(result.url, `https://gitlab.com/${owner}/${repo}/-/releases/${encodedGitTag}`);
-  t.deepEqual(t.context.log.args[0], ["Uploaded file: %s", uploaded.url]);
+  t.deepEqual(t.context.log.args[0], ["Uploaded file: %s", `https://gitlab.com${uploaded.full_path}`]);
   t.deepEqual(t.context.log.args[1], ["Published GitLab release: %s", nextRelease.gitTag]);
   t.true(gitlabUpload.isDone());
   t.true(gitlab.isDone());
@@ -315,7 +323,13 @@ test.serial("Publish a release with asset type and permalink", async (t) => {
   const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
   const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
   const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
-  const uploaded = { url: "/uploads/file.css", alt: "file.css", link_type: "package", filepath: "/dist/file.css" };
+  const uploaded = {
+    url: "/uploads/file.css",
+    alt: "file.css",
+    link_type: "package",
+    filepath: "/dist/file.css",
+    full_path: "/-/project/4/66dbcd21ec5d24ed6ea225176098d52b/file.css",
+  };
   const assets = [
     {
       path: ["**", "!**/*.txt", "!.dotfile"],
@@ -331,7 +345,7 @@ test.serial("Publish a release with asset type and permalink", async (t) => {
         links: [
           {
             name: uploaded.alt,
-            url: `https://gitlab.com/${owner}/${repo}${uploaded.url}`,
+            url: `https://gitlab.com${uploaded.full_path}`,
             link_type: uploaded.link_type,
             filepath: uploaded.filepath,
           },
@@ -346,7 +360,7 @@ test.serial("Publish a release with asset type and permalink", async (t) => {
   const result = await publish({ assets }, { env, cwd, options, nextRelease, logger: t.context.logger });
 
   t.is(result.url, `https://gitlab.com/${owner}/${repo}/-/releases/${encodedGitTag}`);
-  t.deepEqual(t.context.log.args[0], ["Uploaded file: %s", uploaded.url]);
+  t.deepEqual(t.context.log.args[0], ["Uploaded file: %s", `https://gitlab.com${uploaded.full_path}`]);
   t.deepEqual(t.context.log.args[1], ["Published GitLab release: %s", nextRelease.gitTag]);
   t.true(gitlabUpload.isDone());
   t.true(gitlab.isDone());
@@ -361,7 +375,11 @@ test.serial("Publish a release with an asset with a template label", async (t) =
   const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
   const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
   const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
-  const uploaded = { url: "/uploads/file.css", alt: "file.css" };
+  const uploaded = {
+    url: "/uploads/file.css",
+    alt: "file.css",
+    full_path: "/-/project/4/66dbcd21ec5d24ed6ea225176098d52b/file.css",
+  };
   const assets = [
     {
       label: `file-v\${nextRelease.version}.css`,
@@ -378,7 +396,7 @@ test.serial("Publish a release with an asset with a template label", async (t) =
         links: [
           {
             name: "file-v1.0.0.css",
-            url: `https://gitlab.com/${owner}/${repo}${uploaded.url}`,
+            url: `https://gitlab.com${uploaded.full_path}`,
             link_type: "other",
             filepath: "/dist/file.css",
           },
@@ -393,7 +411,7 @@ test.serial("Publish a release with an asset with a template label", async (t) =
   const result = await publish({ assets }, { env, cwd, options, nextRelease, logger: t.context.logger });
 
   t.is(result.url, `https://gitlab.com/${owner}/${repo}/-/releases/${encodedGitTag}`);
-  t.deepEqual(t.context.log.args[0], ["Uploaded file: %s", uploaded.url]);
+  t.deepEqual(t.context.log.args[0], ["Uploaded file: %s", `https://gitlab.com${uploaded.full_path}`]);
   t.deepEqual(t.context.log.args[1], ["Published GitLab release: %s", nextRelease.gitTag]);
   t.true(gitlabUpload.isDone());
   t.true(gitlab.isDone());
@@ -410,7 +428,11 @@ test.serial("Publish a release (with an link) with variables", async (t) => {
   const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
   const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
   const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
-  const uploaded = { url: "/uploads/file.css", alt: "file.css" };
+  const uploaded = {
+    url: "/uploads/file.css",
+    alt: "file.css",
+    full_path: "/-/project/4/66dbcd21ec5d24ed6ea225176098d52b/file.css",
+  };
   const assets = [
     {
       label: `README-v\${nextRelease.version}.md`,
@@ -437,7 +459,7 @@ test.serial("Publish a release (with an link) with variables", async (t) => {
           },
           {
             name: "file.css",
-            url: `https://gitlab.com/${owner}/${repo}${uploaded.url}`,
+            url: `https://gitlab.com${uploaded.full_path}`,
             link_type: "other",
             filepath: "/dist/file.css",
           },
@@ -452,7 +474,7 @@ test.serial("Publish a release (with an link) with variables", async (t) => {
   const result = await publish({ assets }, { env, cwd, options, nextRelease, logger: t.context.logger });
 
   t.is(result.url, `https://gitlab.com/${owner}/${repo}/-/releases/${encodedGitTag}`);
-  t.deepEqual(t.context.log.args[0], ["Uploaded file: %s", uploaded.url]);
+  t.deepEqual(t.context.log.args[0], ["Uploaded file: %s", `https://gitlab.com${uploaded.full_path}`]);
   t.deepEqual(t.context.log.args[1], ["Published GitLab release: %s", nextRelease.gitTag]);
   t.true(gitlabUpload.isDone());
   t.true(gitlab.isDone());
@@ -524,7 +546,10 @@ test.serial("Publish a release with one asset and custom label", async (t) => {
   const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
   const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
   const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
-  const uploaded = { url: "/uploads/upload.txt" };
+  const uploaded = {
+    url: "/uploads/upload.txt",
+    full_path: "/-/project/4/66dbcd21ec5d24ed6ea225176098d52b/upload.txt",
+  };
   const assetLabel = "Custom Label";
   const assets = [{ path: "upload.txt", label: assetLabel }];
   const gitlab = authenticate(env)
@@ -535,7 +560,7 @@ test.serial("Publish a release with one asset and custom label", async (t) => {
         links: [
           {
             name: assetLabel,
-            url: `https://gitlab.com/${owner}/${repo}${uploaded.url}`,
+            url: `https://gitlab.com${uploaded.full_path}`,
           },
         ],
       },
@@ -548,7 +573,7 @@ test.serial("Publish a release with one asset and custom label", async (t) => {
   const result = await publish({ assets }, { env, cwd, options, nextRelease, logger: t.context.logger });
 
   t.is(result.url, `https://gitlab.com/${owner}/${repo}/-/releases/${encodedGitTag}`);
-  t.deepEqual(t.context.log.args[0], ["Uploaded file: %s", uploaded.url]);
+  t.deepEqual(t.context.log.args[0], ["Uploaded file: %s", `https://gitlab.com${uploaded.full_path}`]);
   t.deepEqual(t.context.log.args[1], ["Published GitLab release: %s", nextRelease.gitTag]);
   t.true(gitlabUpload.isDone());
   t.true(gitlab.isDone());
