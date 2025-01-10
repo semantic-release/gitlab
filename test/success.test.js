@@ -27,16 +27,16 @@ test.serial("Post comments to related issues and MRs", async (t) => {
   const nextRelease = { version: "1.0.0" };
   const releases = [{ name: RELEASE_NAME, url: "https://gitlab.com/test_user/test_repo/-/releases/v1.0.0" }];
   const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
-  const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
+  const encodedProjectPath = encodeURIComponent(`${owner}/${repo}`);
   const commits = [{ hash: "abcdef" }, { hash: "fedcba" }];
   const gitlab = authenticate(env)
-    .get(`/projects/${encodedRepoId}/repository/commits/abcdef/merge_requests`)
+    .get(`/projects/${encodedProjectPath}/repository/commits/abcdef/merge_requests`)
     .reply(200, [
       { project_id: 100, iid: 1, state: "merged" },
       { project_id: 200, iid: 2, state: "closed" },
       { project_id: 300, iid: 3, state: "merged" },
     ])
-    .get(`/projects/${encodedRepoId}/repository/commits/fedcba/merge_requests`)
+    .get(`/projects/${encodedProjectPath}/repository/commits/fedcba/merge_requests`)
     .reply(200, [{ project_id: 100, iid: 1, state: "merged" }])
     .get(`/projects/100/merge_requests/1/closes_issues`)
     .reply(200, [
@@ -74,10 +74,10 @@ test.serial("Post comments with custom template", async (t) => {
   const nextRelease = { version: "1.0.0" };
   const releases = [{ name: RELEASE_NAME, url: "https://gitlab.com/test_user/test_repo/-/releases/v1.0.0" }];
   const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
-  const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
+  const encodedProjectPath = encodeURIComponent(`${owner}/${repo}`);
   const commits = [{ hash: "abcdef" }];
   const gitlab = authenticate(env)
-    .get(`/projects/${encodedRepoId}/repository/commits/abcdef/merge_requests`)
+    .get(`/projects/${encodedProjectPath}/repository/commits/abcdef/merge_requests`)
     .reply(200, [{ project_id: 100, iid: 1, state: "merged" }])
     .get(`/projects/100/merge_requests/1/closes_issues`)
     .reply(200, [{ project_id: 100, iid: 11, state: "closed" }])
@@ -106,10 +106,10 @@ test.serial("Post comments for multiple releases", async (t) => {
     { name: "Other release" },
   ];
   const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
-  const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
+  const encodedProjectPath = encodeURIComponent(`${owner}/${repo}`);
   const commits = [{ hash: "abcdef" }];
   const gitlab = authenticate(env)
-    .get(`/projects/${encodedRepoId}/repository/commits/abcdef/merge_requests`)
+    .get(`/projects/${encodedProjectPath}/repository/commits/abcdef/merge_requests`)
     .reply(200, [{ project_id: 100, iid: 1, state: "merged" }])
     .get(`/projects/100/merge_requests/1/closes_issues`)
     .reply(200, [])
@@ -147,16 +147,16 @@ test.serial("Does not post comments when successCommentCondition disables it", a
   const nextRelease = { version: "1.0.0" };
   const releases = [{ name: RELEASE_NAME, url: "https://gitlab.com/test_user/test_repo/-/releases/v1.0.0" }];
   const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
-  const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
+  const encodedProjectPath = encodeURIComponent(`${owner}/${repo}`);
   const commits = [{ hash: "abcdef" }, { hash: "fedcba" }];
   const gitlab = authenticate(env)
-    .get(`/projects/${encodedRepoId}/repository/commits/abcdef/merge_requests`)
+    .get(`/projects/${encodedProjectPath}/repository/commits/abcdef/merge_requests`)
     .reply(200, [
       { project_id: 100, iid: 1, state: "merged" },
       { project_id: 200, iid: 2, state: "closed" },
       { project_id: 300, iid: 3, state: "merged" },
     ])
-    .get(`/projects/${encodedRepoId}/repository/commits/fedcba/merge_requests`)
+    .get(`/projects/${encodedProjectPath}/repository/commits/fedcba/merge_requests`)
     .reply(200, [{ project_id: 100, iid: 1, state: "merged" }])
     .get(`/projects/100/merge_requests/1/closes_issues`)
     .reply(200, [
@@ -180,16 +180,16 @@ test.serial("Does not post comments on issues when successCommentCondition disab
   const nextRelease = { version: "1.0.0" };
   const releases = [{ name: RELEASE_NAME, url: "https://gitlab.com/test_user/test_repo/-/releases/v1.0.0" }];
   const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
-  const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
+  const encodedProjectPath = encodeURIComponent(`${owner}/${repo}`);
   const commits = [{ hash: "abcdef" }, { hash: "fedcba" }];
   const gitlab = authenticate(env)
-    .get(`/projects/${encodedRepoId}/repository/commits/abcdef/merge_requests`)
+    .get(`/projects/${encodedProjectPath}/repository/commits/abcdef/merge_requests`)
     .reply(200, [
       { project_id: 100, iid: 1, state: "merged" },
       { project_id: 200, iid: 2, state: "closed" },
       { project_id: 300, iid: 3, state: "merged" },
     ])
-    .get(`/projects/${encodedRepoId}/repository/commits/fedcba/merge_requests`)
+    .get(`/projects/${encodedProjectPath}/repository/commits/fedcba/merge_requests`)
     .reply(200, [{ project_id: 100, iid: 1, state: "merged" }])
     .get(`/projects/100/merge_requests/1/closes_issues`)
     .reply(200, [
@@ -219,16 +219,16 @@ test.serial("Only posts comments on issues which are found using the successComm
   const nextRelease = { version: "1.0.0" };
   const releases = [{ name: RELEASE_NAME, url: "https://gitlab.com/test_user/test_repo/-/releases/v1.0.0" }];
   const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
-  const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
+  const encodedProjectPath = encodeURIComponent(`${owner}/${repo}`);
   const commits = [{ hash: "abcdef" }, { hash: "fedcba" }];
   const gitlab = authenticate(env)
-    .get(`/projects/${encodedRepoId}/repository/commits/abcdef/merge_requests`)
+    .get(`/projects/${encodedProjectPath}/repository/commits/abcdef/merge_requests`)
     .reply(200, [
       { project_id: 100, iid: 1, state: "merged" },
       { project_id: 200, iid: 2, state: "closed" },
       { project_id: 300, iid: 3, state: "merged" },
     ])
-    .get(`/projects/${encodedRepoId}/repository/commits/fedcba/merge_requests`)
+    .get(`/projects/${encodedProjectPath}/repository/commits/fedcba/merge_requests`)
     .reply(200, [{ project_id: 100, iid: 1, state: "merged" }])
     .get(`/projects/100/merge_requests/1/closes_issues`)
     .reply(200, [
@@ -258,16 +258,16 @@ test.serial(
     const nextRelease = { version: "1.0.0" };
     const releases = [{ name: RELEASE_NAME, url: "https://gitlab.com/test_user/test_repo/-/releases/v1.0.0" }];
     const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
-    const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
+    const encodedProjectPath = encodeURIComponent(`${owner}/${repo}`);
     const commits = [{ hash: "abcdef" }, { hash: "fedcba" }];
     const gitlab = authenticate(env)
-      .get(`/projects/${encodedRepoId}/repository/commits/abcdef/merge_requests`)
+      .get(`/projects/${encodedProjectPath}/repository/commits/abcdef/merge_requests`)
       .reply(200, [
         { project_id: 100, iid: 1, state: "merged" },
         { project_id: 200, iid: 2, state: "closed" },
         { project_id: 300, iid: 3, state: "merged" },
       ])
-      .get(`/projects/${encodedRepoId}/repository/commits/fedcba/merge_requests`)
+      .get(`/projects/${encodedProjectPath}/repository/commits/fedcba/merge_requests`)
       .reply(200, [{ project_id: 100, iid: 1, state: "merged" }])
       .get(`/projects/100/merge_requests/1/closes_issues`)
       .reply(200, [
@@ -314,14 +314,14 @@ test.serial("Retries requests when rate limited", async (t) => {
   const nextRelease = { version: "1.0.0" };
   const releases = [{ name: RELEASE_NAME, url: "https://gitlab.com/test_user/test_repo/-/releases/v1.0.0" }];
   const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
-  const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
+  const encodedProjectPath = encodeURIComponent(`${owner}/${repo}`);
   const commits = [{ hash: "abcdef" }];
   const retryLimit = 3;
   const gitlab = authenticate(env)
-    .get(`/projects/${encodedRepoId}/repository/commits/abcdef/merge_requests`)
+    .get(`/projects/${encodedProjectPath}/repository/commits/abcdef/merge_requests`)
     .times(retryLimit)
     .reply(429)
-    .get(`/projects/${encodedRepoId}/repository/commits/abcdef/merge_requests`)
+    .get(`/projects/${encodedProjectPath}/repository/commits/abcdef/merge_requests`)
     .reply(200, [{ project_id: 100, iid: 1, state: "merged" }])
     .get(`/projects/100/merge_requests/1/closes_issues`)
     .reply(200, [])

@@ -26,10 +26,10 @@ test.serial("Publish a release", async (t) => {
   const pluginConfig = {};
   const nextRelease = { gitHead: "123", gitTag: "v1.0.0", notes: "Test release note body" };
   const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
-  const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
+  const encodedProjectPath = encodeURIComponent(`${owner}/${repo}`);
   const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
   const gitlab = authenticate(env)
-    .post(`/projects/${encodedRepoId}/releases`, {
+    .post(`/projects/${encodedProjectPath}/releases`, {
       tag_name: nextRelease.gitTag,
       description: nextRelease.notes,
       assets: {
@@ -52,7 +52,7 @@ test.serial("Publish a release with templated path", async (t) => {
   const env = { GITLAB_TOKEN: "gitlab_token", FIXTURE: "upload" };
   const nextRelease = { gitHead: "123", gitTag: "v1.0.0", notes: "Test release note body" };
   const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
-  const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
+  const encodedProjectPath = encodeURIComponent(`${owner}/${repo}`);
   const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
   const generic = { path: "${env.FIXTURE}.txt", filepath: "/upload.txt" };
   const assets = [generic];
@@ -62,7 +62,7 @@ test.serial("Publish a release with templated path", async (t) => {
     full_path: "/-/project/4/66dbcd21ec5d24ed6ea225176098d52b/upload.txt",
   };
   const gitlab = authenticate(env)
-    .post(`/projects/${encodedRepoId}/releases`, {
+    .post(`/projects/${encodedProjectPath}/releases`, {
       tag_name: nextRelease.gitTag,
       description: nextRelease.notes,
       assets: {
@@ -77,7 +77,7 @@ test.serial("Publish a release with templated path", async (t) => {
     })
     .reply(200);
   const gitlabUpload = authenticate(env)
-    .post(`/projects/${encodedRepoId}/uploads`, /Content-Disposition/g)
+    .post(`/projects/${encodedProjectPath}/uploads`, /Content-Disposition/g)
     .reply(200, uploaded);
 
   const result = await publish({ assets }, { env, cwd, options, nextRelease, logger: t.context.logger });
@@ -95,7 +95,7 @@ test.serial("Publish a release with assets", async (t) => {
   const env = { GITLAB_TOKEN: "gitlab_token" };
   const nextRelease = { gitHead: "123", gitTag: "v1.0.0", notes: "Test release note body" };
   const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
-  const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
+  const encodedProjectPath = encodeURIComponent(`${owner}/${repo}`);
   const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
   const uploaded = {
     url: "/uploads/file.css",
@@ -104,7 +104,7 @@ test.serial("Publish a release with assets", async (t) => {
   };
   const assets = [["**", "!**/*.txt", "!.dotfile"]];
   const gitlab = authenticate(env)
-    .post(`/projects/${encodedRepoId}/releases`, {
+    .post(`/projects/${encodedProjectPath}/releases`, {
       tag_name: nextRelease.gitTag,
       description: nextRelease.notes,
       assets: {
@@ -118,7 +118,7 @@ test.serial("Publish a release with assets", async (t) => {
     })
     .reply(200);
   const gitlabUpload = authenticate(env)
-    .post(`/projects/${encodedRepoId}/uploads`, /filename="file.css"/gm)
+    .post(`/projects/${encodedProjectPath}/uploads`, /filename="file.css"/gm)
     .reply(200, uploaded);
 
   const result = await publish({ assets }, { env, cwd, options, nextRelease, logger: t.context.logger });
@@ -137,16 +137,16 @@ test.serial("Publish a release with generics", async (t) => {
   const env = { GITLAB_TOKEN: "gitlab_token" };
   const nextRelease = { gitHead: "123", gitTag: "v1.0.0", notes: "Test release note body", version: "1.0.0" };
   const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
-  const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
+  const encodedProjectPath = encodeURIComponent(`${owner}/${repo}`);
   const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
   const encodedVersion = encodeURIComponent(nextRelease.version);
   const uploaded = { file: { url: "/uploads/file.css" } };
   const generic = { path: "file.css", label: "Style package", target: "generic_package", status: "hidden" };
   const assets = [generic];
   const encodedLabel = encodeURIComponent(generic.label);
-  const expectedUrl = `https://gitlab.com/api/v4/projects/${encodedRepoId}/packages/generic/release/${encodedVersion}/${encodedLabel}`;
+  const expectedUrl = `https://gitlab.com/api/v4/projects/${encodedProjectPath}/packages/generic/release/${encodedVersion}/${encodedLabel}`;
   const gitlab = authenticate(env)
-    .post(`/projects/${encodedRepoId}/releases`, {
+    .post(`/projects/${encodedProjectPath}/releases`, {
       tag_name: nextRelease.gitTag,
       description: nextRelease.notes,
       assets: {
@@ -162,7 +162,7 @@ test.serial("Publish a release with generics", async (t) => {
     .reply(200);
   const gitlabUpload = authenticate(env)
     .put(
-      `/projects/${encodedRepoId}/packages/generic/release/${encodedVersion}/${encodedLabel}?status=${generic.status}&select=package_file`,
+      `/projects/${encodedProjectPath}/packages/generic/release/${encodedVersion}/${encodedLabel}?status=${generic.status}&select=package_file`,
       /\.test\s\{\}/gm
     )
     .reply(200, uploaded);
@@ -183,16 +183,16 @@ test.serial("Publish a release with generics and external storage provider (http
   const env = { GITLAB_TOKEN: "gitlab_token" };
   const nextRelease = { gitHead: "123", gitTag: "v1.0.0", notes: "Test release note body", version: "1.0.0" };
   const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
-  const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
+  const encodedProjectPath = encodeURIComponent(`${owner}/${repo}`);
   const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
   const encodedVersion = encodeURIComponent(nextRelease.version);
   const uploaded = { file: { url: "http://aws.example.com/bucket/gitlab/file.css" } };
   const generic = { path: "file.css", label: "Style package", target: "generic_package", status: "hidden" };
   const assets = [generic];
   const encodedLabel = encodeURIComponent(generic.label);
-  const expectedUrl = `https://gitlab.com/api/v4/projects/${encodedRepoId}/packages/generic/release/${encodedVersion}/${encodedLabel}`;
+  const expectedUrl = `https://gitlab.com/api/v4/projects/${encodedProjectPath}/packages/generic/release/${encodedVersion}/${encodedLabel}`;
   const gitlab = authenticate(env)
-    .post(`/projects/${encodedRepoId}/releases`, {
+    .post(`/projects/${encodedProjectPath}/releases`, {
       tag_name: nextRelease.gitTag,
       description: nextRelease.notes,
       assets: {
@@ -208,7 +208,7 @@ test.serial("Publish a release with generics and external storage provider (http
     .reply(200);
   const gitlabUpload = authenticate(env)
     .put(
-      `/projects/${encodedRepoId}/packages/generic/release/${encodedVersion}/${encodedLabel}?status=${generic.status}&select=package_file`,
+      `/projects/${encodedProjectPath}/packages/generic/release/${encodedVersion}/${encodedLabel}?status=${generic.status}&select=package_file`,
       /\.test\s\{\}/gm
     )
     .reply(200, uploaded);
@@ -229,16 +229,16 @@ test.serial("Publish a release with generics and external storage provider (http
   const env = { GITLAB_TOKEN: "gitlab_token" };
   const nextRelease = { gitHead: "123", gitTag: "v1.0.0", notes: "Test release note body", version: "1.0.0" };
   const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
-  const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
+  const encodedProjectPath = encodeURIComponent(`${owner}/${repo}`);
   const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
   const encodedVersion = encodeURIComponent(nextRelease.version);
   const uploaded = { file: { url: "https://aws.example.com/bucket/gitlab/file.css" } };
   const generic = { path: "file.css", label: "Style package", target: "generic_package", status: "hidden" };
   const assets = [generic];
   const encodedLabel = encodeURIComponent(generic.label);
-  const expectedUrl = `https://gitlab.com/api/v4/projects/${encodedRepoId}/packages/generic/release/${encodedVersion}/${encodedLabel}`;
+  const expectedUrl = `https://gitlab.com/api/v4/projects/${encodedProjectPath}/packages/generic/release/${encodedVersion}/${encodedLabel}`;
   const gitlab = authenticate(env)
-    .post(`/projects/${encodedRepoId}/releases`, {
+    .post(`/projects/${encodedProjectPath}/releases`, {
       tag_name: nextRelease.gitTag,
       description: nextRelease.notes,
       assets: {
@@ -254,7 +254,7 @@ test.serial("Publish a release with generics and external storage provider (http
     .reply(200);
   const gitlabUpload = authenticate(env)
     .put(
-      `/projects/${encodedRepoId}/packages/generic/release/${encodedVersion}/${encodedLabel}?status=${generic.status}&select=package_file`,
+      `/projects/${encodedProjectPath}/packages/generic/release/${encodedVersion}/${encodedLabel}?status=${generic.status}&select=package_file`,
       /\.test\s\{\}/gm
     )
     .reply(200, uploaded);
@@ -275,16 +275,16 @@ test.serial("Publish a release with generics and external storage provider (ftp)
   const env = { GITLAB_TOKEN: "gitlab_token" };
   const nextRelease = { gitHead: "123", gitTag: "v1.0.0", notes: "Test release note body", version: "1.0.0" };
   const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
-  const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
+  const encodedProjectPath = encodeURIComponent(`${owner}/${repo}`);
   const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
   const encodedVersion = encodeURIComponent(nextRelease.version);
   const uploaded = { file: { url: "ftp://drive.example.com/gitlab/file.css" } };
   const generic = { path: "file.css", label: "Style package", target: "generic_package", status: "hidden" };
   const assets = [generic];
   const encodedLabel = encodeURIComponent(generic.label);
-  const expectedUrl = `https://gitlab.com/api/v4/projects/${encodedRepoId}/packages/generic/release/${encodedVersion}/${encodedLabel}`;
+  const expectedUrl = `https://gitlab.com/api/v4/projects/${encodedProjectPath}/packages/generic/release/${encodedVersion}/${encodedLabel}`;
   const gitlab = authenticate(env)
-    .post(`/projects/${encodedRepoId}/releases`, {
+    .post(`/projects/${encodedProjectPath}/releases`, {
       tag_name: nextRelease.gitTag,
       description: nextRelease.notes,
       assets: {
@@ -300,7 +300,7 @@ test.serial("Publish a release with generics and external storage provider (ftp)
     .reply(200);
   const gitlabUpload = authenticate(env)
     .put(
-      `/projects/${encodedRepoId}/packages/generic/release/${encodedVersion}/${encodedLabel}?status=${generic.status}&select=package_file`,
+      `/projects/${encodedProjectPath}/packages/generic/release/${encodedVersion}/${encodedLabel}?status=${generic.status}&select=package_file`,
       /\.test\s\{\}/gm
     )
     .reply(200, uploaded);
@@ -321,7 +321,7 @@ test.serial("Publish a release with asset type and permalink", async (t) => {
   const env = { GITLAB_TOKEN: "gitlab_token" };
   const nextRelease = { gitHead: "123", gitTag: "v1.0.0", notes: "Test release note body" };
   const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
-  const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
+  const encodedProjectPath = encodeURIComponent(`${owner}/${repo}`);
   const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
   const uploaded = {
     url: "/uploads/file.css",
@@ -338,7 +338,7 @@ test.serial("Publish a release with asset type and permalink", async (t) => {
     },
   ];
   const gitlab = authenticate(env)
-    .post(`/projects/${encodedRepoId}/releases`, {
+    .post(`/projects/${encodedProjectPath}/releases`, {
       tag_name: nextRelease.gitTag,
       description: nextRelease.notes,
       assets: {
@@ -354,7 +354,7 @@ test.serial("Publish a release with asset type and permalink", async (t) => {
     })
     .reply(200);
   const gitlabUpload = authenticate(env)
-    .post(`/projects/${encodedRepoId}/uploads`, /filename="file.css"/gm)
+    .post(`/projects/${encodedProjectPath}/uploads`, /filename="file.css"/gm)
     .reply(200, uploaded);
 
   const result = await publish({ assets }, { env, cwd, options, nextRelease, logger: t.context.logger });
@@ -373,7 +373,7 @@ test.serial("Publish a release with an asset with a template label", async (t) =
   const env = { GITLAB_TOKEN: "gitlab_token" };
   const nextRelease = { gitHead: "123", gitTag: "v1.0.0", notes: "Test release note body", version: "1.0.0" };
   const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
-  const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
+  const encodedProjectPath = encodeURIComponent(`${owner}/${repo}`);
   const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
   const uploaded = {
     url: "/uploads/file.css",
@@ -389,7 +389,7 @@ test.serial("Publish a release with an asset with a template label", async (t) =
     },
   ];
   const gitlab = authenticate(env)
-    .post(`/projects/${encodedRepoId}/releases`, {
+    .post(`/projects/${encodedProjectPath}/releases`, {
       tag_name: nextRelease.gitTag,
       description: nextRelease.notes,
       assets: {
@@ -405,7 +405,7 @@ test.serial("Publish a release with an asset with a template label", async (t) =
     })
     .reply(200);
   const gitlabUpload = authenticate(env)
-    .post(`/projects/${encodedRepoId}/uploads`, /filename="file.css"/gm)
+    .post(`/projects/${encodedProjectPath}/uploads`, /filename="file.css"/gm)
     .reply(200, uploaded);
 
   const result = await publish({ assets }, { env, cwd, options, nextRelease, logger: t.context.logger });
@@ -426,7 +426,7 @@ test.serial("Publish a release (with an link) with variables", async (t) => {
   const env = { GITLAB_TOKEN: "gitlab_token" };
   const nextRelease = { gitHead: "123", gitTag: "v1.0.0", notes: "Test release note body", version: "1.0.0" };
   const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
-  const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
+  const encodedProjectPath = encodeURIComponent(`${owner}/${repo}`);
   const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
   const uploaded = {
     url: "/uploads/file.css",
@@ -447,7 +447,7 @@ test.serial("Publish a release (with an link) with variables", async (t) => {
     },
   ];
   const gitlab = authenticate(env)
-    .post(`/projects/${encodedRepoId}/releases`, {
+    .post(`/projects/${encodedProjectPath}/releases`, {
       tag_name: nextRelease.gitTag,
       description: nextRelease.notes,
       assets: {
@@ -469,7 +469,7 @@ test.serial("Publish a release (with an link) with variables", async (t) => {
     .reply(200);
 
   const gitlabUpload = authenticate(env)
-    .post(`/projects/${encodedRepoId}/uploads`, /filename="file.css"/gm)
+    .post(`/projects/${encodedProjectPath}/uploads`, /filename="file.css"/gm)
     .reply(200, uploaded);
   const result = await publish({ assets }, { env, cwd, options, nextRelease, logger: t.context.logger });
 
@@ -490,10 +490,10 @@ test.serial("Publish a release with a milestone", async (t) => {
   const pluginConfig = { milestones: ["1.2.3"] };
   const nextRelease = { gitHead: "123", gitTag: "v1.0.0", notes: "Test release note body" };
   const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
-  const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
+  const encodedProjectPath = encodeURIComponent(`${owner}/${repo}`);
   const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
   const gitlab = authenticate(env)
-    .post(`/projects/${encodedRepoId}/releases`, {
+    .post(`/projects/${encodedProjectPath}/releases`, {
       tag_name: nextRelease.gitTag,
       description: nextRelease.notes,
       assets: {
@@ -517,12 +517,12 @@ test.serial("Publish a release with array of missing assets", async (t) => {
   const env = { GITLAB_TOKEN: "gitlab_token" };
   const nextRelease = { gitHead: "123", gitTag: "v1.0.0", notes: "Test release note body" };
   const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
-  const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
+  const encodedProjectPath = encodeURIComponent(`${owner}/${repo}`);
   const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
   const emptyDirectory = tempy.directory();
   const assets = [emptyDirectory, { path: "missing.txt", label: "missing.txt" }];
   const gitlab = authenticate(env)
-    .post(`/projects/${encodedRepoId}/releases`, {
+    .post(`/projects/${encodedProjectPath}/releases`, {
       tag_name: nextRelease.gitTag,
       description: nextRelease.notes,
       assets: {
@@ -544,7 +544,7 @@ test.serial("Publish a release with one asset and custom label", async (t) => {
   const env = { GITLAB_TOKEN: "gitlab_token" };
   const nextRelease = { gitHead: "123", gitTag: "v1.0.0", notes: "Test release note body" };
   const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
-  const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
+  const encodedProjectPath = encodeURIComponent(`${owner}/${repo}`);
   const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
   const uploaded = {
     url: "/uploads/upload.txt",
@@ -553,7 +553,7 @@ test.serial("Publish a release with one asset and custom label", async (t) => {
   const assetLabel = "Custom Label";
   const assets = [{ path: "upload.txt", label: assetLabel }];
   const gitlab = authenticate(env)
-    .post(`/projects/${encodedRepoId}/releases`, {
+    .post(`/projects/${encodedProjectPath}/releases`, {
       tag_name: nextRelease.gitTag,
       description: nextRelease.notes,
       assets: {
@@ -567,7 +567,7 @@ test.serial("Publish a release with one asset and custom label", async (t) => {
     })
     .reply(200);
   const gitlabUpload = authenticate(env)
-    .post(`/projects/${encodedRepoId}/uploads`, /filename="upload.txt"/gm)
+    .post(`/projects/${encodedProjectPath}/uploads`, /filename="upload.txt"/gm)
     .reply(200, uploaded);
 
   const result = await publish({ assets }, { env, cwd, options, nextRelease, logger: t.context.logger });
@@ -586,10 +586,10 @@ test.serial("Publish a release with missing release notes", async (t) => {
   const pluginConfig = {};
   const nextRelease = { gitHead: "123", gitTag: "v1.0.0" };
   const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
-  const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
+  const encodedProjectPath = encodeURIComponent(`${owner}/${repo}`);
   const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
   const gitlab = authenticate(env)
-    .post(`/projects/${encodedRepoId}/releases`, {
+    .post(`/projects/${encodedProjectPath}/releases`, {
       tag_name: nextRelease.gitTag,
       description: nextRelease.gitTag,
       assets: {
@@ -612,7 +612,7 @@ test.serial("Publish a release with an asset link", async (t) => {
   const env = { GITLAB_TOKEN: "gitlab_token" };
   const nextRelease = { gitHead: "123", gitTag: "v1.0.0", notes: "Test release note body" };
   const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
-  const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
+  const encodedProjectPath = encodeURIComponent(`${owner}/${repo}`);
   const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
   const link = {
     label: "README.md",
@@ -621,7 +621,7 @@ test.serial("Publish a release with an asset link", async (t) => {
   };
   const assets = [link];
   const gitlab = authenticate(env)
-    .post(`/projects/${encodedRepoId}/releases`, {
+    .post(`/projects/${encodedProjectPath}/releases`, {
       tag_name: nextRelease.gitTag,
       description: nextRelease.notes,
       assets: {
@@ -650,10 +650,10 @@ test.serial("Publish a release with error response", async (t) => {
   const pluginConfig = {};
   const nextRelease = { gitHead: "123", gitTag: "v1.0.0", notes: "Test release note body" };
   const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
-  const encodedRepoId = encodeURIComponent(`${owner}/${repo}`);
+  const encodedProjectPath = encodeURIComponent(`${owner}/${repo}`);
   const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
   const gitlab = authenticate(env)
-    .post(`/projects/${encodedRepoId}/releases`, {
+    .post(`/projects/${encodedProjectPath}/releases`, {
       tag_name: nextRelease.gitTag,
       description: nextRelease.notes,
       assets: {
