@@ -24,7 +24,10 @@ test("Parse repo id with context in repo URL", (t) => {
 
 test("Parse repo id with context not in repo URL", (t) => {
   t.is(getProjectPath({ env: {} }, "https://gitlbab.com/context", "https://gitlab.com/owner/repo.git"), "owner/repo");
-  t.is(getProjectPath({ env: {} }, "https://gitlab.com/context", "git+ssh://git@gitlab.com/owner/repo.git"), "owner/repo");
+  t.is(
+    getProjectPath({ env: {} }, "https://gitlab.com/context", "git+ssh://git@gitlab.com/owner/repo.git"),
+    "owner/repo"
+  );
 });
 
 test("Parse repo id with organization and subgroup", (t) => {
