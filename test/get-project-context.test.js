@@ -8,7 +8,8 @@ test("Parse project path with https URL", (t) => {
     "owner/repo"
   );
   t.is(
-    getProjectContext({ env: {} }, "https://gitlbab.com", "https://api.gitlab.com", "https://gitlab.com/owner/repo").projectPath,
+    getProjectContext({ env: {} }, "https://gitlbab.com", "https://api.gitlab.com", "https://gitlab.com/owner/repo")
+      .projectPath,
     "owner/repo"
   );
 });
