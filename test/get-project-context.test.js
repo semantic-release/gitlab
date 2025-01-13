@@ -3,12 +3,12 @@ import getProjectContext from "../lib/get-project-context.js";
 
 test("Parse project path with https URL", (t) => {
   t.is(
-    getProjectContext({ env: {} }, "https://gitlbab.com", "https://api.gitlab.com", "https://gitlab.com/owner/repo.git")
+    getProjectContext({ env: {} }, "https://gitlab.com", "https://api.gitlab.com", "https://gitlab.com/owner/repo.git")
       .projectPath,
     "owner/repo"
   );
   t.is(
-    getProjectContext({ env: {} }, "https://gitlbab.com", "https://api.gitlab.com", "https://gitlab.com/owner/repo")
+    getProjectContext({ env: {} }, "https://gitlab.com", "https://api.gitlab.com", "https://gitlab.com/owner/repo")
       .projectPath,
     "owner/repo"
   );
@@ -39,7 +39,7 @@ test("Parse project path with context in repo URL", (t) => {
   t.is(
     getProjectContext(
       { env: {} },
-      "https://gitlbab.com/context",
+      "https://gitlab.com/context",
       "https://api.gitlab.com",
       "https://gitlab.com/context/owner/repo.git"
     ).projectPath,
@@ -48,7 +48,7 @@ test("Parse project path with context in repo URL", (t) => {
   t.is(
     getProjectContext(
       { env: {} },
-      "https://gitlbab.com/context",
+      "https://gitlab.com/context",
       "https://api.gitlab.com",
       "git+ssh://git@gitlab.com/context/owner/repo.git"
     ).projectPath,
@@ -60,7 +60,7 @@ test("Parse project path with context not in repo URL", (t) => {
   t.is(
     getProjectContext(
       { env: {} },
-      "https://gitlbab.com/context",
+      "https://gitlab.com/context",
       "https://api.gitlab.com",
       "https://gitlab.com/owner/repo.git"
     ).projectPath,
@@ -69,7 +69,7 @@ test("Parse project path with context not in repo URL", (t) => {
   t.is(
     getProjectContext(
       { env: {} },
-      "https://gitlbab.com/context",
+      "https://gitlab.com/context",
       "https://api.gitlab.com",
       "git+ssh://git@gitlab.com/owner/repo.git"
     ).projectPath,
@@ -81,7 +81,7 @@ test("Parse project path with organization and subgroup", (t) => {
   t.is(
     getProjectContext(
       { env: {} },
-      "https://gitlbab.com/context",
+      "https://gitlab.com/context",
       "https://api.gitlab.com",
       "https://gitlab.com/orga/subgroup/owner/repo.git"
     ).projectPath,
@@ -90,7 +90,7 @@ test("Parse project path with organization and subgroup", (t) => {
   t.is(
     getProjectContext(
       { env: {} },
-      "https://gitlbab.com/context",
+      "https://gitlab.com/context",
       "https://api.gitlab.com",
       "git+ssh://git@gitlab.com/orga/subgroup/owner/repo.git"
     ).projectPath,
@@ -102,7 +102,7 @@ test("Get project path from GitLab CI", (t) => {
   t.is(
     getProjectContext(
       { envCi: { service: "gitlab" }, env: { CI_PROJECT_PATH: "other-owner/other-repo" } },
-      "https://gitlbab.com",
+      "https://gitlab.com",
       "https://api.gitlab.com",
       "https://gitlab.com/owner/repo.git"
     ).projectPath,
@@ -114,7 +114,7 @@ test("Ignore CI_PROJECT_PATH if not on GitLab CI", (t) => {
   t.is(
     getProjectContext(
       { envCi: { service: "travis" }, env: { CI_PROJECT_PATH: "other-owner/other-repo" } },
-      "https://gitlbab.com",
+      "https://gitlab.com",
       "https://api.gitlab.com",
       "https://gitlab.com/owner/repo.git"
     ).projectPath,
