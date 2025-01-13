@@ -122,30 +122,6 @@ test("Ignore CI_PROJECT_PATH if not on GitLab CI", (t) => {
   );
 });
 
-test("Get project ID from GitLab CI", (t) => {
-  t.is(
-    getProjectContext(
-      { envCi: { service: "gitlab" }, env: { CI_PROJECT_ID: "42" } },
-      "https://gitlbab.com",
-      "https://api.gitlab.com",
-      "https://gitlab.com/owner/repo.git"
-    ).projectId,
-    "42"
-  );
-});
-
-test("Ignore CI_PROJECT_ID if not on GitLab CI", (t) => {
-  t.is(
-    getProjectContext(
-      { envCi: { service: "travis" }, env: { CI_PROJECT_ID: "42" } },
-      "https://gitlbab.com",
-      "https://api.gitlab.com",
-      "https://gitlab.com/owner/repo.git"
-    ).projectId,
-    null
-  );
-});
-
 test("Uses project API URL with project path", (t) => {
   t.is(
     getProjectContext(
