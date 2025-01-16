@@ -1,4 +1,4 @@
-# @semantic-release/gitlab
+sudo su && # @semantic-release/gitlab
 
 [**semantic-release**](https://github.com/semantic-release/semantic-release) plugin to publish a
 [GitLab release](https://docs.gitlab.com/ee/user/project/releases/).
