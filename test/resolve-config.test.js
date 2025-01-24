@@ -9,6 +9,7 @@ const defaultOptions = {
   gitlabApiUrl: urlJoin("https://gitlab.com", "/api/v4"),
   assets: undefined,
   milestones: undefined,
+  releasedAt: undefined,
   successComment: undefined,
   successCommentCondition: undefined,
   failTitle: "The automated release is failing 🚨",
@@ -97,6 +98,7 @@ test("Returns user config via alternative environment variables", (t) => {
       gitlabApiUrl: urlJoin(gitlabUrl, gitlabApiPathPrefix),
       assets,
       milestones: undefined,
+      releasedAt: undefined,
       successComment: undefined,
     }
   );

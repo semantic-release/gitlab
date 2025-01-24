@@ -666,3 +666,141 @@ test.serial("Publish a release with error response", async (t) => {
   t.is(error.message, `Response code 499 (Something went wrong)`);
   t.true(gitlab.isDone());
 });
+
+test.serial("Publish a release with releasedAt", async (t) => {
+  const owner = "test_user";
+  const repo = "test_repo";
+  const env = { GITLAB_TOKEN: "gitlab_token" };
+  const pluginConfig = { releasedAt: "2025-01-24T12:00:00Z" };
+  const nextRelease = { gitHead: "123", gitTag: "v1.0.0", notes: "Test release note body" };
+  const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
+  const encodedProjectPath = encodeURIComponent(`${owner}/${repo}`);
+  const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
+
+  const gitlab = authenticate(env)
+    .post(`/projects/${encodedProjectPath}/releases`, {
+      tag_name: nextRelease.gitTag,
+      description: nextRelease.notes,
+      released_at: nextRelease.releasedAt,
+      assets: {
+        links: [],
+      },
+      released_at: pluginConfig.releasedAt,
+    })
+    .reply(200);
+
+  const result = await publish(pluginConfig, { env, options, nextRelease, logger: t.context.logger });
+
+  t.is(result.url, `https://gitlab.com/${owner}/${repo}/-/releases/${encodedGitTag}`);
+  t.deepEqual(t.context.log.args[0], ["Published GitLab release: %s", nextRelease.gitTag]);
+  t.true(gitlab.isDone());
+});
+
+test.serial("Publish a release with future dated releasedAt", async (t) => {
+  const owner = "test_user";
+  const repo = "test_repo";
+  const env = { GITLAB_TOKEN: "gitlab_token" };
+  const oneWeekFromNow = new Date();
+  oneWeekFromNow.setDate(oneWeekFromNow.getDate() + 7);
+  const futureReleaseDate = oneWeekFromNow.toISOString();
+  const pluginConfig = { releasedAt: futureReleaseDate };
+  const nextRelease = { gitHead: "123", gitTag: "v1.0.0", notes: "Test release note body" };
+  const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
+  const encodedProjectPath = encodeURIComponent(`${owner}/${repo}`);
+  const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
+
+  const gitlab = authenticate(env)
+    .post(`/projects/${encodedProjectPath}/releases`, {
+      tag_name: nextRelease.gitTag,
+      description: nextRelease.notes,
+      released_at: nextRelease.releasedAt,
+      assets: {
+        links: [],
+      },
+      released_at: pluginConfig.releasedAt,
+    })
+    .reply(200);
+
+  const result = await publish(pluginConfig, { env, options, nextRelease, logger: t.context.logger });
+
+  t.is(result.url, `https://gitlab.com/${owner}/${repo}/-/releases/${encodedGitTag}`);
+  t.deepEqual(t.context.log.args[0], ["Published GitLab release: %s", nextRelease.gitTag]);
+  t.true(gitlab.isDone());
+});
+
+test.serial("Publish a release with releasedAt and assets", async (t) => {
+  const cwd = "test/fixtures/files";
+  const owner = "test_user";
+  const repo = "test_repo";
+  const env = { GITLAB_TOKEN: "gitlab_token" };
+  const pluginConfig = { releasedAt: "2025-01-24T12:00:00Z" };
+  const nextRelease = { gitHead: "123", gitTag: "v1.0.0", notes: "Test release note body" };
+  const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
+  const encodedProjectPath = encodeURIComponent(`${owner}/${repo}`);
+  const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
+  const uploaded = {
+    url: "/uploads/file.css",
+    alt: "file.css",
+    full_path: "/-/project/4/66dbcd21ec5d24ed6ea225176098d52b/file.css",
+  };
+  const assets = [["**", "!**/*.txt", "!.dotfile"]]; // Changed to match successful test
+
+  const gitlab = authenticate(env)
+    .post(`/projects/${encodedProjectPath}/releases`, {
+      tag_name: nextRelease.gitTag,
+      description: nextRelease.notes,
+      assets: {
+        links: [
+          {
+            name: uploaded.alt,
+            url: `https://gitlab.com${uploaded.full_path}`,
+          },
+        ],
+      },
+      released_at: pluginConfig.releasedAt,
+    })
+    .reply(200);
+
+  const gitlabUpload = authenticate(env)
+    .post(`/projects/${encodedProjectPath}/uploads`, /filename="file.css"/gm) // Added regex pattern
+    .reply(200, uploaded);
+
+  const result = await publish(
+    { ...pluginConfig, assets },
+    { env, cwd, options, nextRelease, logger: t.context.logger }
+  );
+
+  t.is(result.url, `https://gitlab.com/${owner}/${repo}/-/releases/${encodedGitTag}`);
+  t.deepEqual(t.context.log.args[0], ["Uploaded file: %s", `https://gitlab.com${uploaded.full_path}`]);
+  t.deepEqual(t.context.log.args[1], ["Published GitLab release: %s", nextRelease.gitTag]);
+  t.true(gitlabUpload.isDone());
+  t.true(gitlab.isDone());
+});
+
+test.serial("Publish a release with explicit null releasedAt", async (t) => {
+  const owner = "test_user";
+  const repo = "test_repo";
+  const env = { GITLAB_TOKEN: "gitlab_token" };
+  const pluginConfig = { releasedAt: null };
+  const nextRelease = { gitHead: "123", gitTag: "v1.0.0", notes: "Test release note body" };
+  const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
+  const encodedProjectPath = encodeURIComponent(`${owner}/${repo}`);
+  const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
+
+  const gitlab = authenticate(env)
+    .post(`/projects/${encodedProjectPath}/releases`, {
+      tag_name: nextRelease.gitTag,
+      description: nextRelease.notes,
+      released_at: pluginConfig.releasedAt,
+      assets: {
+        links: [],
+      },
+    })
+    .reply(200);
+
+  const result = await publish(pluginConfig, { env, options, nextRelease, logger: t.context.logger });
+
+  t.is(result.url, `https://gitlab.com/${owner}/${repo}/-/releases/${encodedGitTag}`);
+  t.deepEqual(t.context.log.args[0], ["Published GitLab release: %s", nextRelease.gitTag]);
+  t.true(gitlab.isDone());
+});

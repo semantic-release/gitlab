@@ -96,6 +96,7 @@ If you need to bypass the proxy for some hosts, configure the `NO_PROXY` environ
 | `labels`                  | The [labels](https://docs.gitlab.com/ee/user/project/labels.html#labels) to add to the issue created when a release fails. Set to `false` to not add any label. Labels should be comma-separated as described in the [official docs](https://docs.gitlab.com/ee/api/issues.html#new-issue), e.g. `"semantic-release,bot"`. | `semantic-release`                                                                                                                                                      |
 | `assignee`                | The [assignee](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#assignee) to add to the issue created when a release fails.                                                                                                                                                                             | -                                                                                                                                                                       |
 | `retryLimit`              | The maximum number of retries for failing HTTP requests.                                                                                                                                                                                                                                                                   | `3`                                                                                                                                                                     |
+| `releasedAt` | The date and time to schedule the release. Must be in ISO 8601 format (e.g., "2025-01-24T12:00:00Z").  | When provided, GitLab will schedule the release for the specified time. When not provided, the release is published immediately. <br /> **Note** - Only provide this field if creating an upcoming or historical release.       |
 
 #### assets
 
@@ -210,6 +211,22 @@ The fail comment condition is generated with [Lodash template](https://lodash.co
 - you can use labels to filter issues, i.e. to not comment if the issue is labeled with `wip`: `"<% return !issue.labels?.includes('wip') %>"`
 
 > check the [GitLab API Issue object](https://docs.gitlab.com/ee/api/issues.html#single-issue) for properties which can be used for the filter
+
+##### Scheduled Releases
+
+You can schedule releases for a future date or create historical releases using the `releasedAt` option. The date must be provided in ISO 8601 format (e.g., "2025-01-24T12:00:00Z").
+
+Example of scheduling a future release.
+
+```json
+{
+  "plugins": [
+    ["@semantic-release/gitlab", {
+      "releasedAt": "2035-02-01T12:00:00Z"  // Schedule release for February 1st, 2035
+    }]
+  ]
+}
+```
 
 ## Compatibility
 
