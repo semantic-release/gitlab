@@ -96,6 +96,7 @@ If you need to bypass the proxy for some hosts, configure the `NO_PROXY` environ
 | `labels`                  | The [labels](https://docs.gitlab.com/ee/user/project/labels.html#labels) to add to the issue created when a release fails. Set to `false` to not add any label. Labels should be comma-separated as described in the [official docs](https://docs.gitlab.com/ee/api/issues.html#new-issue), e.g. `"semantic-release,bot"`. | `semantic-release`                                                                                                                                                      |
 | `assignee`                | The [assignee](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#assignee) to add to the issue created when a release fails.                                                                                                                                                                             | -                                                                                                                                                                       |
 | `retryLimit`              | The maximum number of retries for failing HTTP requests.                                                                                                                                                                                                                                                                   | `3`                                                                                                                                                                     |
+| `publishToCatalog`        | [EXPERIMENTAL] Publishes CI/CD components to the catalog. See [publishToCatalog](#publishToCatalog).                                                                                                                                                                                                                       | `false`                                                                                                                                                                 |
 
 #### assets
 
@@ -210,6 +211,14 @@ The fail comment condition is generated with [Lodash template](https://lodash.co
 - you can use labels to filter issues, i.e. to not comment if the issue is labeled with `wip`: `"<% return !issue.labels?.includes('wip') %>"`
 
 > check the [GitLab API Issue object](https://docs.gitlab.com/ee/api/issues.html#single-issue) for properties which can be used for the filter
+
+#### publishToCatalog
+
+**Note**: This is an EXPERIMENTAL option that might change in the future.
+
+Use this option to [publish CI/CD components to the catalog](https://gitlab.com/gitlab-org/cli/-/blob/main/docs/source/repo/publish/catalog.md) as part of the release process.
+
+The publishing is done via the `glab` CLI, so make sure to [install it before](https://gitlab.com/gitlab-org/cli#installation).
 
 ## Compatibility
 
