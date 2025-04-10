@@ -10,7 +10,7 @@ import urlJoin from 'url-join';
  * @param {String} [gitlabApiPathPrefix=env.GL_PREFIX || env.GITLAB_PREFIX || ''] The GitHub Enterprise API prefix.
  * @return {Object} A `nock` object ready to respond to a github authentication request.
  */
-export default function authenticate(
+export default function (
   env = {},
   {
     gitlabToken = env.GL_TOKEN || env.GITLAB_TOKEN || 'GL_TOKEN',
@@ -23,4 +23,4 @@ export default function authenticate(
   } = {}
 ) {
   return nock(urlJoin(gitlabUrl, gitlabApiPathPrefix), {reqheaders: {'Private-Token': gitlabToken}});
-}
+};
