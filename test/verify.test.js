@@ -573,7 +573,7 @@ test.serial("Throw error if GitLab API return any other errors", async (t) => {
     verify({}, { env, options: { repositoryUrl: `https://gitlab.com:${owner}/${repo}.git` }, logger: t.context.logger })
   );
 
-  t.is(error.response.statusCode, 500);
+  t.is(error.response.status, 500);
   t.true(gitlab.isDone());
 });
 

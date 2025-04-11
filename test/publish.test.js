@@ -663,6 +663,9 @@ test.serial("Publish a release with error response", async (t) => {
     .reply(499, { message: "Something went wrong" });
 
   const error = await t.throwsAsync(publish(pluginConfig, { env, options, nextRelease, logger: t.context.logger }));
-  t.is(error.message, `Response code 499 (Something went wrong)`);
+  t.is(
+    error.message,
+    "Request failed with status code 499: POST https://gitlab.com/api/v4/projects/test_user%2Ftest_repo/releases"
+  );
   t.true(gitlab.isDone());
 });
