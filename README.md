@@ -70,7 +70,7 @@ Create a [project access token](https://docs.gitlab.com/ee/user/project/settings
 
 #### Proxy configuration
 
-The plugin supports passing requests through a proxy server.
+The plugin supports passing requests through a proxy server using `undici`'s `EnvHttpProxyAgent`.
 
 You can configure a proxy server via the `HTTPS_PROXY` environment variable: `HTTPS_PROXY=http://proxyurl.com:8080`
 
