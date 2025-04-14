@@ -25,10 +25,10 @@
     "formdata-node": "^6.0.3",
     "fs-extra": "^11.0.0",
     "globby": "^14.0.0",
-    "got": "^14.0.0",
-    "hpagent": "^1.0.0",
+    "ky": "^1.8.0",
     "lodash-es": "^4.17.21",
     "parse-url": "^9.0.0",
+    "undici": "^7.7.0",
     "url-join": "^4.0.0"
   },
   "devDependencies": {
