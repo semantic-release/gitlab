@@ -1,5 +1,6 @@
 import nock from 'nock';
 import urlJoin from 'url-join';
+import getTokenHeader from "./get-token-header.js"
 
 /**
  * Retun a `nock` object setup to respond to a GitLab authentication request. Other expectation and responses can be chained.
@@ -22,5 +23,5 @@ export default function (
       : null || '/api/v4',
   } = {}
 ) {
-  return nock(urlJoin(gitlabUrl, gitlabApiPathPrefix), {reqheaders: {'Private-Token': gitlabToken}});
+  return nock(urlJoin(gitlabUrl, gitlabApiPathPrefix), {reqheaders: {[getTokenHeader(gitlabToken)]: gitlabToken}});
 };
