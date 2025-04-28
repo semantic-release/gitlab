@@ -18,6 +18,7 @@ const defaultOptions = {
   assignee: undefined,
   proxy: {},
   retryLimit: 3,
+  publishToCatalog: false,
 };
 
 test("Returns user config", (t) => {
