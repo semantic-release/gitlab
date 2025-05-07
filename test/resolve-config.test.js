@@ -18,6 +18,7 @@ const defaultOptions = {
   assignee: undefined,
   proxy: {},
   retryLimit: 3,
+  retryStatusCodes: [408, 413, 422, 429, 500, 502, 503, 504, 521, 522, 524],
 };
 
 test("Returns user config", (t) => {
