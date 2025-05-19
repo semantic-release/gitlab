@@ -3,6 +3,7 @@ import nock from "nock";
 import { stub } from "sinon";
 import verify from "../lib/verify.js";
 import authenticate from "./helpers/mock-gitlab.js";
+import * as td from "testdouble";
 
 /* eslint camelcase: ["error", {properties: "never"}] */
 
@@ -985,6 +986,37 @@ test.serial(
     );
     t.is(error.name, "SemanticReleaseError");
     t.is(error.code, "EINVALIDASSETS");
+    t.true(gitlab.isDone());
+  }
+);
+
+test.serial(
+  'Throw SemanticReleaseError if "publishToCatalog" option is set and the GitLab CLI is not installed.',
+  async (t) => {
+    const owner = "test_user";
+    const repo = "test_repo";
+    const env = { GITLAB_TOKEN: "gitlab_token" };
+    const gitlab = authenticate(env)
+      .get(`/projects/${owner}%2F${repo}`)
+      .reply(200, { permissions: { project_access: { access_level: 40 } } });
+
+    const execa = (await td.replaceEsm("execa")).execa;
+    td.when(
+      execa("glab", ["version"], {
+        timeout: 5000,
+      })
+    ).thenReject();
+    const verifyWithMockExeca = (await import("../lib/verify.js")).default;
+    const {
+      errors: [error],
+    } = await t.throwsAsync(
+      verifyWithMockExeca(
+        { publishToCatalog: true },
+        { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
+      )
+    );
+    t.is(error.name, "SemanticReleaseError");
+    t.is(error.code, "EGLABNOTINSTALLED");
     t.true(gitlab.isDone());
   }
 );
