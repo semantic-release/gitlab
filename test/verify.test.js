@@ -29,7 +29,7 @@ test.serial("Verify token and repository access (project_access 30)", async (t) 
 
   await t.notThrowsAsync(
     verify(
-      {},
+      { publishToCatalog: false },
       { env, options: { repositoryUrl: `git+https://gitalb.com/${owner}/${repo}.git` }, logger: t.context.logger }
     )
   );
@@ -46,7 +46,7 @@ test.serial("Verify token and repository access (project_access 40)", async (t) 
 
   await t.notThrowsAsync(
     verify(
-      {},
+      { publishToCatalog: false },
       { env, options: { repositoryUrl: `git+https://gitalb.com/${owner}/${repo}.git` }, logger: t.context.logger }
     )
   );
@@ -63,7 +63,7 @@ test.serial("Verify token and repository access (group_access 30)", async (t) =>
 
   await t.notThrowsAsync(
     verify(
-      {},
+      { publishToCatalog: false },
       { env, options: { repositoryUrl: `git+https://gitalb.com/${owner}/${repo}.git` }, logger: t.context.logger }
     )
   );
@@ -80,7 +80,7 @@ test.serial("Verify token and repository access (group_access 40)", async (t) =>
 
   await t.notThrowsAsync(
     verify(
-      {},
+      { publishToCatalog: false },
       { env, options: { repositoryUrl: `git+https://gitalb.com/${owner}/${repo}.git` }, logger: t.context.logger }
     )
   );
@@ -93,13 +93,13 @@ test.serial("Verify token and repository access and custom URL with prefix", asy
   const env = { GL_TOKEN: "gitlab_token" };
   const gitlabUrl = "https://othertesturl.com:9090";
   const gitlabApiPathPrefix = "prefix";
-  const gitlab = authenticate(env, { gitlabUrl, gitlabApiPathPrefix })
+  const gitlab = authenticate(env, { gitlabUrl, gitlabApiPathPrefix, publishToCatalog: false })
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, { permissions: { project_access: { access_level: 40 } } });
 
   await t.notThrowsAsync(
     verify(
-      { gitlabUrl, gitlabApiPathPrefix },
+      { gitlabUrl, gitlabApiPathPrefix, publishToCatalog: false },
       { env, options: { repositoryUrl: `git@othertesturl.com:${owner}/${repo}.git` }, logger: t.context.logger }
     )
   );
@@ -119,7 +119,7 @@ test.serial("Verify token and repository access and custom URL without prefix", 
 
   await t.notThrowsAsync(
     verify(
-      { gitlabUrl },
+      { gitlabUrl, publishToCatalog: false },
       { env, options: { repositoryUrl: `git@othertesturl.com:${owner}/${repo}.git` }, logger: t.context.logger }
     )
   );
@@ -133,13 +133,13 @@ test.serial("Verify token and repository access with subgroup git URL", async (t
   const env = { GL_TOKEN: "gitlab_token" };
   const gitlabUrl = "https://customurl.com:9090/context";
   const gitlabApiPathPrefix = "prefix";
-  const gitlab = authenticate(env, { gitlabUrl, gitlabApiPathPrefix })
+  const gitlab = authenticate(env, { gitlabUrl, gitlabApiPathPrefix, publishToCatalog: false })
     .get(`/projects/${encodeURIComponent(repoUri)}`)
     .reply(200, { permissions: { project_access: { access_level: 40 } } });
 
   await t.notThrowsAsync(
     verify(
-      { gitlabUrl, gitlabApiPathPrefix },
+      { gitlabUrl, gitlabApiPathPrefix, publishToCatalog: false },
       { env, options: { repositoryUrl: `git@customurl.com:${repoUri}.git` }, logger: t.context.logger }
     )
   );
@@ -156,13 +156,13 @@ test.serial("Verify token and repository access with subgroup http URL", async (
   const env = { GL_TOKEN: "gitlab_token" };
   const gitlabUrl = "https://customurl.com:9090/context";
   const gitlabApiPathPrefix = "prefix";
-  const gitlab = authenticate(env, { gitlabUrl, gitlabApiPathPrefix })
+  const gitlab = authenticate(env, { gitlabUrl, gitlabApiPathPrefix, publishToCatalog: false })
     .get(`/projects/${encodeURIComponent(repoUri)}`)
     .reply(200, { permissions: { project_access: { access_level: 40 } } });
 
   await t.notThrowsAsync(
     verify(
-      { gitlabUrl, gitlabApiPathPrefix },
+      { gitlabUrl, gitlabApiPathPrefix, publishToCatalog: false },
       { env, options: { repositoryUrl: `http://customurl.com/${repoUri}.git` }, logger: t.context.logger }
     )
   );
@@ -180,13 +180,13 @@ test.serial("Verify token and repository access with empty gitlabApiPathPrefix",
   const env = { GL_TOKEN: "gitlab_token" };
   const gitlabUrl = "https://othertesturl.com:9090";
   const gitlabApiPathPrefix = "";
-  const gitlab = authenticate(env, { gitlabUrl, gitlabApiPathPrefix })
+  const gitlab = authenticate(env, { gitlabUrl, gitlabApiPathPrefix, publishToCatalog: false })
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, { permissions: { project_access: { access_level: 40 } } });
 
   await t.notThrowsAsync(
     verify(
-      { gitlabUrl, gitlabApiPathPrefix },
+      { gitlabUrl, gitlabApiPathPrefix, publishToCatalog: false },
       { env, options: { repositoryUrl: `git@othertesturl.com:${owner}/${repo}.git` }, logger: t.context.logger }
     )
   );
@@ -205,7 +205,7 @@ test.serial("Verify token and repository with environment variables", async (t) 
 
   await t.notThrowsAsync(
     verify(
-      {},
+      { publishToCatalog: false },
       { env, options: { repositoryUrl: `git@othertesturl.com:${owner}/${repo}.git` }, logger: t.context.logger }
     )
   );
@@ -224,7 +224,7 @@ test.serial("Verify token and repository access with alternative environment var
 
   await t.notThrowsAsync(
     verify(
-      {},
+      { publishToCatalog: false },
       { env, options: { repositoryUrl: `git@othertesturl.com:${owner}/${repo}.git` }, logger: t.context.logger }
     )
   );
@@ -242,7 +242,7 @@ test.serial('Verify "assets" is a String', async (t) => {
 
   await t.notThrowsAsync(
     verify(
-      { assets },
+      { assets, publishToCatalog: false },
       { env, options: { repositoryUrl: `git@othertesturl.com:${owner}/${repo}.git` }, logger: t.context.logger }
     )
   );
@@ -261,7 +261,7 @@ test.serial('Verify "assets" is an Object with a path property', async (t) => {
 
   await t.notThrowsAsync(
     verify(
-      { assets },
+      { assets, publishToCatalog: false },
       { env, options: { repositoryUrl: `git@othertesturl.com:${owner}/${repo}.git` }, logger: t.context.logger }
     )
   );
@@ -280,7 +280,7 @@ test.serial('Verify "assets" is an Array of Object with a path property', async 
 
   await t.notThrowsAsync(
     verify(
-      { assets },
+      { assets, publishToCatalog: false },
       { env, options: { repositoryUrl: `git@othertesturl.com:${owner}/${repo}.git` }, logger: t.context.logger }
     )
   );
@@ -299,7 +299,7 @@ test.serial('Verify "assets" is an Array of glob Arrays', async (t) => {
 
   await t.notThrowsAsync(
     verify(
-      { assets },
+      { assets, publishToCatalog: false },
       { env, options: { repositoryUrl: `git@othertesturl.com:${owner}/${repo}.git` }, logger: t.context.logger }
     )
   );
@@ -318,7 +318,7 @@ test.serial('Verify "assets" is an Array of Object with a glob Arrays in path pr
 
   await t.notThrowsAsync(
     verify(
-      { assets },
+      { assets, publishToCatalog: false },
       { env, options: { repositoryUrl: `git@othertesturl.com:${owner}/${repo}.git` }, logger: t.context.logger }
     )
   );
@@ -339,7 +339,7 @@ test.serial('Throw SemanticReleaseError if "assets" option is not a String or an
     errors: [error, ...errors],
   } = await t.throwsAsync(
     verify(
-      { assets },
+      { assets, publishToCatalog: false },
       { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
     )
   );
@@ -363,7 +363,7 @@ test.serial('Throw SemanticReleaseError if "assets" option is an Array with inva
     errors: [error, ...errors],
   } = await t.throwsAsync(
     verify(
-      { assets },
+      { assets, publishToCatalog: false },
       { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
     )
   );
@@ -387,7 +387,7 @@ test.serial('Throw SemanticReleaseError if "assets" option is an Object missing 
     errors: [error, ...errors],
   } = await t.throwsAsync(
     verify(
-      { assets },
+      { assets, publishToCatalog: false },
       { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
     )
   );
@@ -413,7 +413,7 @@ test.serial(
       errors: [error, ...errors],
     } = await t.throwsAsync(
       verify(
-        { assets },
+        { assets, publishToCatalog: false },
         { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
       )
     );
@@ -431,7 +431,7 @@ test("Throw SemanticReleaseError for missing GitLab token", async (t) => {
     errors: [error, ...errors],
   } = await t.throwsAsync(
     verify(
-      {},
+      { publishToCatalog: false },
       { env, options: { repositoryUrl: "https://gitlab.com/semantic-release/gitlab.git" }, logger: t.context.logger }
     )
   );
@@ -450,7 +450,10 @@ test.serial("Throw SemanticReleaseError for invalid token", async (t) => {
   const {
     errors: [error, ...errors],
   } = await t.throwsAsync(
-    verify({}, { env, options: { repositoryUrl: `https://gitlab.com:${owner}/${repo}.git` }, logger: t.context.logger })
+    verify(
+      { publishToCatalog: false },
+      { env, options: { repositoryUrl: `https://gitlab.com:${owner}/${repo}.git` }, logger: t.context.logger }
+    )
   );
 
   t.is(errors.length, 0);
@@ -467,7 +470,7 @@ test.serial("Throw SemanticReleaseError for invalid repositoryUrl", async (t) =>
     errors: [error, ...errors],
   } = await t.throwsAsync(
     verify(
-      { gitlabUrl },
+      { gitlabUrl, publishToCatalog: false },
       { env, options: { repositoryUrl: "git+ssh://git@gitlab.com/context.git" }, logger: t.context.logger }
     )
   );
@@ -485,7 +488,7 @@ test.serial("Throw AggregateError if multiple verification fails", async (t) => 
     errors: [invalidAssetsError, invalidUrlError, noTokenError, ...errors],
   } = await t.throwsAsync(
     verify(
-      { assets, gitlabUrl },
+      { assets, gitlabUrl, publishToCatalog: false },
       { env, options: { repositoryUrl: "git+ssh://git@gitlab.com/context.git" }, logger: t.context.logger }
     )
   );
@@ -510,7 +513,10 @@ test.serial("Throw SemanticReleaseError if token doesn't have the push permissio
   const {
     errors: [error, ...errors],
   } = await t.throwsAsync(
-    verify({}, { env, options: { repositoryUrl: `https://gitlab.com:${owner}/${repo}.git` }, logger: t.context.logger })
+    verify(
+      { publishToCatalog: false },
+      { env, options: { repositoryUrl: `https://gitlab.com:${owner}/${repo}.git` }, logger: t.context.logger }
+    )
   );
 
   t.is(errors.length, 0);
@@ -531,7 +537,7 @@ test.serial("Throw SemanticReleaseError if token doesn't have the pull permissio
     errors: [error, ...errors],
   } = await t.throwsAsync(
     verify(
-      {},
+      { publishToCatalog: false },
       {
         env,
         options: { repositoryUrl: `https://gitlab.com:${owner}/${repo}.git`, dryRun: true },
@@ -555,7 +561,10 @@ test.serial("Throw SemanticReleaseError if the repository doesn't exist", async 
   const {
     errors: [error, ...errors],
   } = await t.throwsAsync(
-    verify({}, { env, options: { repositoryUrl: `https://gitlab.com:${owner}/${repo}.git` }, logger: t.context.logger })
+    verify(
+      { publishToCatalog: false },
+      { env, options: { repositoryUrl: `https://gitlab.com:${owner}/${repo}.git` }, logger: t.context.logger }
+    )
   );
 
   t.is(errors.length, 0);
@@ -571,7 +580,10 @@ test.serial("Throw error if GitLab API return any other errors", async (t) => {
   const gitlab = authenticate(env).get(`/projects/${owner}%2F${repo}`).times(3).reply(500);
 
   const error = await t.throwsAsync(
-    verify({}, { env, options: { repositoryUrl: `https://gitlab.com:${owner}/${repo}.git` }, logger: t.context.logger })
+    verify(
+      { publishToCatalog: false },
+      { env, options: { repositoryUrl: `https://gitlab.com:${owner}/${repo}.git` }, logger: t.context.logger }
+    )
   );
 
   t.is(error.response.statusCode, 500);
@@ -591,7 +603,7 @@ test.serial('Throw SemanticReleaseError if "failTitle" option is not a String', 
     errors: [error, ...errors],
   } = await t.throwsAsync(
     verify(
-      { failTitle },
+      { failTitle, publishToCatalog: false },
       { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
     )
   );
@@ -615,7 +627,7 @@ test.serial('Throw SemanticReleaseError if "failTitle" option is an empty String
     errors: [error, ...errors],
   } = await t.throwsAsync(
     verify(
-      { failTitle },
+      { failTitle, publishToCatalog: false },
       { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
     )
   );
@@ -639,7 +651,7 @@ test.serial('Throw SemanticReleaseError if "failTitle" option is a whitespace St
     errors: [error, ...errors],
   } = await t.throwsAsync(
     verify(
-      { failTitle },
+      { failTitle, publishToCatalog: false },
       { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
     )
   );
@@ -663,7 +675,7 @@ test.serial('Throw SemanticReleaseError if "failComment" option is not a String'
     errors: [error, ...errors],
   } = await t.throwsAsync(
     verify(
-      { failComment },
+      { failComment, publishToCatalog: false },
       { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
     )
   );
@@ -687,7 +699,7 @@ test.serial('Throw SemanticReleaseError if "failComment" option is an empty Stri
     errors: [error, ...errors],
   } = await t.throwsAsync(
     verify(
-      { failComment },
+      { failComment, publishToCatalog: false },
       { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
     )
   );
@@ -711,7 +723,7 @@ test.serial('Throw SemanticReleaseError if "failComment" option is a whitespace 
     errors: [error, ...errors],
   } = await t.throwsAsync(
     verify(
-      { failComment },
+      { failComment, publishToCatalog: false },
       { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
     )
   );
@@ -733,7 +745,7 @@ test.serial('Does not throw SemanticReleaseError if "labels" option is a valid S
 
   await t.notThrowsAsync(
     verify(
-      { labels },
+      { labels, publishToCatalog: false },
       { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
     )
   );
@@ -752,7 +764,7 @@ test.serial('Does not throw SemanticReleaseError if "labels" option is "false"',
 
   await t.notThrowsAsync(
     verify(
-      { labels },
+      { labels, publishToCatalog: false },
       { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
     )
   );
@@ -773,7 +785,7 @@ test.serial('Throw SemanticReleaseError if "labels" option is not a String', asy
     errors: [error, ...errors],
   } = await t.throwsAsync(
     verify(
-      { labels },
+      { labels, publishToCatalog: false },
       { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
     )
   );
@@ -797,7 +809,7 @@ test.serial('Throw SemanticReleaseError if "labels" option is an empty String', 
     errors: [error, ...errors],
   } = await t.throwsAsync(
     verify(
-      { labels },
+      { labels, publishToCatalog: false },
       { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
     )
   );
@@ -821,7 +833,7 @@ test.serial('Throw SemanticReleaseError if "labels" option is a whitespace Strin
     errors: [error, ...errors],
   } = await t.throwsAsync(
     verify(
-      { labels },
+      { labels, publishToCatalog: false },
       { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
     )
   );
@@ -845,7 +857,7 @@ test.serial('Throw SemanticReleaseError if "assignee" option is not a String', a
     errors: [error, ...errors],
   } = await t.throwsAsync(
     verify(
-      { assignee },
+      { assignee, publishToCatalog: false },
       { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
     )
   );
@@ -869,7 +881,7 @@ test.serial('Throw SemanticReleaseError if "assignee" option is an empty String'
     errors: [error, ...errors],
   } = await t.throwsAsync(
     verify(
-      { assignee },
+      { assignee, publishToCatalog: false },
       { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
     )
   );
@@ -893,7 +905,7 @@ test.serial('Throw SemanticReleaseError if "assignee" option is a whitespace Str
     errors: [error, ...errors],
   } = await t.throwsAsync(
     verify(
-      { assignee },
+      { assignee, publishToCatalog: false },
       { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
     )
   );
@@ -916,6 +928,7 @@ test.serial("Does not throw an error for option without validator", async (t) =>
     verify(
       {
         someOption: 42,
+        publishToCatalog: false,
       },
       { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
     )
@@ -936,7 +949,7 @@ test.serial(
 
     await t.notThrowsAsync(
       verify(
-        { assets },
+        { assets, publishToCatalog: false },
         { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
       )
     );
@@ -957,7 +970,7 @@ test.serial(
 
     await t.notThrowsAsync(
       verify(
-        { assets },
+        { assets, publishToCatalog: false },
         { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
       )
     );
@@ -980,7 +993,7 @@ test.serial(
       errors: [error],
     } = await t.throwsAsync(
       verify(
-        { assets },
+        { assets, publishToCatalog: false },
         { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
       )
     );
@@ -1020,3 +1033,32 @@ test.serial(
     t.true(gitlab.isDone());
   }
 );
+
+test.serial("Throw SemanticReleaseError if GraphQL API request fails.", async (t) => {
+  const owner = "test_user";
+  const repo = "test_repo";
+  const env = { GITLAB_TOKEN: "gitlab_token" };
+  const gitlab = authenticate(env)
+    .get(`/projects/${owner}%2F${repo}`)
+    .reply(200, { permissions: { project_access: { access_level: 40 } } });
+  const gitlabGraphQl = nock("https://gitlab.com", { reqheaders: { "Private-Token": "gitlab_token" } })
+    .post("/graphql")
+    .reply(400);
+
+  const {
+    errors: [error],
+  } = await t.throwsAsync(
+    verify(
+      { publishToCatalog: undefined },
+      {
+        env,
+        options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` },
+        logger: t.context.logger,
+      }
+    )
+  );
+  t.is(error.name, "SemanticReleaseError");
+  t.is(error.code, "EGLABNOTINSTALLED");
+  t.true(gitlab.isDone());
+  t.true(gitlabGraphQl.isDone());
+});

@@ -24,7 +24,7 @@ test.serial("Publish a release", async (t) => {
   const owner = "test_user";
   const repo = "test_repo";
   const env = { GITLAB_TOKEN: "gitlab_token" };
-  const pluginConfig = {};
+  const pluginConfig = { publishToCatalog: false };
   const nextRelease = { gitHead: "123", gitTag: "v1.0.0", notes: "Test release note body" };
   const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
   const encodedProjectPath = encodeURIComponent(`${owner}/${repo}`);
@@ -81,7 +81,10 @@ test.serial("Publish a release with templated path", async (t) => {
     .post(`/projects/${encodedProjectPath}/uploads`, /Content-Disposition/g)
     .reply(200, uploaded);
 
-  const result = await publish({ assets }, { env, cwd, options, nextRelease, logger: t.context.logger });
+  const result = await publish(
+    { assets, publishToCatalog: false },
+    { env, cwd, options, nextRelease, logger: t.context.logger }
+  );
 
   t.is(result.url, `https://gitlab.com/${owner}/${repo}/-/releases/${encodedGitTag}`);
   t.deepEqual(t.context.log.args[0], ["Uploaded file: %s", `https://gitlab.com${uploaded.full_path}`]);
@@ -122,7 +125,10 @@ test.serial("Publish a release with assets", async (t) => {
     .post(`/projects/${encodedProjectPath}/uploads`, /filename="file.css"/gm)
     .reply(200, uploaded);
 
-  const result = await publish({ assets }, { env, cwd, options, nextRelease, logger: t.context.logger });
+  const result = await publish(
+    { assets, publishToCatalog: false },
+    { env, cwd, options, nextRelease, logger: t.context.logger }
+  );
 
   t.is(result.url, `https://gitlab.com/${owner}/${repo}/-/releases/${encodedGitTag}`);
   t.deepEqual(t.context.log.args[0], ["Uploaded file: %s", `https://gitlab.com${uploaded.full_path}`]);
@@ -168,7 +174,10 @@ test.serial("Publish a release with generics", async (t) => {
     )
     .reply(200, uploaded);
 
-  const result = await publish({ assets }, { env, cwd, options, nextRelease, logger: t.context.logger });
+  const result = await publish(
+    { assets, publishToCatalog: false },
+    { env, cwd, options, nextRelease, logger: t.context.logger }
+  );
 
   t.is(result.url, `https://gitlab.com/${owner}/${repo}/-/releases/${encodedGitTag}`);
   t.deepEqual(t.context.log.args[0], ["Uploaded file: %s (%s)", expectedUrl, uploaded.file.url]);
@@ -214,7 +223,10 @@ test.serial("Publish a release with generics and external storage provider (http
     )
     .reply(200, uploaded);
 
-  const result = await publish({ assets }, { env, cwd, options, nextRelease, logger: t.context.logger });
+  const result = await publish(
+    { assets, publishToCatalog: false },
+    { env, cwd, options, nextRelease, logger: t.context.logger }
+  );
 
   t.is(result.url, `https://gitlab.com/${owner}/${repo}/-/releases/${encodedGitTag}`);
   t.deepEqual(t.context.log.args[0], ["Uploaded file: %s (%s)", expectedUrl, uploaded.file.url]);
@@ -260,7 +272,10 @@ test.serial("Publish a release with generics and external storage provider (http
     )
     .reply(200, uploaded);
 
-  const result = await publish({ assets }, { env, cwd, options, nextRelease, logger: t.context.logger });
+  const result = await publish(
+    { assets, publishToCatalog: false },
+    { env, cwd, options, nextRelease, logger: t.context.logger }
+  );
 
   t.is(result.url, `https://gitlab.com/${owner}/${repo}/-/releases/${encodedGitTag}`);
   t.deepEqual(t.context.log.args[0], ["Uploaded file: %s (%s)", expectedUrl, uploaded.file.url]);
@@ -306,7 +321,10 @@ test.serial("Publish a release with generics and external storage provider (ftp)
     )
     .reply(200, uploaded);
 
-  const result = await publish({ assets }, { env, cwd, options, nextRelease, logger: t.context.logger });
+  const result = await publish(
+    { assets, publishToCatalog: false },
+    { env, cwd, options, nextRelease, logger: t.context.logger }
+  );
 
   t.is(result.url, `https://gitlab.com/${owner}/${repo}/-/releases/${encodedGitTag}`);
   t.deepEqual(t.context.log.args[0], ["Uploaded file: %s (%s)", expectedUrl, uploaded.file.url]);
@@ -358,7 +376,10 @@ test.serial("Publish a release with asset type and permalink", async (t) => {
     .post(`/projects/${encodedProjectPath}/uploads`, /filename="file.css"/gm)
     .reply(200, uploaded);
 
-  const result = await publish({ assets }, { env, cwd, options, nextRelease, logger: t.context.logger });
+  const result = await publish(
+    { assets, publishToCatalog: false },
+    { env, cwd, options, nextRelease, logger: t.context.logger }
+  );
 
   t.is(result.url, `https://gitlab.com/${owner}/${repo}/-/releases/${encodedGitTag}`);
   t.deepEqual(t.context.log.args[0], ["Uploaded file: %s", `https://gitlab.com${uploaded.full_path}`]);
@@ -409,7 +430,10 @@ test.serial("Publish a release with an asset with a template label", async (t) =
     .post(`/projects/${encodedProjectPath}/uploads`, /filename="file.css"/gm)
     .reply(200, uploaded);
 
-  const result = await publish({ assets }, { env, cwd, options, nextRelease, logger: t.context.logger });
+  const result = await publish(
+    { assets, publishToCatalog: false },
+    { env, cwd, options, nextRelease, logger: t.context.logger }
+  );
 
   t.is(result.url, `https://gitlab.com/${owner}/${repo}/-/releases/${encodedGitTag}`);
   t.deepEqual(t.context.log.args[0], ["Uploaded file: %s", `https://gitlab.com${uploaded.full_path}`]);
@@ -472,7 +496,10 @@ test.serial("Publish a release (with an link) with variables", async (t) => {
   const gitlabUpload = authenticate(env)
     .post(`/projects/${encodedProjectPath}/uploads`, /filename="file.css"/gm)
     .reply(200, uploaded);
-  const result = await publish({ assets }, { env, cwd, options, nextRelease, logger: t.context.logger });
+  const result = await publish(
+    { assets, publishToCatalog: false },
+    { env, cwd, options, nextRelease, logger: t.context.logger }
+  );
 
   t.is(result.url, `https://gitlab.com/${owner}/${repo}/-/releases/${encodedGitTag}`);
   t.deepEqual(t.context.log.args[0], ["Uploaded file: %s", `https://gitlab.com${uploaded.full_path}`]);
@@ -488,7 +515,7 @@ test.serial("Publish a release with a milestone", async (t) => {
   const owner = "test_user";
   const repo = "test_repo";
   const env = { GITLAB_TOKEN: "gitlab_token" };
-  const pluginConfig = { milestones: ["1.2.3"] };
+  const pluginConfig = { publishToCatalog: false, milestones: ["1.2.3"] };
   const nextRelease = { gitHead: "123", gitTag: "v1.0.0", notes: "Test release note body" };
   const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
   const encodedProjectPath = encodeURIComponent(`${owner}/${repo}`);
@@ -531,7 +558,10 @@ test.serial("Publish a release with array of missing assets", async (t) => {
       },
     })
     .reply(200);
-  const result = await publish({ assets }, { env, cwd, options, nextRelease, logger: t.context.logger });
+  const result = await publish(
+    { assets, publishToCatalog: false },
+    { env, cwd, options, nextRelease, logger: t.context.logger }
+  );
 
   t.is(result.url, `https://gitlab.com/${owner}/${repo}/-/releases/${encodedGitTag}`);
   t.deepEqual(t.context.log.args[0], ["Published GitLab release: %s", nextRelease.gitTag]);
@@ -571,7 +601,10 @@ test.serial("Publish a release with one asset and custom label", async (t) => {
     .post(`/projects/${encodedProjectPath}/uploads`, /filename="upload.txt"/gm)
     .reply(200, uploaded);
 
-  const result = await publish({ assets }, { env, cwd, options, nextRelease, logger: t.context.logger });
+  const result = await publish(
+    { assets, publishToCatalog: false },
+    { env, cwd, options, nextRelease, logger: t.context.logger }
+  );
 
   t.is(result.url, `https://gitlab.com/${owner}/${repo}/-/releases/${encodedGitTag}`);
   t.deepEqual(t.context.log.args[0], ["Uploaded file: %s", `https://gitlab.com${uploaded.full_path}`]);
@@ -584,7 +617,7 @@ test.serial("Publish a release with missing release notes", async (t) => {
   const owner = "test_user";
   const repo = "test_repo";
   const env = { GITLAB_TOKEN: "gitlab_token" };
-  const pluginConfig = {};
+  const pluginConfig = { publishToCatalog: false };
   const nextRelease = { gitHead: "123", gitTag: "v1.0.0" };
   const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
   const encodedProjectPath = encodeURIComponent(`${owner}/${repo}`);
@@ -637,7 +670,10 @@ test.serial("Publish a release with an asset link", async (t) => {
     })
     .reply(200);
 
-  const result = await publish({ assets }, { env, cwd, options, nextRelease, logger: t.context.logger });
+  const result = await publish(
+    { assets, publishToCatalog: false },
+    { env, cwd, options, nextRelease, logger: t.context.logger }
+  );
 
   t.is(result.url, `https://gitlab.com/${owner}/${repo}/-/releases/${encodedGitTag}`);
   t.deepEqual(t.context.log.args[0], ["Published GitLab release: %s", nextRelease.gitTag]);
@@ -648,7 +684,7 @@ test.serial("Publish a release with error response", async (t) => {
   const owner = "test_user";
   const repo = "test_repo";
   const env = { GITLAB_TOKEN: "gitlab_token" };
-  const pluginConfig = {};
+  const pluginConfig = { publishToCatalog: false };
   const nextRelease = { gitHead: "123", gitTag: "v1.0.0", notes: "Test release note body" };
   const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
   const encodedProjectPath = encodeURIComponent(`${owner}/${repo}`);
@@ -668,7 +704,7 @@ test.serial("Publish a release with error response", async (t) => {
   t.true(gitlab.isDone());
 });
 
-test.serial("Publish a release to CI catalog", async (t) => {
+test.serial("Publish a release to CI catalog (user-configured)", async (t) => {
   const owner = "test_user";
   const repo = "test_repo";
   const env = { GITLAB_TOKEN: "gitlab_token" };
@@ -698,6 +734,47 @@ test.serial("Publish a release to CI catalog", async (t) => {
   await publishWithMockExeca(pluginConfig, { env, options, nextRelease, logger: t.context.logger });
   t.deepEqual(t.context.log.args[1], ["Published tag %s to the CI catalog", nextRelease.gitTag]);
   t.true(gitlab.isDone());
+});
+
+test.serial("Publish a release to CI catalog (auto-detected)", async (t) => {
+  const owner = "test_user";
+  const repo = "test_repo";
+  const env = { GITLAB_TOKEN: "gitlab_token" };
+  const pluginConfig = { publishToCatalog: undefined };
+  const nextRelease = { gitHead: "123", gitTag: "v1.0.0", notes: "Test release note body" };
+  const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
+  const projectPath = `${owner}/${repo}`;
+  const encodedProjectPath = encodeURIComponent(projectPath);
+  const gitlab = authenticate(env)
+    .post(`/projects/${encodedProjectPath}/releases`, {
+      tag_name: nextRelease.gitTag,
+      description: nextRelease.notes,
+      assets: {
+        links: [],
+      },
+    })
+    .reply(200);
+
+  const gitlabGraphQl = nock("https://gitlab.com", { reqheaders: { "Private-Token": "gitlab_token" } })
+    .post("/graphql", {
+      query:
+        '\n      query {\n        project(fullPath: "test_user/test_repo") {\n          isCatalogResource\n        }\n      }\n    ',
+    })
+    .reply(200, { data: { project: { isCatalogResource: true } } });
+
+  const execa = (await td.replaceEsm("execa")).execa;
+  td.when(
+    execa("glab", ["repo", "publish", "catalog", nextRelease.gitTag], {
+      cwd: undefined,
+      timeout: 30000,
+      env: { GITLAB_TOKEN: env.GITLAB_TOKEN },
+    })
+  ).thenResolve();
+  const publishWithMockExeca = (await import("../lib/publish.js")).default;
+  await publishWithMockExeca(pluginConfig, { env, options, nextRelease, logger: t.context.logger });
+  t.true(gitlab.isDone());
+  t.true(gitlabGraphQl.isDone());
+  t.deepEqual(t.context.log.args[1], ["Published tag %s to the CI catalog", nextRelease.gitTag]);
 });
 
 test.serial("Publish a release to CI catalog with error", async (t) => {
