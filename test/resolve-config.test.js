@@ -7,6 +7,7 @@ const defaultOptions = {
   gitlabToken: undefined,
   gitlabUrl: "https://gitlab.com",
   gitlabApiUrl: urlJoin("https://gitlab.com", "/api/v4"),
+  gitlabGraphQlApiUrl: urlJoin("https://gitlab.com", "/graphql"),
   assets: undefined,
   milestones: undefined,
   successComment: undefined,
@@ -42,6 +43,7 @@ test("Returns user config", (t) => {
       gitlabToken,
       gitlabUrl,
       gitlabApiUrl: urlJoin(gitlabUrl, gitlabApiPathPrefix),
+      gitlabGraphQlApiUrl: urlJoin(gitlabUrl, "/graphql"),
       assets,
       labels: false,
       retryLimit,
@@ -55,6 +57,7 @@ test("Returns user config", (t) => {
       gitlabToken,
       gitlabUrl,
       gitlabApiUrl: urlJoin(gitlabUrl, gitlabApiPathPrefix),
+      gitlabGraphQlApiUrl: urlJoin(gitlabUrl, "/graphql"),
       assets,
       proxy,
     }
@@ -78,6 +81,7 @@ test("Returns user config via environment variables", (t) => {
       gitlabToken,
       gitlabUrl,
       gitlabApiUrl: urlJoin(gitlabUrl, gitlabApiPathPrefix),
+      gitlabGraphQlApiUrl: urlJoin(gitlabUrl, "/graphql"),
       assets,
       milestones,
     }
@@ -97,6 +101,7 @@ test("Returns user config via alternative environment variables", (t) => {
       gitlabToken,
       gitlabUrl,
       gitlabApiUrl: urlJoin(gitlabUrl, gitlabApiPathPrefix),
+      gitlabGraphQlApiUrl: urlJoin(gitlabUrl, "/graphql"),
       assets,
       milestones: undefined,
       successComment: undefined,
@@ -224,6 +229,7 @@ test("Returns user config via alternative environment variables with mismatching
       gitlabToken: "TOKEN",
       gitlabUrl: "http://host.com",
       gitlabApiUrl: "http://host.com/api/prefix",
+      gitlabGraphQlApiUrl: "http://host.com/graphql",
       assets: ["file.js"],
     }
   );
@@ -246,6 +252,7 @@ test("Returns user config via alternative environment variables with mismatching
       gitlabToken: "TOKEN",
       gitlabUrl: "https://host.com",
       gitlabApiUrl: "https://host.com/api/prefix",
+      gitlabGraphQlApiUrl: "https://host.com/graphql",
       assets: ["file.js"],
     }
   );
@@ -366,6 +373,7 @@ test("Returns default config", (t) => {
     gitlabToken,
     gitlabUrl: "https://gitlab.com",
     gitlabApiUrl: urlJoin(gitlabUrl, "/api/v4"),
+    gitlabGraphQlApiUrl: urlJoin(gitlabUrl, "/graphql"),
   });
 });
 
@@ -374,13 +382,14 @@ test("Returns default config via GitLab CI/CD environment variables", (t) => {
   const CI_PROJECT_URL = "http://ci-host.com/ci-owner/ci-repo";
   const CI_PROJECT_PATH = "ci-owner/ci-repo";
   const CI_API_V4_URL = "http://ci-host-api.com/prefix";
+  const CI_API_GRAPHQL_URL = "http://ci-host-api.com/graphql";
 
   t.deepEqual(
     resolveConfig(
       {},
       {
         envCi: { service: "gitlab" },
-        env: { GL_TOKEN: gitlabToken, CI_PROJECT_URL, CI_PROJECT_PATH, CI_API_V4_URL },
+        env: { GL_TOKEN: gitlabToken, CI_PROJECT_URL, CI_PROJECT_PATH, CI_API_V4_URL, CI_API_GRAPHQL_URL },
       }
     ),
     {
@@ -388,6 +397,7 @@ test("Returns default config via GitLab CI/CD environment variables", (t) => {
       gitlabToken,
       gitlabUrl: "http://ci-host.com",
       gitlabApiUrl: CI_API_V4_URL,
+      gitlabGraphQlApiUrl: CI_API_GRAPHQL_URL,
     }
   );
 });
@@ -402,13 +412,14 @@ test("Returns user config over GitLab CI/CD environment variables", (t) => {
   const CI_PROJECT_URL = "http://ci-host.com/ci-owner/ci-repo";
   const CI_PROJECT_PATH = "ci-owner/ci-repo";
   const CI_API_V4_URL = "http://ci-host-api.com/prefix";
+  const CI_API_GRAPHQL_URL = "http://ci-host-api.com/graphql";
 
   t.deepEqual(
     resolveConfig(
       { gitlabUrl, gitlabApiPathPrefix, assets, failTitle, labels },
       {
         envCi: { service: "gitlab" },
-        env: { GL_TOKEN: gitlabToken, CI_PROJECT_URL, CI_PROJECT_PATH, CI_API_V4_URL },
+        env: { GL_TOKEN: gitlabToken, CI_PROJECT_URL, CI_PROJECT_PATH, CI_API_V4_URL, CI_API_GRAPHQL_URL },
       }
     ),
     {
@@ -416,6 +427,7 @@ test("Returns user config over GitLab CI/CD environment variables", (t) => {
       gitlabToken,
       gitlabUrl,
       gitlabApiUrl: urlJoin(gitlabUrl, gitlabApiPathPrefix),
+      gitlabGraphQlApiUrl: urlJoin(gitlabUrl, "/graphql"),
       assets,
       failTitle: "The automated release unfortunately failed!",
       labels: "bot,release-failed",
@@ -430,6 +442,7 @@ test("Returns user config via environment variables over GitLab CI/CD environmen
   const CI_PROJECT_URL = "http://ci-host.com/ci-owner/ci-repo";
   const CI_PROJECT_PATH = "ci-owner/ci-repo";
   const CI_API_V4_URL = "http://ci-host-api.com/prefix";
+  const CI_API_GRAPHQL_URL = "http://ci-host-api.com/graphql";
 
   t.deepEqual(
     resolveConfig(
@@ -443,6 +456,7 @@ test("Returns user config via environment variables over GitLab CI/CD environmen
           CI_PROJECT_URL,
           CI_PROJECT_PATH,
           CI_API_V4_URL,
+          CI_API_GRAPHQL_URL,
         },
       }
     ),
@@ -451,6 +465,7 @@ test("Returns user config via environment variables over GitLab CI/CD environmen
       gitlabToken,
       gitlabUrl,
       gitlabApiUrl: urlJoin(gitlabUrl, gitlabApiPathPrefix),
+      gitlabGraphQlApiUrl: urlJoin(gitlabUrl, "/graphql"),
     }
   );
 });
@@ -462,6 +477,7 @@ test("Returns user config via alternative environment variables over GitLab CI/C
   const CI_PROJECT_URL = "http://ci-host.com/ci-owner/ci-repo";
   const CI_PROJECT_PATH = "ci-owner/ci-repo";
   const CI_API_V4_URL = "http://ci-host-api.com/prefix";
+  const CI_API_GRAPHQL_URL = "http://ci-host-api.com/graphql";
 
   t.deepEqual(
     resolveConfig(
@@ -475,6 +491,7 @@ test("Returns user config via alternative environment variables over GitLab CI/C
           CI_PROJECT_URL,
           CI_PROJECT_PATH,
           CI_API_V4_URL,
+          CI_API_GRAPHQL_URL,
         },
       }
     ),
@@ -483,6 +500,7 @@ test("Returns user config via alternative environment variables over GitLab CI/C
       gitlabToken,
       gitlabUrl,
       gitlabApiUrl: urlJoin(gitlabUrl, gitlabApiPathPrefix),
+      gitlabGraphQlApiUrl: urlJoin(gitlabUrl, "/graphql"),
     }
   );
 });
@@ -509,3 +527,67 @@ test("Ignore GitLab CI/CD environment variables if not running on GitLab CI/CD",
     }
   );
 });
+
+// test("Considers configured GitLab URL when determining GraphQL API URL", (t) => {
+//   const gitlabToken = "TOKEN";
+//   const CI_PROJECT_URL = "http://ci-host.com/owner/repo";
+//   const CI_PROJECT_PATH = "ci-owner/ci-repo";
+//   const CI_API_V4_URL = "http://ci-host-api.com/prefix";
+
+//   t.deepEqual(
+//     resolveConfig(
+//       {},
+//       {
+//         env: { GL_TOKEN: gitlabToken, CI_PROJECT_URL, CI_PROJECT_PATH, CI_API_V4_URL },
+//       }
+//     ),
+//     {
+//       ...defaultOptions,
+//       gitlabToken,
+//       gitlabUrl: "https://gitlab.com",
+//       gitlabApiUrl: urlJoin("https://gitlab.com", "/api/v4"),
+//     }
+//   );
+// });
+
+// test("Considers configured GraphQL API prefix when determining GraphQL API URL", (t) => {
+//   const gitlabToken = "TOKEN";
+
+//   t.deepEqual(
+//     resolveConfig(
+//       {},
+//       {
+//         env: { GL_TOKEN: gitlabToken, CI_PROJECT_URL, CI_PROJECT_PATH, CI_API_V4_URL },
+//       }
+//     ),
+//     {
+//       ...defaultOptions,
+//       gitlabToken,
+//       gitlabUrl: "https://gitlab.com",
+//       gitlabApiUrl: urlJoin("https://gitlab.com", "/api/v4"),
+//     }
+//   );
+// });
+
+// test("Detects GraphQL API URL from GitLab CI/CD environment variables", (t) => {
+//   const gitlabToken = "TOKEN";
+//   const CI_PROJECT_URL = "http://ci-host.com/owner/repo";
+//   const CI_PROJECT_PATH = "ci-owner/ci-repo";
+//   const CI_API_V4_URL = "http://ci-host-api.com/prefix";
+
+//   t.deepEqual(
+//     resolveConfig(
+//       {},
+//       {
+//         envCi: { service: "travis" },
+//         env: { GL_TOKEN: gitlabToken, CI_PROJECT_URL, CI_PROJECT_PATH, CI_API_V4_URL },
+//       }
+//     ),
+//     {
+//       ...defaultOptions,
+//       gitlabToken,
+//       gitlabUrl: "https://gitlab.com",
+//       gitlabApiUrl: urlJoin("https://gitlab.com", "/api/v4"),
+//     }
+//   );
+// });
