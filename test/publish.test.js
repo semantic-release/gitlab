@@ -4,9 +4,9 @@ import tempy from "tempy";
 import { stub } from "sinon";
 import publish from "../lib/publish.js";
 import authenticate from "./helpers/mock-gitlab.js";
+import * as td from "testdouble";
 
 /* eslint camelcase: ["error", {properties: "never"}] */
-
 test.beforeEach((t) => {
   // Mock logger
   t.context.log = stub();
@@ -15,8 +15,9 @@ test.beforeEach((t) => {
 });
 
 test.afterEach.always(() => {
-  // Clear nock
+  // Clear nock and testdouble
   nock.cleanAll();
+  td.reset();
 });
 
 test.serial("Publish a release", async (t) => {
@@ -664,5 +665,77 @@ test.serial("Publish a release with error response", async (t) => {
 
   const error = await t.throwsAsync(publish(pluginConfig, { env, options, nextRelease, logger: t.context.logger }));
   t.is(error.message, `Response code 499 (Something went wrong)`);
+  t.true(gitlab.isDone());
+});
+
+test.serial("Publish a release to CI catalog", async (t) => {
+  const owner = "test_user";
+  const repo = "test_repo";
+  const env = { GITLAB_TOKEN: "gitlab_token" };
+  const pluginConfig = { publishToCatalog: true };
+  const nextRelease = { gitHead: "123", gitTag: "v1.0.0", notes: "Test release note body" };
+  const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
+  const encodedProjectPath = encodeURIComponent(`${owner}/${repo}`);
+  const gitlab = authenticate(env)
+    .post(`/projects/${encodedProjectPath}/releases`, {
+      tag_name: nextRelease.gitTag,
+      description: nextRelease.notes,
+      assets: {
+        links: [],
+      },
+    })
+    .reply(200);
+
+  const execa = (await td.replaceEsm("execa")).execa;
+  td.when(
+    execa("glab", ["repo", "publish", "catalog", nextRelease.gitTag], {
+      cwd: undefined,
+      timeout: 30000,
+      env: { GITLAB_TOKEN: env.GITLAB_TOKEN },
+    })
+  ).thenResolve();
+  const publishWithMockExeca = (await import("../lib/publish.js")).default;
+  await publishWithMockExeca(pluginConfig, { env, options, nextRelease, logger: t.context.logger });
+  t.deepEqual(t.context.log.args[1], ["Published tag %s to the CI catalog", nextRelease.gitTag]);
+  t.true(gitlab.isDone());
+});
+
+test.serial("Publish a release to CI catalog with error", async (t) => {
+  const owner = "test_user";
+  const repo = "test_repo";
+  const env = { GITLAB_TOKEN: "gitlab_token" };
+  const pluginConfig = { publishToCatalog: true };
+  const nextRelease = { gitHead: "123", gitTag: "v1.0.0", notes: "Test release note body" };
+  const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
+  const encodedProjectPath = encodeURIComponent(`${owner}/${repo}`);
+  const gitlab = authenticate(env)
+    .post(`/projects/${encodedProjectPath}/releases`, {
+      tag_name: nextRelease.gitTag,
+      description: nextRelease.notes,
+      assets: {
+        links: [],
+      },
+    })
+    .reply(200);
+
+  const execa = (await td.replaceEsm("execa")).execa;
+  const execaError = new Error("test");
+  td.when(
+    execa("glab", ["repo", "publish", "catalog", nextRelease.gitTag], {
+      cwd: undefined,
+      timeout: 30000,
+      env: { GITLAB_TOKEN: env.GITLAB_TOKEN },
+    })
+  ).thenReject(execaError);
+  const publishWithMockedExeca = (await import("../lib/publish.js")).default;
+  const error = await t.throwsAsync(
+    publishWithMockedExeca(pluginConfig, { env, options, nextRelease, logger: t.context.logger })
+  );
+  t.deepEqual(t.context.error.args[0], [
+    "An error occurred while publishing tag %s to the CI catalog:\n%O",
+    nextRelease.gitTag,
+    execaError,
+  ]);
+  t.is(error.message, execaError.message);
   t.true(gitlab.isDone());
 });
