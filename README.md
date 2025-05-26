@@ -214,7 +214,7 @@ The fail comment condition is generated with [Lodash template](https://lodash.co
 
 #### publishToCatalog
 
-**Note**: This is an EXPERIMENTAL option that might change in the future.
+**Note**: This is an EXPERIMENTAL option that might change in the future. It depends on a GitLab feature flag that, as of May 2025, is only enabled for a subset of projects on GitLab.com. Follow the [upstream issue](https://gitlab.com/gitlab-org/gitlab/-/issues/463253) for progress.
 
 Use this option to [publish CI/CD components to the catalog](https://gitlab.com/gitlab-org/cli/-/blob/main/docs/source/repo/publish/catalog.md) as part of the release process.
 
