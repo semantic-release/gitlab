@@ -22,5 +22,5 @@ export default function (
       : null || '/api/v4',
   } = {}
 ) {
-  return nock(urlJoin(gitlabUrl, gitlabApiPathPrefix), {reqheaders: {'Private-Token': gitlabToken}});
+  return nock(urlJoin(gitlabUrl, gitlabApiPathPrefix), {reqheaders: {[gitlabToken === env.CI_JOB_TOKEN ? "Job-Token" : "Private-Token"]: gitlabToken}});
 };
