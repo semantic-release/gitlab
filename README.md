@@ -67,6 +67,12 @@ Ensure your project is configured to [allow git push requests for job tokens](ht
 
 **Note**: Due to limitations on [job token](https://docs.gitlab.com/ci/jobs/ci_job_token/) access, comments on merge requests and issues must be explicitly disabled. See: [successCommentCondition](#successcommentcondition) and [failCommentCondition](#failcommentcondition).
 
+#### Skip Push Support
+It is possible to use a Job Token *without* git push permissions, by using the `skipPush` option. In this mode, the repository tag will be created by the GitLab release api.
+
+**Note**: **semantic-release** relies on git notes for tracking the [release channels](https://semantic-release.gitbook.io/semantic-release/usage/workflow-configuration#channel) associated with releases. It is not possible to push these notes via the GitLab release api; therefore, all branches must be configured to use the default channel. 
+
+
 ### Environment variables
 
 | Variable                       | Description                                                                                |
