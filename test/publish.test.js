@@ -45,6 +45,33 @@ test.serial("Publish a release", async (t) => {
   t.true(gitlab.isDone());
 });
 
+test.serial("Publish a release with skipPush enabled", async (t) => {
+  const owner = "test_user";
+  const repo = "test_repo";
+  const env = { GITLAB_TOKEN: "gitlab_token" };
+  const pluginConfig = {};
+  const nextRelease = { gitHead: "123", gitTag: "v1.0.0", notes: "Test release note body" };
+  const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`, skipPush: true };
+  const encodedProjectPath = encodeURIComponent(`${owner}/${repo}`);
+  const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
+  const gitlab = authenticate(env)
+    .post(`/projects/${encodedProjectPath}/releases`, {
+      tag_name: nextRelease.gitTag,
+      ref: nextRelease.gitHead,
+      description: nextRelease.notes,
+      assets: {
+        links: [],
+      },
+    })
+    .reply(200);
+
+  const result = await publish(pluginConfig, { env, options, nextRelease, logger: t.context.logger });
+
+  t.is(result.url, `https://gitlab.com/${owner}/${repo}/-/releases/${encodedGitTag}`);
+  t.deepEqual(t.context.log.args[0], ["Published GitLab release: %s", nextRelease.gitTag]);
+  t.true(gitlab.isDone());
+});
+
 test.serial("Publish a release with templated path", async (t) => {
   const cwd = "test/fixtures/files";
   const owner = "test_user";

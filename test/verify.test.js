@@ -988,3 +988,109 @@ test.serial(
     t.true(gitlab.isDone());
   }
 );
+
+test.serial(
+  'Throw SemanticReleaseError if "successMessageCondition" and "failMessageCondition" are not explicitly set to `false` when using a job token',
+  async (t) => {
+    const owner = "test_user";
+    const repo = "test_repo";
+    const env = { GITLAB_TOKEN: "gitlab_token", CI_JOB_TOKEN: "gitlab_token" };
+    const gitlab = authenticate(env)
+      .get(`/projects/${owner}%2F${repo}/releases`)
+      .reply(200, []);
+
+    const {
+      errors: [error],
+    } = await t.throwsAsync(
+      verify(
+        { },
+        { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
+      )
+    );
+    t.is(error.name, "SemanticReleaseError");
+    t.is(error.code, "EJOBTOKENCOMMENTCONDITION");
+    t.true(gitlab.isDone());
+  }
+);
+
+test.serial(
+  'No SemanticReleaseError if "successMessageCondition" and "failMessageCondition" are explicitly set to `false` when using a job token',
+  async (t) => {
+    const owner = "test_user";
+    const repo = "test_repo";
+    const env = { GITLAB_TOKEN: "gitlab_token", CI_JOB_TOKEN: "gitlab_token" };
+    const gitlab = authenticate(env)
+      .get(`/projects/${owner}%2F${repo}/releases`)
+      .reply(200, []);
+
+    await t.notThrowsAsync(
+      verify(
+        { successCommentCondition: false, failCommentCondition: false },
+        { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
+      )
+    );
+    t.true(gitlab.isDone());
+  }
+);
+
+test.serial(
+  'Throw SemanticReleaseError if a branch is not using the default release channel when skipPush is set',
+  async (t) => {
+    const owner = "test_user";
+    const repo = "test_repo";
+    const env = { GITLAB_TOKEN: "gitlab_token", CI_JOB_TOKEN: "gitlab_token" };
+    const branches = [
+      {
+        name: "main"
+      },
+      {
+        name: "beta",
+        channel: "beta"
+      }
+    ]
+    const gitlab = authenticate(env)
+      .get(`/projects/${owner}%2F${repo}/releases`)
+      .reply(200, []);
+
+    const {
+      errors: [error],
+    } = await t.throwsAsync(
+      verify(
+        { successCommentCondition: false, failCommentCondition: false },
+        { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`, skipPush: true }, logger: t.context.logger, branches }
+      )
+    );
+    t.is(error.name, "SemanticReleaseError");
+    t.is(error.code, "ESKIPPUSHCHANNEL");
+    t.true(gitlab.isDone());
+  }
+);
+
+test.serial(
+  'No SemanticReleaseError if all branches are using the default release channel when skipPush is set',
+  async (t) => {
+    const owner = "test_user";
+    const repo = "test_repo";
+    const env = { GITLAB_TOKEN: "gitlab_token", CI_JOB_TOKEN: "gitlab_token" };
+    const branches = [
+      {
+        name: "main"
+      },
+      {
+        name: "beta",
+        channel: false
+      }
+    ]
+    const gitlab = authenticate(env)
+      .get(`/projects/${owner}%2F${repo}/releases`)
+      .reply(200, []);
+
+    await t.notThrowsAsync(
+      verify(
+        { successCommentCondition: false, failCommentCondition: false },
+        { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`, skipPush: true }, logger: t.context.logger, branches }
+      )
+    );
+    t.true(gitlab.isDone());
+  }
+);
