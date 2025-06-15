@@ -54,9 +54,18 @@ With this example [GitLab releases](https://docs.gitlab.com/ee/user/project/rele
 The GitLab authentication configuration is **required** and can be set via
 [environment variables](#environment-variables).
 
+There are two types of tokens supported by GitLab:
+
+#### Access Token
+
 Create a [project access token](https://docs.gitlab.com/ee/user/project/settings/project_access_tokens.html), [group access token](https://docs.gitlab.com/ee/user/group/settings/group_access_tokens.html), or [personal access token](https://docs.gitlab.com/ce/user/profile/personal_access_tokens.html) with role _Developer_ (or higher) and the `api` scope and make it available in your CI environment via the `GL_TOKEN` environment variable. If you are using `GL_TOKEN` as the [remote Git repository authentication](https://github.com/semantic-release/semantic-release/blob/master/docs/usage/ci-configuration.md#authentication) it must also have the `write_repository` scope.
 
 **Note**: When running with [`dryRun`](https://semantic-release.gitbook.io/semantic-release/usage/configuration#dryrun) only `read_repository` scope is required.
+
+#### Job Token
+Ensure your project is configured to [allow git push requests for job tokens](https://docs.gitlab.com/ci/jobs/ci_job_token/#allow-git-push-requests-to-your-project-repository), and assign the value of `CI_JOB_TOKEN` to `GL_TOKEN`.
+
+**Note**: Due to limitations on [job token](https://docs.gitlab.com/ci/jobs/ci_job_token/) access, comments on merge requests and issues must be explicitly disabled. See: [successCommentCondition](#successcommentcondition) and [failCommentCondition](#failcommentcondition).
 
 ### Environment variables
 
