@@ -5,6 +5,8 @@ import resolveConfig from "../lib/resolve-config.js";
 
 const defaultOptions = {
   gitlabToken: undefined,
+  isJobToken: false,
+  tokenHeader: "PRIVATE-TOKEN",
   gitlabUrl: "https://gitlab.com",
   gitlabApiUrl: urlJoin("https://gitlab.com", "/api/v4"),
   assets: undefined,
@@ -505,6 +507,26 @@ test("Ignore GitLab CI/CD environment variables if not running on GitLab CI/CD",
       gitlabToken,
       gitlabUrl: "https://gitlab.com",
       gitlabApiUrl: urlJoin("https://gitlab.com", "/api/v4"),
+    }
+  );
+});
+
+test("Use job token when GitLab token equals CI_JOB_TOKEN", (t) => {
+  const jobToken = "TOKEN"
+
+  t.deepEqual(
+    resolveConfig(
+      {},
+      {
+        envCi: { service: "gitlab" },
+        env: { GL_TOKEN: jobToken, CI_JOB_TOKEN: jobToken },
+      }
+    ),
+    {
+      ...defaultOptions,
+      gitlabToken: jobToken,
+      isJobToken: true,
+      tokenHeader: "JOB-TOKEN",
     }
   );
 });
