@@ -187,7 +187,13 @@ test.serial("Publish a release with generics, providing a packageName", async (t
   const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
   const encodedVersion = encodeURIComponent(nextRelease.version);
   const uploaded = { file: { url: "/uploads/file.css" } };
-  const generic = { path: "file.css", label: "Style package", target: "generic_package", status: "hidden", packageName: "styles" };
+  const generic = {
+    path: "file.css",
+    label: "Style package",
+    target: "generic_package",
+    status: "hidden",
+    packageName: "styles",
+  };
   const assets = [generic];
   const encodedLabel = encodeURIComponent(generic.label);
   const encodedPackageName = encodeURIComponent(generic.packageName);
