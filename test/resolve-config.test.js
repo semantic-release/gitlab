@@ -10,11 +10,15 @@ const defaultOptions = {
   assets: undefined,
   milestones: undefined,
   successComment: undefined,
+  successCommentCondition: undefined,
   failTitle: "The automated release is failing 🚨",
   failComment: undefined,
+  failCommentCondition: undefined,
   labels: "semantic-release",
   assignee: undefined,
   proxy: {},
+  retryLimit: 3,
+  retryStatusCodes: [408, 413, 422, 429, 500, 502, 503, 504, 521, 522, 524],
 };
 
 test("Returns user config", (t) => {
@@ -25,10 +29,11 @@ test("Returns user config", (t) => {
   const postComments = true;
   const proxy = {};
   const labels = false;
+  const retryLimit = 42;
 
   t.deepEqual(
     resolveConfig(
-      { gitlabUrl, gitlabApiPathPrefix, assets, postComments, labels },
+      { gitlabUrl, gitlabApiPathPrefix, assets, postComments, labels, retryLimit },
       { env: { GITLAB_TOKEN: gitlabToken } }
     ),
     {
@@ -38,6 +43,7 @@ test("Returns user config", (t) => {
       gitlabApiUrl: urlJoin(gitlabUrl, gitlabApiPathPrefix),
       assets,
       labels: false,
+      retryLimit,
     }
   );
 
