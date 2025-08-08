@@ -187,7 +187,13 @@ test.serial("Publish a release with generics: with asset.packageName (fixed text
   const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
   const encodedVersion = encodeURIComponent(nextRelease.version);
   const uploaded = { file: { url: "/uploads/file.css" } };
-  const generic = { path: "file.css", label: "Style package", target: "generic_package", status: "hidden", packageName: "microk8s" };
+  const generic = {
+    path: "file.css",
+    label: "Style package",
+    target: "generic_package",
+    status: "hidden",
+    packageName: "microk8s",
+  };
   const assets = [generic];
   const encodedLabel = encodeURIComponent(generic.label);
   const encodedPackageName = encodeURIComponent(generic.packageName);
@@ -228,13 +234,25 @@ test.serial("Publish a release with generics: with asset.packageName (template)"
   const owner = "test_user";
   const repo = "test_repo";
   const env = { GITLAB_TOKEN: "gitlab_token" };
-  const nextRelease = { gitHead: "123", gitTag: "v1.0.0-alpha.1", notes: "Test release note body", version: "1.0.0-alpha.1", channel: "alpha"};
+  const nextRelease = {
+    gitHead: "123",
+    gitTag: "v1.0.0-alpha.1",
+    notes: "Test release note body",
+    version: "1.0.0-alpha.1",
+    channel: "alpha",
+  };
   const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
   const encodedProjectPath = encodeURIComponent(`${owner}/${repo}`);
   const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
   const encodedVersion = encodeURIComponent(nextRelease.version);
   const uploaded = { file: { url: "/uploads/file.css" } };
-  const generic = { path: "file.css", label: "Style package", target: "generic_package", status: "hidden", packageName: "${nextRelease.channel}" };
+  const generic = {
+    path: "file.css",
+    label: "Style package",
+    target: "generic_package",
+    status: "hidden",
+    packageName: "${nextRelease.channel}",
+  };
   const assets = [generic];
   const encodedLabel = encodeURIComponent(generic.label);
   const expectedUrl = `https://gitlab.com/api/v4/projects/${encodedProjectPath}/packages/generic/alpha/${encodedVersion}/${encodedLabel}`;
