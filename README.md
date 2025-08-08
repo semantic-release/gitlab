@@ -47,6 +47,28 @@ The plugin can be configured in the [**semantic-release** configuration file](ht
 
 With this example [GitLab releases](https://docs.gitlab.com/ee/user/project/releases/) will be published to the `https://custom.gitlab.com` instance.
 
+### GitLab CI Component Example
+
+For projects that are [GitLab CI components](https://docs.gitlab.com/ee/ci/components/) and need to be published to the GitLab catalog:
+
+```json
+{
+  "branches": ["main"],
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    [
+      "@semantic-release/gitlab",
+      {
+        "publishToCatalog": true
+      }
+    ]
+  ]
+}
+```
+
+This will create a GitLab release and then publish the component to the GitLab catalog using the `/projects/:id/catalog/publish` API endpoint.
+
 ## Configuration
 
 ### GitLab authentication
@@ -95,6 +117,7 @@ If you need to bypass the proxy for some hosts, configure the `NO_PROXY` environ
 | `failCommentCondition`    | Use this as condition, when to comment on or create an issues in case of failures. See [failCommentCondition](#failCommentCondition).                                                                                                                                                                                      | -                                                                                                                                                                       |
 | `labels`                  | The [labels](https://docs.gitlab.com/ee/user/project/labels.html#labels) to add to the issue created when a release fails. Set to `false` to not add any label. Labels should be comma-separated as described in the [official docs](https://docs.gitlab.com/ee/api/issues.html#new-issue), e.g. `"semantic-release,bot"`. | `semantic-release`                                                                                                                                                      |
 | `assignee`                | The [assignee](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#assignee) to add to the issue created when a release fails.                                                                                                                                                                             | -                                                                                                                                                                       |
+| `publishToCatalog`        | Whether to publish GitLab CI components to the [GitLab catalog](https://docs.gitlab.com/ee/ci/components/) after creating a release. When enabled, an additional API call to `/projects/:id/catalog/publish` is made after the release is created. This is only needed for projects that are GitLab CI components.         | `false`                                                                                                                                                                 |
 | `retryLimit`              | The maximum number of retries for failing HTTP requests.                                                                                                                                                                                                                                                                   | `3`                                                                                                                                                                     |
 
 #### assets

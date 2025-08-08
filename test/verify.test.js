@@ -988,3 +988,43 @@ test.serial(
     t.true(gitlab.isDone());
   }
 );
+
+test.serial('Does not throw SemanticReleaseError if "publishToCatalog" option is valid boolean', async (t) => {
+  const owner = "test_user";
+  const repo = "test_repo";
+  const env = { GITLAB_TOKEN: "gitlab_token" };
+  const publishToCatalog = true;
+  const gitlab = authenticate(env)
+    .get(`/projects/${owner}%2F${repo}`)
+    .reply(200, { permissions: { project_access: { access_level: 40 } } });
+
+  await t.notThrowsAsync(
+    verify(
+      { publishToCatalog },
+      { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
+    )
+  );
+  t.true(gitlab.isDone());
+});
+
+test.serial('Throw SemanticReleaseError if "publishToCatalog" option is not a boolean', async (t) => {
+  const owner = "test_user";
+  const repo = "test_repo";
+  const env = { GITLAB_TOKEN: "gitlab_token" };
+  const publishToCatalog = "invalid";
+  const gitlab = authenticate(env)
+    .get(`/projects/${owner}%2F${repo}`)
+    .reply(200, { permissions: { project_access: { access_level: 40 } } });
+
+  const {
+    errors: [error],
+  } = await t.throwsAsync(
+    verify(
+      { publishToCatalog },
+      { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
+    )
+  );
+  t.is(error.name, "SemanticReleaseError");
+  t.is(error.code, "EINVALIDPUBLISHTOCATALOG");
+  t.true(gitlab.isDone());
+});
