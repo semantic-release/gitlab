@@ -666,3 +666,59 @@ test.serial("Publish a release with error response", async (t) => {
   t.is(error.message, `Response code 499 (Something went wrong)`);
   t.true(gitlab.isDone());
 });
+
+test.serial("Publish a release with catalog publishing enabled", async (t) => {
+  const owner = "test_user";
+  const repo = "test_repo";
+  const env = { GITLAB_TOKEN: "gitlab_token" };
+  const pluginConfig = { publishToCatalog: true };
+  const nextRelease = { gitHead: "123", gitTag: "v1.0.0", notes: "Test release note body" };
+  const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
+  const encodedProjectPath = encodeURIComponent(`${owner}/${repo}`);
+  const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
+
+  const gitlab = authenticate(env)
+    .post(`/projects/${encodedProjectPath}/releases`, {
+      tag_name: nextRelease.gitTag,
+      description: nextRelease.notes,
+      assets: {
+        links: [],
+      },
+    })
+    .reply(200)
+    .post(`/projects/${encodedProjectPath}/catalog/publish`)
+    .reply(200);
+
+  const result = await publish(pluginConfig, { env, options, nextRelease, logger: t.context.logger });
+
+  t.is(result.url, `https://gitlab.com/${owner}/${repo}/-/releases/${encodedGitTag}`);
+  t.deepEqual(t.context.log.args[0], ["Published GitLab release: %s", nextRelease.gitTag]);
+  t.deepEqual(t.context.log.args[1], ["Published GitLab CI component to catalog: %s", nextRelease.gitTag]);
+  t.true(gitlab.isDone());
+});
+
+test.serial("Publish a release with catalog publishing error", async (t) => {
+  const owner = "test_user";
+  const repo = "test_repo";
+  const env = { GITLAB_TOKEN: "gitlab_token" };
+  const pluginConfig = { publishToCatalog: true };
+  const nextRelease = { gitHead: "123", gitTag: "v1.0.0", notes: "Test release note body" };
+  const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
+  const encodedProjectPath = encodeURIComponent(`${owner}/${repo}`);
+
+  const gitlab = authenticate(env)
+    .post(`/projects/${encodedProjectPath}/releases`, {
+      tag_name: nextRelease.gitTag,
+      description: nextRelease.notes,
+      assets: {
+        links: [],
+      },
+    })
+    .reply(200)
+    .post(`/projects/${encodedProjectPath}/catalog/publish`)
+    .reply(400, { message: "Catalog publishing failed" });
+
+  const error = await t.throwsAsync(publish(pluginConfig, { env, options, nextRelease, logger: t.context.logger }));
+  t.is(error.message, `Response code 400 (Catalog publishing failed)`);
+  t.true(gitlab.isDone());
+});

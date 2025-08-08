@@ -19,6 +19,7 @@ const defaultOptions = {
   proxy: {},
   retryLimit: 3,
   retryStatusCodes: [408, 413, 422, 429, 500, 502, 503, 504, 521, 522, 524],
+  publishToCatalog: false,
 };
 
 test("Returns user config", (t) => {
