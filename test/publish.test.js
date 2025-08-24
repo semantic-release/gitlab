@@ -712,3 +712,48 @@ test.serial("Publish a release with error response", async (t) => {
   t.is(error.message, `Response code 499 (Something went wrong)`);
   t.true(gitlab.isDone());
 });
+
+test.serial("Publish a release with templated wildcard path", async (t) => {
+  const cwd = "test/fixtures";
+  const owner = "test_user";
+  const repo = "test_repo";
+  const env = { GITLAB_TOKEN: "gitlab_token" };
+  const nextRelease = { gitHead: "123", gitTag: "v1.0.0", notes: "Test release note body", version: "1.0.0" };
+  const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
+  const encodedProjectPath = encodeURIComponent(`${owner}/${repo}`);
+  const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
+
+  const assets = ["versioned/upload_v${nextRelease.version}.txt"];
+
+  const uploaded = {
+    url: "/uploads/upload_v1.0.0.txt",
+    alt: "upload_v1.0.0.txt",
+    full_path: "/-/project/4/66dbcd21ec5d24ed6ea225176098d52b/upload_v1.0.0.txt",
+  };
+
+  const gitlab = authenticate(env)
+    .post(`/projects/${encodedProjectPath}/releases`, {
+      tag_name: nextRelease.gitTag,
+      description: nextRelease.notes,
+      assets: {
+        links: [
+          {
+            name: "upload_v1.0.0.txt",
+            url: `https://gitlab.com${uploaded.full_path}`,
+          },
+        ],
+      },
+    })
+    .reply(200);
+  const gitlabUpload = authenticate(env)
+    .post(`/projects/${encodedProjectPath}/uploads`, /Content-Disposition.*upload_v1\.0\.0\.txt/g)
+    .reply(200, uploaded);
+
+  const result = await publish({ assets }, { env, cwd, options, nextRelease, logger: t.context.logger });
+
+  t.is(result.url, `https://gitlab.com/${owner}/${repo}/-/releases/${encodedGitTag}`);
+  t.deepEqual(t.context.log.args[0], ["Uploaded file: %s", `https://gitlab.com${uploaded.full_path}`]);
+  t.deepEqual(t.context.log.args[1], ["Published GitLab release: %s", nextRelease.gitTag]);
+  t.true(gitlab.isDone());
+  t.true(gitlabUpload.isDone());
+});
