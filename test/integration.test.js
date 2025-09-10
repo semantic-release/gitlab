@@ -117,7 +117,7 @@ test.serial("Verify GitLab auth and release with Job Token", async (t) => {
   const env = { GL_TOKEN: "gitlab_token", CI_JOB_TOKEN: "gitlab_token" };
   const owner = "test_user";
   const repo = "test_repo";
-  const options = { repositoryUrl: `https://github.com/${owner}/${repo}.git` };
+  const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
   const encodedProjectPath = encodeURIComponent(`${owner}/${repo}`);
   const nextRelease = { gitHead: "123", gitTag: "v1.0.0", notes: "Test release note body" };
 
@@ -133,7 +133,12 @@ test.serial("Verify GitLab auth and release with Job Token", async (t) => {
     })
     .reply(200);
 
-  await t.notThrowsAsync(t.context.m.verifyConditions({ successCommentCondition: false, failCommentCondition: false }, { env, options, logger: t.context.logger }));
+  await t.notThrowsAsync(
+    t.context.m.verifyConditions(
+      { successCommentCondition: false, failCommentCondition: false },
+      { env, options, logger: t.context.logger }
+    )
+  );
   const result = await t.context.m.publish({}, { env, options, nextRelease, logger: t.context.logger });
 
   t.is(result.url, `https://gitlab.com/${owner}/${repo}/-/releases/${nextRelease.gitTag}`);

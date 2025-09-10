@@ -63,6 +63,7 @@ Create a [project access token](https://docs.gitlab.com/ee/user/project/settings
 **Note**: When running with [`dryRun`](https://semantic-release.gitbook.io/semantic-release/usage/configuration#dryrun) only `read_repository` scope is required.
 
 #### Job Token
+
 Ensure your project is configured to [allow git push requests for job tokens](https://docs.gitlab.com/ci/jobs/ci_job_token/#allow-git-push-requests-to-your-project-repository), and assign the value of `CI_JOB_TOKEN` to `GL_TOKEN`.
 
 **Note**: Due to limitations on [job token](https://docs.gitlab.com/ci/jobs/ci_job_token/) access, comments on merge requests and issues must be explicitly disabled. See: [successCommentCondition](#successcommentcondition) and [failCommentCondition](#failcommentcondition).

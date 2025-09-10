@@ -512,7 +512,7 @@ test("Ignore GitLab CI/CD environment variables if not running on GitLab CI/CD",
 });
 
 test("Use job token when GitLab token equals CI_JOB_TOKEN", (t) => {
-  const jobToken = "TOKEN"
+  const jobToken = "TOKEN";
 
   t.deepEqual(
     resolveConfig(

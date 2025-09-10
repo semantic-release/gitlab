@@ -995,15 +995,13 @@ test.serial(
     const owner = "test_user";
     const repo = "test_repo";
     const env = { GITLAB_TOKEN: "gitlab_token", CI_JOB_TOKEN: "gitlab_token" };
-    const gitlab = authenticate(env)
-      .get(`/projects/${owner}%2F${repo}/releases`)
-      .reply(200, []);
+    const gitlab = authenticate(env).get(`/projects/${owner}%2F${repo}/releases`).reply(200, []);
 
     const {
       errors: [error],
     } = await t.throwsAsync(
       verify(
-        { },
+        {},
         { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
       )
     );
@@ -1019,9 +1017,7 @@ test.serial(
     const owner = "test_user";
     const repo = "test_repo";
     const env = { GITLAB_TOKEN: "gitlab_token", CI_JOB_TOKEN: "gitlab_token" };
-    const gitlab = authenticate(env)
-      .get(`/projects/${owner}%2F${repo}/releases`)
-      .reply(200, []);
+    const gitlab = authenticate(env).get(`/projects/${owner}%2F${repo}/releases`).reply(200, []);
 
     await t.notThrowsAsync(
       verify(
