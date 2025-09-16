@@ -1011,9 +1011,31 @@ test.serial(
             expires_at: null,
           },
         ],
+      });
+
+    const gitlabGraphQl = nock("https://gitlab.com", { reqheaders: { "Private-Token": "group_access_token" } })
+      .post("/graphql", {
+        query: `
+            query {
+              project(fullPath: "${owner}/${repo}") {
+                userPermissions {
+                  pushToRepository
+                  readRepository
+                }
+              }
+            }
+          `,
       })
-      .get(`/projects/${owner}%2F${repo}/variables`)
-      .reply(403);
+      .reply(200, {
+        data: {
+          project: {
+            userPermissions: {
+              pushToRepository: false,
+              readRepository: true,
+            },
+          },
+        },
+      });
 
     const {
       errors: [error, ...errors],
@@ -1028,6 +1050,7 @@ test.serial(
     t.is(error.name, "SemanticReleaseError");
     t.is(error.code, "EGLNOPUSHPERMISSION");
     t.true(gitlab.isDone());
+    t.true(gitlabGraphQl.isDone());
   }
 );
 
@@ -1053,9 +1076,31 @@ test.serial(
             expires_at: null,
           },
         ],
+      });
+
+    const gitlabGraphQl = nock("https://gitlab.com", { reqheaders: { "Private-Token": "group_access_token" } })
+      .post("/graphql", {
+        query: `
+            query {
+              project(fullPath: "${owner}/${repo}") {
+                userPermissions {
+                  pushToRepository
+                  readRepository
+                }
+              }
+            }
+          `,
       })
-      .get(`/projects/${owner}%2F${repo}/variables`)
-      .reply(200, []);
+      .reply(200, {
+        data: {
+          project: {
+            userPermissions: {
+              pushToRepository: true,
+              readRepository: true,
+            },
+          },
+        },
+      });
 
     await t.notThrowsAsync(
       verify(
@@ -1064,6 +1109,7 @@ test.serial(
       )
     );
     t.true(gitlab.isDone());
+    t.true(gitlabGraphQl.isDone());
   }
 );
 
@@ -1106,3 +1152,42 @@ test.serial(
     t.true(gitlab.isDone());
   }
 );
+
+test.serial("Throw SemanticReleaseError when GraphQL fails and permissions are null", async (t) => {
+  const owner = "test_user";
+  const repo = "test_repo";
+  const env = { GL_TOKEN: "group_access_token" };
+  const gitlab = authenticate(env)
+    .get(`/projects/${owner}%2F${repo}`)
+    .reply(200, {
+      permissions: {
+        project_access: null,
+        group_access: null,
+      },
+      shared_with_groups: [
+        {
+          group_id: 123,
+          group_name: "test_group",
+          group_full_path: "test_group",
+          group_access_level: 40,
+          expires_at: null,
+        },
+      ],
+    });
+
+  const gitlabGraphQl = nock("https://gitlab.com", { reqheaders: { "Private-Token": "group_access_token" } })
+    .post("/graphql")
+    .reply(500, { error: "Internal server error" });
+
+  const {
+    errors: [error, ...errors],
+  } = await t.throwsAsync(
+    verify({}, { env, options: { repositoryUrl: `https://gitlab.com:${owner}/${repo}.git` }, logger: t.context.logger })
+  );
+
+  t.is(errors.length, 0);
+  t.is(error.name, "SemanticReleaseError");
+  t.is(error.code, "EGLNOPUSHPERMISSION");
+  t.true(gitlab.isDone());
+  t.true(gitlabGraphQl.isDone());
+});
