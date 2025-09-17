@@ -1028,6 +1028,58 @@ test.serial(
   }
 );
 
+test.serial(
+  "Verify token and repository access when GraphQL returns sufficient permissions in dry run mode",
+  async (t) => {
+    const owner = "test_user";
+    const repo = "test_repo";
+    const env = { GL_TOKEN: "gitlab_token" };
+    const gitlab = authenticate(env)
+      .get(`/projects/${owner}%2F${repo}`)
+      .reply(200, {});
+
+    const gitlabGraphQl = nock("https://gitlab.com", { reqheaders: { "Private-Token": "gitlab_token" } })
+      .post("/graphql", {
+        query: `
+            query {
+              project(fullPath: "${owner}/${repo}") {
+                userPermissions {
+                  pushToRepository
+                  readRepository
+                }
+              }
+            }
+          `,
+      })
+      .reply(200, {
+        data: {
+          project: {
+            userPermissions: {
+              pushToRepository: true,
+              readRepository: true,
+            },
+          },
+        },
+      });
+
+    await t.notThrowsAsync(
+      verify(
+        {},
+        { 
+          env, 
+          options: { 
+            repositoryUrl: `https://gitlab.com/${owner}/${repo}.git`, 
+            dryRun: true 
+          }, 
+          logger: t.context.logger 
+        }
+      )
+    );
+    t.true(gitlab.isDone());
+    t.true(gitlabGraphQl.isDone());
+  }
+);
+
 test.serial("Throw SemanticReleaseError when GraphQL fails", async (t) => {
   const owner = "test_user";
   const repo = "test_repo";
