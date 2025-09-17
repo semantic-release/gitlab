@@ -875,7 +875,7 @@ test.serial(
 );
 
 test.serial(
-  "Throw SemanticReleaseError when GraphQL returns insufficient permissions",
+  "Throw SemanticReleaseError when GraphQL returns only read permissions",
   async (t) => {
     const owner = "test_user";
     const repo = "test_repo";
@@ -926,6 +926,57 @@ test.serial(
 );
 
 test.serial(
+  "Throw SemanticReleaseError when GraphQL returns neither read nor write permissions",
+  async (t) => {
+    const owner = "test_user";
+    const repo = "test_repo";
+    const env = { GL_TOKEN: "gitlab_token" };
+    const gitlab = authenticate(env)
+      .get(`/projects/${owner}%2F${repo}`)
+      .reply(200, {});
+
+    const gitlabGraphQl = nock("https://gitlab.com", { reqheaders: { "Private-Token": "gitlab_token" } })
+      .post("/graphql", {
+        query: `
+            query {
+              project(fullPath: "${owner}/${repo}") {
+                userPermissions {
+                  pushToRepository
+                  readRepository
+                }
+              }
+            }
+          `,
+      })
+      .reply(200, {
+        data: {
+          project: {
+            userPermissions: {
+              pushToRepository: false,
+              readRepository: false,
+            },
+          },
+        },
+      });
+
+    const {
+      errors: [error, ...errors],
+    } = await t.throwsAsync(
+      verify(
+        {},
+        { env, options: { repositoryUrl: `https://gitlab.com:${owner}/${repo}.git` }, logger: t.context.logger }
+      )
+    );
+
+    t.is(errors.length, 0);
+    t.is(error.name, "SemanticReleaseError");
+    t.is(error.code, "EGLNOPUSHPERMISSION");
+    t.true(gitlab.isDone());
+    t.true(gitlabGraphQl.isDone());
+  }
+);
+
+test.serial(
   "Throw SemanticReleaseError when GraphQL returns insufficient read permissions in dry run mode",
   async (t) => {
     const owner = "test_user";
@@ -952,7 +1003,7 @@ test.serial(
         data: {
           project: {
             userPermissions: {
-              pushToRepository: true,
+              pushToRepository: false,
               readRepository: false,
             },
           },
