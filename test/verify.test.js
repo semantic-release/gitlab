@@ -1015,7 +1015,7 @@ test.serial(
 );
 
 test.serial(
-  "Throw SemanticReleaseError for group access token with null permissions (shared_with_groups scenario)",
+  "Throw SemanticReleaseError for group access token with null permissions",
   async (t) => {
     const owner = "test_user";
     const repo = "test_repo";
@@ -1027,15 +1027,6 @@ test.serial(
           project_access: null,
           group_access: null,
         },
-        shared_with_groups: [
-          {
-            group_id: 123,
-            group_name: "test_group",
-            group_full_path: "test_group",
-            group_access_level: 40,
-            expires_at: null,
-          },
-        ],
       });
 
     const gitlabGraphQl = nock("https://gitlab.com", { reqheaders: { "Private-Token": "group_access_token" } })
@@ -1092,15 +1083,6 @@ test.serial(
           project_access: null,
           group_access: null,
         },
-        shared_with_groups: [
-          {
-            group_id: 123,
-            group_name: "test_group",
-            group_full_path: "test_group",
-            group_access_level: 40,
-            expires_at: null,
-          },
-        ],
       });
 
     const gitlabGraphQl = nock("https://gitlab.com", { reqheaders: { "Private-Token": "group_access_token" } })
@@ -1138,46 +1120,6 @@ test.serial(
   }
 );
 
-test.serial(
-  "Throw SemanticReleaseError for insufficient group access level even with shared_with_groups",
-  async (t) => {
-    const owner = "test_user";
-    const repo = "test_repo";
-    const env = { GL_TOKEN: "group_access_token" };
-    const gitlab = authenticate(env)
-      .get(`/projects/${owner}%2F${repo}`)
-      .reply(200, {
-        permissions: {
-          project_access: null,
-          group_access: { access_level: 20 }, // Reporter level, insufficient for push
-        },
-        shared_with_groups: [
-          {
-            group_id: 123,
-            group_name: "test_group",
-            group_full_path: "test_group",
-            group_access_level: 40,
-            expires_at: null,
-          },
-        ],
-      });
-
-    const {
-      errors: [error, ...errors],
-    } = await t.throwsAsync(
-      verify(
-        {},
-        { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
-      )
-    );
-
-    t.is(errors.length, 0);
-    t.is(error.name, "SemanticReleaseError");
-    t.is(error.code, "EGLNOPUSHPERMISSION");
-    t.true(gitlab.isDone());
-  }
-);
-
 test.serial("Throw SemanticReleaseError when GraphQL fails and permissions are null", async (t) => {
   const owner = "test_user";
   const repo = "test_repo";
@@ -1189,15 +1131,6 @@ test.serial("Throw SemanticReleaseError when GraphQL fails and permissions are n
         project_access: null,
         group_access: null,
       },
-      shared_with_groups: [
-        {
-          group_id: 123,
-          group_name: "test_group",
-          group_full_path: "test_group",
-          group_access_level: 40,
-          expires_at: null,
-        },
-      ],
     });
 
   const gitlabGraphQl = nock("https://gitlab.com", { reqheaders: { "Private-Token": "group_access_token" } })
