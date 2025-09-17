@@ -1055,7 +1055,7 @@ test.serial(
         data: {
           project: {
             userPermissions: {
-              pushToRepository: true,
+              pushToRepository: false,
               readRepository: true,
             },
           },
