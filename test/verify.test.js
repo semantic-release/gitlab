@@ -26,6 +26,30 @@ test.serial("Verify token and repository access (project_access 30)", async (t) 
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, { permissions: { project_access: { access_level: 30 } } });
 
+  const gitlabGraphQl = nock("https://gitlab.com", { reqheaders: { "Private-Token": "gitlab_token" } })
+    .post("/graphql", {
+      query: `
+        query {
+          project(fullPath: "${owner}/${repo}") {
+            userPermissions {
+              pushToRepository
+              readRepository
+            }
+          }
+        }
+      `,
+    })
+    .reply(200, {
+      data: {
+        project: {
+          userPermissions: {
+            pushToRepository: true,
+            readRepository: true,
+          },
+        },
+      },
+    });
+
   await t.notThrowsAsync(
     verify(
       {},
@@ -33,6 +57,7 @@ test.serial("Verify token and repository access (project_access 30)", async (t) 
     )
   );
   t.true(gitlab.isDone());
+  t.true(gitlabGraphQl.isDone());
 });
 
 test.serial("Verify token and repository access (project_access 40)", async (t) => {
