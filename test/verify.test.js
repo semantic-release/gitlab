@@ -1015,21 +1015,16 @@ test.serial(
 );
 
 test.serial(
-  "Throw SemanticReleaseError for group access token with null permissions",
+  "Throw SemanticReleaseError when GraphQL returns insufficient permissions",
   async (t) => {
     const owner = "test_user";
     const repo = "test_repo";
-    const env = { GL_TOKEN: "group_access_token" };
+    const env = { GL_TOKEN: "gitlab_token" };
     const gitlab = authenticate(env)
       .get(`/projects/${owner}%2F${repo}`)
-      .reply(200, {
-        permissions: {
-          project_access: null,
-          group_access: null,
-        },
-      });
+      .reply(200, {});
 
-    const gitlabGraphQl = nock("https://gitlab.com", { reqheaders: { "Private-Token": "group_access_token" } })
+    const gitlabGraphQl = nock("https://gitlab.com", { reqheaders: { "Private-Token": "gitlab_token" } })
       .post("/graphql", {
         query: `
             query {
@@ -1071,21 +1066,16 @@ test.serial(
 );
 
 test.serial(
-  "Verify token and repository access with null permissions but successful permission test (group access token)",
+  "Verify token and repository access when GraphQL returns sufficient permissions",
   async (t) => {
     const owner = "test_user";
     const repo = "test_repo";
-    const env = { GL_TOKEN: "group_access_token" };
+    const env = { GL_TOKEN: "gitlab_token" };
     const gitlab = authenticate(env)
       .get(`/projects/${owner}%2F${repo}`)
-      .reply(200, {
-        permissions: {
-          project_access: null,
-          group_access: null,
-        },
-      });
+      .reply(200, {});
 
-    const gitlabGraphQl = nock("https://gitlab.com", { reqheaders: { "Private-Token": "group_access_token" } })
+    const gitlabGraphQl = nock("https://gitlab.com", { reqheaders: { "Private-Token": "gitlab_token" } })
       .post("/graphql", {
         query: `
             query {
@@ -1120,20 +1110,15 @@ test.serial(
   }
 );
 
-test.serial("Throw SemanticReleaseError when GraphQL fails and permissions are null", async (t) => {
+test.serial("Throw SemanticReleaseError when GraphQL fails", async (t) => {
   const owner = "test_user";
   const repo = "test_repo";
-  const env = { GL_TOKEN: "group_access_token" };
+  const env = { GL_TOKEN: "gitlab_token" };
   const gitlab = authenticate(env)
     .get(`/projects/${owner}%2F${repo}`)
-    .reply(200, {
-      permissions: {
-        project_access: null,
-        group_access: null,
-      },
-    });
+    .reply(200, {});
 
-  const gitlabGraphQl = nock("https://gitlab.com", { reqheaders: { "Private-Token": "group_access_token" } })
+  const gitlabGraphQl = nock("https://gitlab.com", { reqheaders: { "Private-Token": "gitlab_token" } })
     .post("/graphql")
     .reply(500, { error: "Internal server error" });
 
