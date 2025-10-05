@@ -989,135 +989,33 @@ test.serial(
   }
 );
 
-test.serial("Throw SemanticReleaseError if generic package asset label contains spaces", async (t) => {
+test.serial("Throw SemanticReleaseError if generic package asset labels are invalid", async (t) => {
   const owner = "test_user";
   const repo = "test_repo";
   const env = { GITLAB_TOKEN: "gitlab_token" };
-  const assets = [{ path: "file.css", label: "Style package", target: "generic_package" }];
+  const assets = [
+    { path: "file1.css", label: "Style package", target: "generic_package" }, // contains spaces
+    { path: "file2.css", label: "~invalid", target: "generic_package" }, // starts with ~
+    { path: "file3.css", label: "@invalid", target: "generic_package" }, // starts with @
+    { path: "file4.css", label: "invalid~", target: "generic_package" }, // ends with ~
+    { path: "file5.css", label: "invalid@", target: "generic_package" }, // ends with @
+    { path: "file6.css", label: "invalid$char", target: "generic_package" }, // contains invalid character
+  ];
   const gitlab = authenticate(env)
     .get(`/projects/${owner}%2F${repo}`)
     .reply(200, { permissions: { project_access: { access_level: 40 } } });
 
-  const {
-    errors: [error],
-  } = await t.throwsAsync(
+  const { errors } = await t.throwsAsync(
     verify(
       { assets },
       { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
     )
   );
-  t.is(error.name, "SemanticReleaseError");
-  t.is(error.code, "EINVALIDGENERICPACKAGELABEL");
-  t.true(gitlab.isDone());
-});
-
-test.serial("Throw SemanticReleaseError if generic package asset label starts with ~", async (t) => {
-  const owner = "test_user";
-  const repo = "test_repo";
-  const env = { GITLAB_TOKEN: "gitlab_token" };
-  const assets = [{ path: "file.css", label: "~invalid", target: "generic_package" }];
-  const gitlab = authenticate(env)
-    .get(`/projects/${owner}%2F${repo}`)
-    .reply(200, { permissions: { project_access: { access_level: 40 } } });
-
-  const {
-    errors: [error],
-  } = await t.throwsAsync(
-    verify(
-      { assets },
-      { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
-    )
-  );
-  t.is(error.name, "SemanticReleaseError");
-  t.is(error.code, "EINVALIDGENERICPACKAGELABEL");
-  t.true(gitlab.isDone());
-});
-
-test.serial("Throw SemanticReleaseError if generic package asset label starts with @", async (t) => {
-  const owner = "test_user";
-  const repo = "test_repo";
-  const env = { GITLAB_TOKEN: "gitlab_token" };
-  const assets = [{ path: "file.css", label: "@invalid", target: "generic_package" }];
-  const gitlab = authenticate(env)
-    .get(`/projects/${owner}%2F${repo}`)
-    .reply(200, { permissions: { project_access: { access_level: 40 } } });
-
-  const {
-    errors: [error],
-  } = await t.throwsAsync(
-    verify(
-      { assets },
-      { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
-    )
-  );
-  t.is(error.name, "SemanticReleaseError");
-  t.is(error.code, "EINVALIDGENERICPACKAGELABEL");
-  t.true(gitlab.isDone());
-});
-
-test.serial("Throw SemanticReleaseError if generic package asset label ends with ~", async (t) => {
-  const owner = "test_user";
-  const repo = "test_repo";
-  const env = { GITLAB_TOKEN: "gitlab_token" };
-  const assets = [{ path: "file.css", label: "invalid~", target: "generic_package" }];
-  const gitlab = authenticate(env)
-    .get(`/projects/${owner}%2F${repo}`)
-    .reply(200, { permissions: { project_access: { access_level: 40 } } });
-
-  const {
-    errors: [error],
-  } = await t.throwsAsync(
-    verify(
-      { assets },
-      { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
-    )
-  );
-  t.is(error.name, "SemanticReleaseError");
-  t.is(error.code, "EINVALIDGENERICPACKAGELABEL");
-  t.true(gitlab.isDone());
-});
-
-test.serial("Throw SemanticReleaseError if generic package asset label ends with @", async (t) => {
-  const owner = "test_user";
-  const repo = "test_repo";
-  const env = { GITLAB_TOKEN: "gitlab_token" };
-  const assets = [{ path: "file.css", label: "invalid@", target: "generic_package" }];
-  const gitlab = authenticate(env)
-    .get(`/projects/${owner}%2F${repo}`)
-    .reply(200, { permissions: { project_access: { access_level: 40 } } });
-
-  const {
-    errors: [error],
-  } = await t.throwsAsync(
-    verify(
-      { assets },
-      { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
-    )
-  );
-  t.is(error.name, "SemanticReleaseError");
-  t.is(error.code, "EINVALIDGENERICPACKAGELABEL");
-  t.true(gitlab.isDone());
-});
-
-test.serial("Throw SemanticReleaseError if generic package asset label contains invalid characters", async (t) => {
-  const owner = "test_user";
-  const repo = "test_repo";
-  const env = { GITLAB_TOKEN: "gitlab_token" };
-  const assets = [{ path: "file.css", label: "invalid$char", target: "generic_package" }];
-  const gitlab = authenticate(env)
-    .get(`/projects/${owner}%2F${repo}`)
-    .reply(200, { permissions: { project_access: { access_level: 40 } } });
-
-  const {
-    errors: [error],
-  } = await t.throwsAsync(
-    verify(
-      { assets },
-      { env, options: { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
-    )
-  );
-  t.is(error.name, "SemanticReleaseError");
-  t.is(error.code, "EINVALIDGENERICPACKAGELABEL");
+  t.is(errors.length, 6);
+  errors.forEach((error) => {
+    t.is(error.name, "SemanticReleaseError");
+    t.is(error.code, "EINVALIDGENERICPACKAGELABEL");
+  });
   t.true(gitlab.isDone());
 });
 
