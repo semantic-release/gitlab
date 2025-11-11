@@ -58,6 +58,20 @@ Create a [project access token](https://docs.gitlab.com/user/project/settings/pr
 
 **Note**: When running with [`dryRun`](https://semantic-release.gitbook.io/semantic-release/usage/configuration#dryrun) only `read_repository` scope is required.
 
+#### Using a CI Job Token
+
+When running in a GitLab CI/CD environment, you can use the `CI_JOB_TOKEN` for authentication. To enable this, set the `useJobToken` option to `true` in your plugin configuration:
+
+```json
+{
+  "plugins": [
+    ["@semantic-release/gitlab", { "useJobToken": true }]
+  ]
+}
+```
+
+> **Important**: When `useJobToken` is enabled, comments on issues and merge requests are automatically disabled. This is due to the limited permissions of the `CI_JOB_TOKEN` which do not allow for these actions.
+
 ### Environment variables
 
 | Variable                       | Description                                                                                |
@@ -65,6 +79,7 @@ Create a [project access token](https://docs.gitlab.com/user/project/settings/pr
 | `GL_TOKEN` or `GITLAB_TOKEN`   | **Required.** The token used to authenticate with GitLab.                                  |
 | `GL_URL` or `GITLAB_URL`       | The GitLab endpoint.                                                                       |
 | `GL_PREFIX` or `GITLAB_PREFIX` | The GitLab API prefix.                                                                     |
+| `CI_JOB_TOKEN`                 | The GitLab CI/CD job token. Used if `useJobToken` is `true`.                               |
 | `HTTP_PROXY` or `HTTPS_PROXY`  | HTTP or HTTPS proxy to use.                                                                |
 | `NO_PROXY`                     | Patterns for which the proxy should be ignored. See [details below](#proxy-configuration). |
 
@@ -86,6 +101,7 @@ If you need to bypass the proxy for some hosts, configure the `NO_PROXY` environ
 | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `gitlabUrl`               | The GitLab endpoint.                                                                                                                                                                                                                                                                                         | `GL_URL` or `GITLAB_URL` environment variable or CI provided environment variables if running on [GitLab CI/CD](https://docs.gitlab.com/ci/) or `https://gitlab.com`. |
 | `gitlabApiPathPrefix`     | The GitLab API prefix.                                                                                                                                                                                                                                                                                       | `GL_PREFIX` or `GITLAB_PREFIX` environment variable or CI provided environment variables if running on [GitLab CI/CD](https://docs.gitlab.com/ci/) or `/api/v4`.      |
+| `useJobToken`             | Set to `true` to use the `CI_JOB_TOKEN` for authentication within a GitLab CI/CD environment.                                                                                                                                                                                                                  | `false`                                                                                                                                                               |
 | `assets`                  | An array of files to upload to the release. See [assets](#assets).                                                                                                                                                                                                                                           | -                                                                                                                                                                     |
 | `milestones`              | An array of milestone titles to associate to the release. See [GitLab Release API](https://docs.gitlab.com/api/releases/#create-a-release).                                                                                                                                                                  | -                                                                                                                                                                     |
 | `successComment`          | The comment to add to each Issue and Merge Request resolved by the release. See [successComment](#successComment).                                                                                                                                                                                           | :tada: This issue has been resolved in version ${nextRelease.version} :tada:\n\nThe release is available on [GitLab release](gitlab_release_url)                      |
