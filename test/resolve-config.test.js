@@ -16,6 +16,8 @@ const defaultOptions = {
   failCommentCondition: undefined,
   labels: "semantic-release",
   assignee: undefined,
+  tokenHeader: "PRIVATE-TOKEN",
+  useJobToken: undefined,
   proxy: {},
   retryLimit: 3,
   retryStatusCodes: [408, 413, 422, 429, 500, 502, 503, 504, 521, 522, 524],
@@ -505,6 +507,28 @@ test("Ignore GitLab CI/CD environment variables if not running on GitLab CI/CD",
       gitlabToken,
       gitlabUrl: "https://gitlab.com",
       gitlabApiUrl: urlJoin("https://gitlab.com", "/api/v4"),
+    }
+  );
+});
+
+test("Set token header to JOB-TOKEN when useJobToken is set to true", (t) => {
+  const jobToken = "TOKEN";
+
+  t.deepEqual(
+    resolveConfig(
+      { useJobToken: true },
+      {
+        envCi: { service: "gitlab" },
+        env: { CI_JOB_TOKEN: jobToken },
+      }
+    ),
+    {
+      ...defaultOptions,
+      gitlabToken: jobToken,
+      useJobToken: true,
+      tokenHeader: "JOB-TOKEN",
+      successCommentCondition: false,
+      failCommentCondition: false,
     }
   );
 });
