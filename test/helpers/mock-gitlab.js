@@ -20,7 +20,7 @@ export default function (
     gitlabUrl = env.GL_URL || env.GITLAB_URL || 'https://gitlab.com',
     gitlabApiPathPrefix = typeof env.GL_PREFIX === 'string'
       ? env.GL_PREFIX
-      : null || typeof env.GITLAB_PREFIX === "string"
+      : null || typeof env.GITLAB_PREFIX === 'string'
         ? env.GITLAB_PREFIX
         : null || '/api/v4',
   } = {}
