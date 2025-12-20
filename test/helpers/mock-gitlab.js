@@ -1,5 +1,5 @@
-import nock from "nock";
-import urlJoin from "url-join";
+import nock from 'nock';
+import urlJoin from 'url-join';
 
 /**
  * Return a `nock` object setup to respond to a GitLab authentication request. Other expectation and responses can be chained.
@@ -16,13 +16,13 @@ export default function (
   env = {},
   {
     useJobToken = false,
-    gitlabToken = env.GL_TOKEN || env.GITLAB_TOKEN || "GL_TOKEN",
-    gitlabUrl = env.GL_URL || env.GITLAB_URL || "https://gitlab.com",
-    gitlabApiPathPrefix = typeof env.GL_PREFIX === "string"
+    gitlabToken = env.GL_TOKEN || env.GITLAB_TOKEN || 'GL_TOKEN',
+    gitlabUrl = env.GL_URL || env.GITLAB_URL || 'https://gitlab.com',
+    gitlabApiPathPrefix = typeof env.GL_PREFIX === 'string'
       ? env.GL_PREFIX
       : null || typeof env.GITLAB_PREFIX === "string"
         ? env.GITLAB_PREFIX
-        : null || "/api/v4",
+        : null || '/api/v4',
   } = {}
 ) {
   const tokenHeader = useJobToken ? "JOB-TOKEN" : "Private-Token";
