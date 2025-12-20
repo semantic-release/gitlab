@@ -2,15 +2,13 @@ import nock from 'nock';
 import urlJoin from 'url-join';
 
 /**
- * Return a `nock` object setup to respond to a GitLab authentication request. Other expectation and responses can be chained.
+ * Retun a `nock` object setup to respond to a GitLab authentication request. Other expectation and responses can be chained.
  *
  * @param {Object} [env={}] Environment variables.
- * @param {Object} [options={}] Options.
- * @param {boolean} [options.useJobToken=false] Whether to use a CI_JOB_TOKEN.
- * @param {String} [options.gitlabToken=env.GL_TOKEN || env.GITLAB_TOKEN || 'GL_TOKEN'] The GitLab token to use for authentication.
- * @param {String} [options.gitlabUrl=env.GL_URL || env.GITLAB_URL || 'https://gitlab.com'] The url on which to intercept http requests.
- * @param {String} [options.gitlabApiPathPrefix=env.GL_PREFIX || env.GITLAB_PREFIX || '/api/v4'] The GitLab API prefix.
- * @return {Object} A `nock` object ready to respond to a GitLab authentication request.
+ * @param {String} [gitlabToken=env.GL_TOKEN || env.GITLAB_TOKEN || 'GL_TOKEN'] The github token to return in the authentication response.
+ * @param {String} [gitlabUrl=env.GL_URL || env.GITLAB_URL || 'https://api.github.com'] The url on which to intercept http requests.
+ * @param {String} [gitlabApiPathPrefix=env.GL_PREFIX || env.GITLAB_PREFIX || ''] The GitHub Enterprise API prefix.
+ * @return {Object} A `nock` object ready to respond to a github authentication request.
  */
 export default function (
   env = {},
