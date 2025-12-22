@@ -86,6 +86,44 @@ test.serial("Verify token and repository access (group_access 40)", async (t) =>
   t.true(gitlab.isDone());
 });
 
+test.serial("Verify CI_JOB_TOKEN and repository access", async (t) => {
+  const owner = "test_user";
+  const repo = "test_repo";
+  const env = { CI_JOB_TOKEN: "job_token" };
+  const gitlab = authenticate(env, { useJobToken: true }).get(`/projects/${owner}%2F${repo}/releases`).reply(200);
+
+  await t.notThrowsAsync(
+    verify(
+      { useJobToken: true },
+      { env, options: { repositoryUrl: `git+https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
+    )
+  );
+
+  t.true(gitlab.isDone());
+  t.deepEqual(t.context.log.args[1], ["Using Job Token for authentication. Some functionality may be disabled."]);
+});
+
+test.serial("Throw SemanticReleaseError for invalid CI_JOB_TOKEN", async (t) => {
+  const owner = "test_user";
+  const repo = "test_repo";
+  const env = { CI_JOB_TOKEN: "job_token" };
+  const gitlab = authenticate(env, { useJobToken: true }).get(`/projects/${owner}%2F${repo}/releases`).reply(401);
+
+  const {
+    errors: [error, ...errors],
+  } = await t.throwsAsync(
+    verify(
+      { useJobToken: true },
+      { env, options: { repositoryUrl: `https://gitlab.com:${owner}/${repo}.git` }, logger: t.context.logger }
+    )
+  );
+
+  t.is(errors.length, 0);
+  t.is(error.name, "SemanticReleaseError");
+  t.is(error.code, "EINVALIDGLTOKEN");
+  t.true(gitlab.isDone());
+});
+
 test.serial("Verify token and repository access and custom URL with prefix", async (t) => {
   const owner = "test_user";
   const repo = "test_repo";
