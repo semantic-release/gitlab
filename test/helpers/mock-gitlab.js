@@ -13,6 +13,7 @@ import urlJoin from 'url-join';
 export default function (
   env = {},
   {
+    useJobToken = false,
     gitlabToken = env.GL_TOKEN || env.GITLAB_TOKEN || 'GL_TOKEN',
     gitlabUrl = env.GL_URL || env.GITLAB_URL || 'https://gitlab.com',
     gitlabApiPathPrefix = typeof env.GL_PREFIX === 'string'
@@ -22,5 +23,8 @@ export default function (
       : null || '/api/v4',
   } = {}
 ) {
-  return nock(urlJoin(gitlabUrl, gitlabApiPathPrefix), {reqheaders: {'Private-Token': gitlabToken}});
-};
+  const tokenHeader = useJobToken ? "JOB-TOKEN" : "Private-Token";
+  const token = useJobToken ? env.CI_JOB_TOKEN : gitlabToken;
+
+  return nock(urlJoin(gitlabUrl, gitlabApiPathPrefix), { reqheaders: { [tokenHeader]: token } });
+}

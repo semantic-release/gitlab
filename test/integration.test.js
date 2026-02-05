@@ -112,3 +112,34 @@ test.serial("Verify Github auth and release", async (t) => {
   t.deepEqual(t.context.log.args[1], ["Published GitLab release: %s", nextRelease.gitTag]);
   t.true(gitlab.isDone());
 });
+
+test.serial("Verify GitLab auth and release with Job Token", async (t) => {
+  const env = { CI_JOB_TOKEN: "job_token" };
+  const owner = "test_user";
+  const repo = "test_repo";
+  const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
+  const encodedProjectPath = encodeURIComponent(`${owner}/${repo}`);
+  const nextRelease = { gitHead: "123", gitTag: "v1.0.0", notes: "Test release note body" };
+  const pluginConfig = { useJobToken: true };
+
+  const gitlab = authenticate(env, { useJobToken: true })
+    .get(`/projects/${encodedProjectPath}/releases`)
+    .reply(200)
+    .post(`/projects/${encodedProjectPath}/releases`, {
+      tag_name: nextRelease.gitTag,
+      description: nextRelease.notes,
+      assets: {
+        links: [],
+      },
+    })
+    .reply(200, {});
+
+  await t.notThrowsAsync(t.context.m.verifyConditions(pluginConfig, { env, options, logger: t.context.logger }));
+  const result = await t.context.m.publish(pluginConfig, { env, options, nextRelease, logger: t.context.logger });
+
+  t.is(result.url, `https://gitlab.com/${owner}/${repo}/-/releases/${nextRelease.gitTag}`);
+  t.deepEqual(t.context.log.args[0], ["Verify GitLab authentication (%s)", "https://gitlab.com/api/v4"]);
+  t.deepEqual(t.context.log.args[1], ["Using Job Token for authentication. Some functionality may be disabled."]);
+  t.deepEqual(t.context.log.args[2], ["Published GitLab release: %s", nextRelease.gitTag]);
+  t.true(gitlab.isDone());
+});
