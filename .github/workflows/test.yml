@@ -31,7 +31,7 @@ jobs:
           cache: npm
       - run: npm ci
       - name: Ensure dependencies are compatible with the version of node
-        run: npx ls-engines
+        run: npx ls-engines@v0.9.4
       - run: npm run test
   test:
     runs-on: ubuntu-latest
