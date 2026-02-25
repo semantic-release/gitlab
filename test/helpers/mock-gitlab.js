@@ -26,5 +26,5 @@ export default function (
   const tokenHeader = useJobToken ? "JOB-TOKEN" : "Private-Token";
   const token = useJobToken ? env.CI_JOB_TOKEN : gitlabToken;
 
-  return nock(urlJoin(gitlabUrl, gitlabApiPathPrefix), { reqheaders: { tokenHeader: token } });
+  return nock(urlJoin(gitlabUrl, gitlabApiPathPrefix), { reqheaders: { [tokenHeader]: token } });
 }
