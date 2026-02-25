@@ -45,3 +45,21 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run lint
+  dry_release:
+    # permissions:
+    #   contents: read # to be able to publish a GitHub release
+    #   issues: read # to be able to comment on released issues
+    #   pull-requests: write # to be able to comment on released pull requests
+    #   id-token: write # to enable use of OIDC for npm provenance
+    name: dry_release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+        with:
+          cache: npm
+          node-version: lts/*
+      - run: npm ci
+      - run: npx semantic-release --dry-run
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
