@@ -22,12 +22,8 @@ jobs:
           cache: npm
           node-version: lts/*
       - run: npm ci
-      # Perform a dry run without publishing anything.
-      #
-      # Unset the `GITHUB_ACTIONS` environment variable to trick semantic-release into thinking it's not running in a CI environment,
-      # as `--no-ci` alone is insufficient.
-      #
-      # Use `--branches "${GITHUB_HEAD_REF}"` to consider the PR head ref (source branch) as a release one for the dry run.
-      - run: npx --no-install semantic-release --dry-run --no-ci --branches "${GITHUB_HEAD_REF}"
+      - run: |
+          GITHUB_REF=${{ github.head_ref }}
+          npx semantic-release --no-ci --dry-run --plugins @semantic-release/commit-analyzer,@semantic-release/release-notes-generator --branches ${{ github.head_ref }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
