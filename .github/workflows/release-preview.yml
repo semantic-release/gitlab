@@ -22,6 +22,12 @@ jobs:
           cache: npm
           node-version: lts/*
       - run: npm ci
-      - run: npx semantic-release --dry-run --ci false --branches pull/960/merge
+      # Perform a dry run without publishing anything.
+      #
+      # Unset the `GITHUB_ACTIONS` environment variable to trick semantic-release into thinking it's not running in a CI environment,
+      # as `--no-ci` alone is insufficient.
+      #
+      # Use `--branches "${GITHUB_HEAD_REF}"` to consider the PR head ref (source branch) as a release one for the dry run.
+      - run: npx --no-install semantic-release --dry-run --no-ci --branches "${GITHUB_HEAD_REF}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
