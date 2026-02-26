@@ -1,0 +1,27 @@
+name: Release Preview
+"on":
+  pull_request:
+    types:
+      - opened
+      - synchronize
+permissions:
+  contents: read # for checkout
+jobs:
+  release-preview:
+    permissions:
+      issues: read # to be able to comment on released issues
+      pull-requests: read # to be able to comment on released pull requests
+    name: release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+        with:
+          cache: npm
+          node-version: lts/*
+      - run: npm ci
+      - run: npx semantic-release --dry-run --ci false --branches $GITHUB_HEAD_REF
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
