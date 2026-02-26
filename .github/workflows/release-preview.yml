@@ -22,6 +22,8 @@ jobs:
           cache: npm
           node-version: lts/*
       - run: npm ci
-      - run: npx semantic-release --dry-run --ci false --branches $GITHUB_REF_NAME
+      - run: echo GITHUB_REF=$GITHUB_REF
+      - run: echo GITHUB_REF_NAME=$GITHUB_REF_NAME
+      - run: npx semantic-release --dry-run --ci false --branches $GITHUB_REF
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
