@@ -16,14 +16,21 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          fetch-depth: 0
+          fetch-depth: 0 # Required by semantic-release
+          # Use the pull request head ref (source branch) to ensure the dry run simulates a release for the current PR.
+          # LIMITATION: will probably not work with pull requests from forks forbidding read accesses.
+          ref: ${{ github.head_ref }}
       - uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
         with:
           cache: npm
           node-version: lts/*
       - run: npm ci
+      # Perform a dry run without publishing anything.
+      #
+      # Unset the `GITHUB_ACTIONS` environment variable to trick semantic-release into thinking it's not running in a CI environment,
+      # as `--no-ci` alone is insufficient.
+      #
+      # Use `--branches "${GITHUB_HEAD_REF}"` to consider the PR head ref (source branch) as a release one for the dry run.
       - run: |
-          GITHUB_REF=${{ github.head_ref }}
-          npx semantic-release --no-ci --dry-run --plugins @semantic-release/commit-analyzer,@semantic-release/release-notes-generator --branches ${{ github.head_ref }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          unset GITHUB_ACTIONS
+          npx --no-install semantic-release --dry-run --no-ci --branches "${GITHUB_HEAD_REF}"
