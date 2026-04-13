@@ -37,7 +37,7 @@
     "nock": "14.0.12",
     "prettier": "3.8.2",
     "semantic-release": "25.0.3",
-    "sinon": "21.1.0",
+    "sinon": "21.1.1",
     "tempy": "1.0.1"
   },
   "engines": {
