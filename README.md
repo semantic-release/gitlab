@@ -4,7 +4,7 @@
 [GitLab release](https://docs.gitlab.com/user/project/releases/).
 
 [![Build Status](https://github.com/semantic-release/gitlab/workflows/Test/badge.svg)](https://github.com/semantic-release/gitlab/actions?query=workflow%3ATest+branch%3Amaster) [![npm latest version](https://img.shields.io/npm/v/@semantic-release/gitlab/latest.svg)](https://www.npmjs.com/package/@semantic-release/gitlab)
-[![npm next version](https://img.shields.io/npm/v/@semantic-release/gitlab/next.svg)](https://www.npmjs.com/package/@semantic-release/gitlab)
+[![npm beta version](https://img.shields.io/npm/v/@semantic-release/gitlab/beta.svg)](https://www.npmjs.com/package/@semantic-release/gitlab)
 
 | Step               | Description                                                                                                                                      |
 | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
