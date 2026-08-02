@@ -34,7 +34,7 @@
   "devDependencies": {
     "ava": "6.4.1",
     "c8": "11.0.0",
-    "nock": "14.0.16",
+    "nock": "14.0.17",
     "prettier": "3.8.5",
     "semantic-release": "25.0.8",
     "sinon": "22.1.0",
