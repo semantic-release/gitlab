@@ -141,7 +141,7 @@ test.serial("Publish a release with generics", async (t) => {
   const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
   const encodedVersion = encodeURIComponent(nextRelease.version);
   const uploaded = { file: { url: "/uploads/file.css" } };
-  const generic = { path: "file.css", label: "Style package", target: "generic_package", status: "hidden" };
+  const generic = { path: "file.css", label: "style-package", target: "generic_package", status: "hidden" };
   const assets = [generic];
   const encodedLabel = encodeURIComponent(generic.label);
   const expectedUrl = `https://gitlab.com/api/v4/projects/${encodedProjectPath}/packages/generic/release/${encodedVersion}/${encodedLabel}`;
@@ -152,7 +152,7 @@ test.serial("Publish a release with generics", async (t) => {
       assets: {
         links: [
           {
-            name: "Style package",
+            name: "style-package",
             url: expectedUrl,
             link_type: "package",
           },
@@ -189,7 +189,7 @@ test.serial("Publish a release with generics: with asset.packageName (fixed text
   const uploaded = { file: { url: "/uploads/file.css" } };
   const generic = {
     path: "file.css",
-    label: "Style package",
+    label: "style-package",
     target: "generic_package",
     status: "hidden",
     packageName: "microk8s",
@@ -205,7 +205,7 @@ test.serial("Publish a release with generics: with asset.packageName (fixed text
       assets: {
         links: [
           {
-            name: "Style package",
+            name: "style-package",
             url: expectedUrl,
             link_type: "package",
           },
@@ -248,7 +248,7 @@ test.serial("Publish a release with generics: with asset.packageName (template)"
   const uploaded = { file: { url: "/uploads/file.css" } };
   const generic = {
     path: "file.css",
-    label: "Style package",
+    label: "style-package",
     target: "generic_package",
     status: "hidden",
     packageName: "${nextRelease.channel}",
@@ -263,7 +263,7 @@ test.serial("Publish a release with generics: with asset.packageName (template)"
       assets: {
         links: [
           {
-            name: "Style package",
+            name: "style-package",
             url: expectedUrl,
             link_type: "package",
           },
@@ -344,7 +344,7 @@ test.serial("Publish a release with generics and external storage provider (http
   const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
   const encodedVersion = encodeURIComponent(nextRelease.version);
   const uploaded = { file: { url: "http://aws.example.com/bucket/gitlab/file.css" } };
-  const generic = { path: "file.css", label: "Style package", target: "generic_package", status: "hidden" };
+  const generic = { path: "file.css", label: "style-package", target: "generic_package", status: "hidden" };
   const assets = [generic];
   const encodedLabel = encodeURIComponent(generic.label);
   const expectedUrl = `https://gitlab.com/api/v4/projects/${encodedProjectPath}/packages/generic/release/${encodedVersion}/${encodedLabel}`;
@@ -355,7 +355,7 @@ test.serial("Publish a release with generics and external storage provider (http
       assets: {
         links: [
           {
-            name: "Style package",
+            name: "style-package",
             url: expectedUrl,
             link_type: "package",
           },
@@ -390,7 +390,7 @@ test.serial("Publish a release with generics and external storage provider (http
   const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
   const encodedVersion = encodeURIComponent(nextRelease.version);
   const uploaded = { file: { url: "https://aws.example.com/bucket/gitlab/file.css" } };
-  const generic = { path: "file.css", label: "Style package", target: "generic_package", status: "hidden" };
+  const generic = { path: "file.css", label: "style-package", target: "generic_package", status: "hidden" };
   const assets = [generic];
   const encodedLabel = encodeURIComponent(generic.label);
   const expectedUrl = `https://gitlab.com/api/v4/projects/${encodedProjectPath}/packages/generic/release/${encodedVersion}/${encodedLabel}`;
@@ -401,7 +401,7 @@ test.serial("Publish a release with generics and external storage provider (http
       assets: {
         links: [
           {
-            name: "Style package",
+            name: "style-package",
             url: expectedUrl,
             link_type: "package",
           },
@@ -436,7 +436,7 @@ test.serial("Publish a release with generics and external storage provider (ftp)
   const encodedGitTag = encodeURIComponent(nextRelease.gitTag);
   const encodedVersion = encodeURIComponent(nextRelease.version);
   const uploaded = { file: { url: "ftp://drive.example.com/gitlab/file.css" } };
-  const generic = { path: "file.css", label: "Style package", target: "generic_package", status: "hidden" };
+  const generic = { path: "file.css", label: "style-package", target: "generic_package", status: "hidden" };
   const assets = [generic];
   const encodedLabel = encodeURIComponent(generic.label);
   const expectedUrl = `https://gitlab.com/api/v4/projects/${encodedProjectPath}/packages/generic/release/${encodedVersion}/${encodedLabel}`;
@@ -447,7 +447,7 @@ test.serial("Publish a release with generics and external storage provider (ftp)
       assets: {
         links: [
           {
-            name: "Style package",
+            name: "style-package",
             url: expectedUrl,
             link_type: "package",
           },
