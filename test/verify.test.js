@@ -1,6 +1,8 @@
 import test from "ava";
 import nock from "nock";
 import { stub } from "sinon";
+import { HttpsProxyAgent } from "hpagent";
+import got from "got";
 import verify from "../lib/verify.js";
 import authenticate from "./helpers/mock-gitlab.js";
 
@@ -101,6 +103,26 @@ test.serial("Verify CI_JOB_TOKEN and repository access", async (t) => {
 
   t.true(gitlab.isDone());
   t.deepEqual(t.context.log.args[1], ["Using Job Token for authentication. Some functionality may be disabled."]);
+});
+
+test.serial("Verify CI_JOB_TOKEN request uses HTTPS_PROXY agent", async (t) => {
+  const owner = "test_user";
+  const repo = "test_repo";
+  const env = { CI_JOB_TOKEN: "job_token", HTTPS_PROXY: "http://proxy.test:8443" };
+  const gotGet = stub(got, "get").resolves({});
+  t.teardown(() => gotGet.restore());
+
+  await t.notThrowsAsync(
+    verify(
+      { useJobToken: true },
+      { env, options: { repositoryUrl: `git+https://gitlab.com/${owner}/${repo}.git` }, logger: t.context.logger }
+    )
+  );
+
+  t.true(gotGet.calledOnce);
+  t.is(gotGet.firstCall.args[0], `https://gitlab.com/api/v4/projects/${owner}%2F${repo}/releases`);
+  t.is(gotGet.firstCall.args[1].headers["JOB-TOKEN"], "job_token");
+  t.true(gotGet.firstCall.args[1].agent.https instanceof HttpsProxyAgent);
 });
 
 test.serial("Throw SemanticReleaseError for invalid CI_JOB_TOKEN", async (t) => {
