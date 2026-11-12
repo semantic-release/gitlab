@@ -51,12 +51,33 @@ With this example [GitLab releases](https://docs.gitlab.com/user/project/release
 
 ### GitLab authentication
 
-The GitLab authentication configuration is **required** and can be set via
-[environment variables](#environment-variables).
+The GitLab authentication configuration is **required** and can be set via [environment variables](#environment-variables).
 
-Create a [project access token](https://docs.gitlab.com/user/project/settings/project_access_tokens/), [group access token](https://docs.gitlab.com/user/group/settings/group_access_tokens/), or [personal access token](https://docs.gitlab.com/user/profile/personal_access_tokens/) with role _Developer_ (or higher) and the `api` scope and make it available in your CI environment via the `GL_TOKEN` environment variable. If you are using `GL_TOKEN` as the [remote Git repository authentication](https://github.com/semantic-release/semantic-release/blob/master/docs/usage/ci-configuration.md#authentication) it must also have the `write_repository` scope.
+#### Fine-grained personal access token (recommended)
 
-**Note**: When running with [`dryRun`](https://semantic-release.gitbook.io/semantic-release/usage/configuration#dryrun) only `read_repository` scope is required.
+For improved security and least-privilege access, we recommend using a [fine-grained personal access token](https://docs.gitlab.com/auth/tokens/fine_grained_access_tokens/) with only the following required permissions:
+
+| **GitLab resource** | **Permission** | **Required for** |
+| :------------------ | --------------: | :--------------- |
+| **Project** | **Read** | Verify the project exists and check the token permissions via `GET /projects/:id`. |
+| **Release** | **Create** | Publish the release via `POST /projects/:id/releases`. |
+| **Work Item** | **Read** | Find an existing issue when processing `fail`. |
+| **Work Item** | **Create** | Create a failure issue and publish comments on issues or merge requests. |
+| **Markdown Upload** | **Create** | Upload release assets via `POST /projects/:id/uploads`. |
+| **Commit** | **Read** | Retrieve the merge requests associated with commits during the `success` step. |
+| **Merge Request** | **Read** | Retrieve the issues closed by merge requests. |
+
+The token must also be available in your CI environment through the `GL_TOKEN` or `GITLAB_TOKEN` environment variable.
+
+#### Legacy access token
+
+Create a [project access token](https://docs.gitlab.com/user/project/settings/project_access_tokens/), [group access token](https://docs.gitlab.com/user/group/settings/group_access_tokens/), or [personal access token](https://docs.gitlab.com/user/profile/personal_access_tokens/) with role _Developer_ (or higher) and the `api` scope, then make it available in your CI environment through the `GL_TOKEN` or `GITLAB_TOKEN environment variable.
+
+The `api` scope grants complete read and write access to the API within the token's scope.
+
+If you are using `GL_TOKEN` for [remote Git repository authentication](https://github.com/semantic-release/semantic-release/blob/master/docs/usage/ci-configuration.md#authentication), the token must also have the `write_repository` scope.
+
+**Note**: When running with [`dryRun`](https://semantic-release.gitbook.io/semantic-release/usage/configuration#dryrun), only the `read_repository` scope is required.
 
 #### Using a CI Job Token
 
