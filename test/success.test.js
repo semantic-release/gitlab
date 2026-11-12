@@ -332,3 +332,44 @@ test.serial("Retries requests when rate limited", async (t) => {
 
   t.true(gitlab.isDone());
 });
+
+test.serial("Posts comments one at a time", async (t) => {
+  const owner = "test_user";
+  const repo = "test_repo";
+  const env = { GITLAB_TOKEN: "gitlab_token" };
+  const pluginConfig = {};
+  const nextRelease = { version: "1.0.0" };
+  const releases = [{ name: RELEASE_NAME, url: "https://gitlab.com/test_user/test_repo/-/releases/v1.0.0" }];
+  const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
+  const encodedProjectPath = encodeURIComponent(`${owner}/${repo}`);
+  const commits = [{ hash: "abcdef" }];
+  const delay = 100;
+  const postedAt = [];
+  const gitlab = authenticate(env)
+    .get(`/projects/${encodedProjectPath}/repository/commits/abcdef/merge_requests`)
+    .reply(200, [
+      { project_id: 100, iid: 1, state: "merged" },
+      { project_id: 100, iid: 2, state: "merged" },
+    ])
+    .get(`/projects/100/merge_requests/1/closes_issues`)
+    .reply(200, [])
+    .get(`/projects/100/merge_requests/2/closes_issues`)
+    .reply(200, [])
+    .post(`/projects/100/merge_requests/1/notes`)
+    .delay(delay)
+    .reply(() => {
+      postedAt.push(Date.now());
+      return [200];
+    })
+    .post(`/projects/100/merge_requests/2/notes`)
+    .delay(delay)
+    .reply(() => {
+      postedAt.push(Date.now());
+      return [200];
+    });
+
+  await success(pluginConfig, { env, options, nextRelease, logger: t.context.logger, commits, releases });
+
+  t.true(gitlab.isDone());
+  t.true(postedAt[1] - postedAt[0] >= delay * 0.9);
+});
