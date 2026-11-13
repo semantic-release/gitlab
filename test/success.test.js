@@ -332,3 +332,58 @@ test.serial("Retries requests when rate limited", async (t) => {
 
   t.true(gitlab.isDone());
 });
+
+test.serial("Retries comments when rate limited", async (t) => {
+  const owner = "test_user";
+  const repo = "test_repo";
+  const env = { GITLAB_TOKEN: "gitlab_token" };
+  const pluginConfig = {};
+  const nextRelease = { version: "1.0.0" };
+  const releases = [{ name: RELEASE_NAME, url: "https://gitlab.com/test_user/test_repo/-/releases/v1.0.0" }];
+  const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
+  const encodedProjectPath = encodeURIComponent(`${owner}/${repo}`);
+  const commits = [{ hash: "abcdef" }];
+  const rateLimitBody = { message: { error: "This endpoint has been requested too many times. Try again later." } };
+  const gitlab = authenticate(env)
+    .get(`/projects/${encodedProjectPath}/repository/commits/abcdef/merge_requests`)
+    .reply(200, [{ project_id: 100, iid: 1, state: "merged" }])
+    .get(`/projects/100/merge_requests/1/closes_issues`)
+    .reply(200, [{ project_id: 100, iid: 11, state: "closed" }])
+    .post(`/projects/100/issues/11/notes`)
+    .reply(429, rateLimitBody, { "Retry-After": "1" })
+    .post(`/projects/100/issues/11/notes`)
+    .reply(200)
+    .post(`/projects/100/merge_requests/1/notes`)
+    .reply(429, rateLimitBody, { "Retry-After": "1" })
+    .post(`/projects/100/merge_requests/1/notes`)
+    .reply(200);
+
+  await success(pluginConfig, { env, options, nextRelease, logger: t.context.logger, commits, releases });
+
+  t.true(gitlab.isDone());
+});
+
+test.serial("Does not retry comments on server errors", async (t) => {
+  const owner = "test_user";
+  const repo = "test_repo";
+  const env = { GITLAB_TOKEN: "gitlab_token" };
+  const pluginConfig = {};
+  const nextRelease = { version: "1.0.0" };
+  const releases = [{ name: RELEASE_NAME, url: "https://gitlab.com/test_user/test_repo/-/releases/v1.0.0" }];
+  const options = { repositoryUrl: `https://gitlab.com/${owner}/${repo}.git` };
+  const encodedProjectPath = encodeURIComponent(`${owner}/${repo}`);
+  const commits = [{ hash: "abcdef" }];
+  authenticate(env)
+    .get(`/projects/${encodedProjectPath}/repository/commits/abcdef/merge_requests`)
+    .reply(200, [{ project_id: 100, iid: 1, state: "merged" }])
+    .get(`/projects/100/merge_requests/1/closes_issues`)
+    .reply(200, [])
+    .post(`/projects/100/merge_requests/1/notes`)
+    .reply(500);
+
+  const error = await t.throwsAsync(
+    success(pluginConfig, { env, options, nextRelease, logger: t.context.logger, commits, releases })
+  );
+
+  t.is(error.response?.statusCode, 500);
+});
